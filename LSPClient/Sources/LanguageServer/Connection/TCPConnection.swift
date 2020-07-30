@@ -9,11 +9,11 @@
 import Foundation
 import Network
 
-final class TCPConnection {
+final class TCPConnection: LSPConnection {
 
 	static let shared = TCPConnection()
 
-	weak var delegate: TCPConnectionDelegate?
+	weak var delegate: LSPConnectionDelegate?
 
 	private let queue = DispatchQueue(label: "lsp.connection.tcpconnection")
 
@@ -71,12 +71,5 @@ final class TCPConnection {
 	func close() {
 		connection.cancel()
 	}
-
-}
-
-protocol TCPConnectionDelegate: class {
-
-	func connectionError(cause: Error)
-	func didReceive(data: Data)
 
 }

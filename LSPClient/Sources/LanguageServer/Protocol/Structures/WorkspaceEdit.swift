@@ -7,7 +7,7 @@
 //
 
 struct WorkspaceEdit: ResultType {
-	let changes: [DocumentUri: [TextEdit]]?
+	let changes: [String: [TextEdit]]? // TODO: changes?: { [uri: DocumentUri]: TextEdit[]; };
 	let documentChanges: [DocumentChanges]?
 }
 
@@ -48,4 +48,3 @@ extension WorkspaceEdit {
 		}
 	}
 }
-

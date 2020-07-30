@@ -48,14 +48,13 @@ struct MarkedString: Codable {
 	}
 
 	init(from decoder: Decoder) throws {
-		let container = try decoder.container(keyedBy: CodingKeys.self)
-
-		if container.contains(.language) {
+		if let value = try? decoder.singleValueContainer().decode(String.self) {
+			self.language = nil
+			self.value = value
+		} else {
+			let container = try decoder.container(keyedBy: CodingKeys.self)
 			self.language = try container.decode(String.self, forKey: .language)
 			self.value = try container.decode(String.self, forKey: .value)
-		} else {
-			self.language = nil
-			self.value = try decoder.singleValueContainer().decode(String.self)
 		}
 	}
 }

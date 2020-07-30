@@ -19,7 +19,7 @@ final class ApplicationMessage {
 	}
 
 	func initialize(params: InitializeParams, source: ApplicationResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: INITIALIZE, source: source)
+		let context = RequestContext(method: INITIALIZE, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -32,7 +32,7 @@ final class ApplicationMessage {
 	}
 
 	func shutdown(params: VoidValue, source: ApplicationResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: SHUTDOWN, source: source)
+		let context = RequestContext(method: SHUTDOWN, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -55,7 +55,7 @@ protocol ApplicationResponceDelegate: ResponceDelegate {
 
 extension ApplicationResponceDelegate {
 
-	func receiveResponse(id: RequestID, context: MessageManager.RequestContext, result: ResultType?, error: ErrorResponse?) -> Bool {
+	func receiveResponse(id: RequestID, context: RequestContext, result: ResultType?, error: ErrorResponse?) throws -> Bool {
 		guard let source = context.source as? ApplicationResponceDelegate else {
 			fatalError()
 		}
@@ -66,7 +66,7 @@ extension ApplicationResponceDelegate {
 		case SHUTDOWN:
 			source.shutdown(id: id, result: or(result, error))
 		default:
-			fatalError()
+			throw MessageDecodingError.unsupportedMethod(id, context.method)
 		}
 
 		return true

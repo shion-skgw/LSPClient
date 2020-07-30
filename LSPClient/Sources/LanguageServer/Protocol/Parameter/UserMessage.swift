@@ -29,7 +29,7 @@ struct ShowMessageRequestParams: RequestParamsType {
 	let actions: [MessageActionItem]?
 }
 
-struct MessageActionItem: Codable {
+struct MessageActionItem: ResultType {
 	let title: String
 }
 

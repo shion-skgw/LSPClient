@@ -45,7 +45,7 @@ enum CodeActionResult: ResultType {
 	}
 
 	func encode(to encoder: Encoder) throws {
-		fatalError("TODO")
+		throw EncodingError.invalidValueError(self, encoder.codingPath, "Receive only.")
 	}
 }
 

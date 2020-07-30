@@ -34,7 +34,7 @@ final class TextDocumentMessage {
 	}
 
 	func completion(params: CompletionParams, source: TextDocumentResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_COMPLETION, source: source)
+		let context = RequestContext(method: TEXT_DOCUMENT_COMPLETION, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -42,7 +42,7 @@ final class TextDocumentMessage {
 	}
 
 	func completionResolve(params: CompletionItem, source: TextDocumentResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: COMPLETION_ITEM_RESOLVE, source: source)
+		let context = RequestContext(method: COMPLETION_ITEM_RESOLVE, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -50,7 +50,7 @@ final class TextDocumentMessage {
 	}
 
 	func hover(params: HoverParams, source: TextDocumentResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_HOVER, source: source)
+		let context = RequestContext(method: TEXT_DOCUMENT_HOVER, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -58,7 +58,7 @@ final class TextDocumentMessage {
 	}
 
 //	func declaration(params: DeclarationParams, source: TextDocumentResponceDelegate) -> RequestID {
-//		let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_DECLARATION, source: source)
+//		let context = RequestContext(method: TEXT_DOCUMENT_DECLARATION, source: source)
 //		let id = messageManager.nextId
 //		let message = Message.request(id, context.method, params)
 //		messageManager.send(message: message, context: context)
@@ -66,7 +66,7 @@ final class TextDocumentMessage {
 //	}
 
 	func definition(params: DefinitionParams, source: TextDocumentResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_DEFINITION, source: source)
+		let context = RequestContext(method: TEXT_DOCUMENT_DEFINITION, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -74,7 +74,7 @@ final class TextDocumentMessage {
 	}
 
 	func typeDefinition(params: TypeDefinitionParams, source: TextDocumentResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_TYPE_DEFINITION, source: source)
+		let context = RequestContext(method: TEXT_DOCUMENT_TYPE_DEFINITION, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -82,7 +82,7 @@ final class TextDocumentMessage {
 	}
 
 	func implementation(params: ImplementationParams, source: TextDocumentResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_IMPLEMENTATION, source: source)
+		let context = RequestContext(method: TEXT_DOCUMENT_IMPLEMENTATION, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -90,7 +90,7 @@ final class TextDocumentMessage {
 	}
 
 	func references(params: ReferenceParams, source: TextDocumentResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_REFERENCES, source: source)
+		let context = RequestContext(method: TEXT_DOCUMENT_REFERENCES, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -98,7 +98,7 @@ final class TextDocumentMessage {
 	}
 
 	func documentHighlight(params: DocumentHighlightParams, source: TextDocumentResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_DOCUMENT_HIGHLIGHT, source: source)
+		let context = RequestContext(method: TEXT_DOCUMENT_DOCUMENT_HIGHLIGHT, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -106,7 +106,7 @@ final class TextDocumentMessage {
 	}
 
 	func documentSymbol(params: DocumentSymbolParams, source: TextDocumentResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_DOCUMENT_SYMBOL, source: source)
+		let context = RequestContext(method: TEXT_DOCUMENT_DOCUMENT_SYMBOL, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -114,7 +114,7 @@ final class TextDocumentMessage {
 	}
 
 	func codeAction(params: CodeActionParams, source: TextDocumentResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_CODE_ACTION, source: source)
+		let context = RequestContext(method: TEXT_DOCUMENT_CODE_ACTION, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -122,7 +122,7 @@ final class TextDocumentMessage {
 	}
 
 //	func formatting(params: DocumentFormattingParams, source: TextDocumentResponceDelegate) -> RequestID {
-//		let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_FORMATTING, source: source)
+//		let context = RequestContext(method: TEXT_DOCUMENT_FORMATTING, source: source)
 //		let id = messageManager.nextId
 //		let message = Message.request(id, context.method, params)
 //		messageManager.send(message: message, context: context)
@@ -130,7 +130,7 @@ final class TextDocumentMessage {
 //	}
 
 	func rangeFormatting(params: DocumentRangeFormattingParams, source: TextDocumentResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_RANGE_FORMATTING, source: source)
+		let context = RequestContext(method: TEXT_DOCUMENT_RANGE_FORMATTING, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -138,7 +138,7 @@ final class TextDocumentMessage {
 	}
 
 	func rename(params: RenameParams, source: TextDocumentResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_RENAME, source: source)
+		let context = RequestContext(method: TEXT_DOCUMENT_RENAME, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -168,7 +168,7 @@ protocol TextDocumentResponceDelegate: ResponceDelegate {
 
 extension TextDocumentResponceDelegate {
 
-	func receiveResponse(id: RequestID, context: MessageManager.RequestContext, result: ResultType?, error: ErrorResponse?) -> Bool {
+	func receiveResponse(id: RequestID, context: RequestContext, result: ResultType?, error: ErrorResponse?) throws -> Bool {
 		guard let source = context.source as? TextDocumentResponceDelegate else {
 			fatalError()
 		}
@@ -206,7 +206,7 @@ extension TextDocumentResponceDelegate {
 		case TEXT_DOCUMENT_RENAME:
 			source.rename(id: id, result: or(result, error))
 		default:
-			fatalError()
+			throw MessageDecodingError.unsupportedMethod(id, context.method)
 		}
 
 		return true

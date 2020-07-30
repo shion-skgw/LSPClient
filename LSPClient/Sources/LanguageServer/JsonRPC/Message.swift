@@ -9,7 +9,8 @@
 enum Message {
 	case request(RequestID, String, RequestParamsType)
 	case notification(String, NotificationParamsType)
-	case response(RequestID, ResultType?, ErrorResponse?)
+	case response(RequestID, ResultType?)
+	case errorResponse(RequestID, ErrorResponse)
 }
 
 extension Message: Codable {
@@ -58,10 +59,10 @@ extension Message: Codable {
 				throw MessageDecodingError.unknownRequestID
 			}
 			guard let resultType = RESPONSE_RESULT_TYPE[method] else {
-				fatalError("TODO")
+				throw MessageDecodingError.unsupportedMethod(id, method)
 			}
 			let result = try resultType.init(from: container.superDecoder(forKey: .result))
-			self = .response(id, result, nil)
+			self = .response(id, result)
 
 		case (let id?, nil, false, true):
 			/* Error response */
@@ -69,7 +70,7 @@ extension Message: Codable {
 				throw MessageDecodingError.unknownRequestID
 			}
 			let error = try container.decode(ErrorResponse.self, forKey: .error)
-			self = .response(id, nil, error)
+			self = .errorResponse(id, error)
 
 		default:
 			throw DecodingError.dataCorruptedError(container.codingPath, "TODO")
@@ -92,18 +93,19 @@ extension Message: Codable {
 			try container.encode(method, forKey: .method)
 			try params.encode(to: container.superEncoder(forKey: .params))
 
-		case .response(let id, let result?, nil):
+		case .response(let id, let result):
 			/* Response */
 			try container.encode(id, forKey: .id)
-			try result.encode(to: container.superEncoder(forKey: .result))
+			if let result = result {
+				try result.encode(to: container.superEncoder(forKey: .result))
+			} else {
+				try container.encodeNil(forKey: .result)
+			}
 
-		case .response(let id, nil, let error?):
+		case .errorResponse(let id, let error):
 			/* Error response */
 			try container.encode(id, forKey: .id)
 			try error.encode(to: container.superEncoder(forKey: .error))
-
-		default:
-			fatalError("TODO")
 		}
 	}
 

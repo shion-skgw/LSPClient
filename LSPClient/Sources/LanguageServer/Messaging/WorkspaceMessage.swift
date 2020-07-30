@@ -24,7 +24,7 @@ final class WorkspaceMessage {
 	}
 
 	func symbol(params: WorkspaceSymbolParams, source: WorkspaceResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: WORKSPACE_SYMBOL, source: source)
+		let context = RequestContext(method: WORKSPACE_SYMBOL, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -32,7 +32,7 @@ final class WorkspaceMessage {
 	}
 
 	func executeCommand(params: ExecuteCommandParams, source: WorkspaceResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: WORKSPACE_EXECUTE_COMMAND, source: source)
+		let context = RequestContext(method: WORKSPACE_EXECUTE_COMMAND, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -40,7 +40,7 @@ final class WorkspaceMessage {
 	}
 
 	func applyEdit(params: ApplyWorkspaceEditParams, source: WorkspaceResponceDelegate) -> RequestID {
-		let context = MessageManager.RequestContext(method: WORKSPACE_APPLY_EDIT, source: source)
+		let context = RequestContext(method: WORKSPACE_APPLY_EDIT, source: source)
 		let id = messageManager.nextId
 		let message = Message.request(id, context.method, params)
 		messageManager.send(message: message, context: context)
@@ -58,7 +58,7 @@ protocol WorkspaceResponceDelegate: ResponceDelegate {
 
 extension WorkspaceResponceDelegate {
 
-	func receiveResponse(id: RequestID, context: MessageManager.RequestContext, result: ResultType?, error: ErrorResponse?) -> Bool {
+	func receiveResponse(id: RequestID, context: RequestContext, result: ResultType?, error: ErrorResponse?) throws -> Bool {
 		guard let source = context.source as? WorkspaceResponceDelegate else {
 			fatalError()
 		}
@@ -69,7 +69,7 @@ extension WorkspaceResponceDelegate {
 		case WORKSPACE_EXECUTE_COMMAND:
 			source.executeCommand(id: id, result: or(result, error))
 		default:
-			fatalError()
+			throw MessageDecodingError.unsupportedMethod(id, context.method)
 		}
 
 		return true

@@ -50,7 +50,7 @@ enum TextDocumentContentChangeEvent: Codable {
 	}
 
 	init(from decoder: Decoder) throws {
-		fatalError("TODO")
+		throw DecodingError.dataCorruptedError(decoder.codingPath, "Send only.")
 	}
 
 	func encode(to encoder: Encoder) throws {
