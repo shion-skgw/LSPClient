@@ -6,15 +6,16 @@
 //  Copyright © 2020 Shion. All rights reserved.
 //
 
+import XCTest
 import Foundation
 @testable import LSPClient
 
 class MessageManagerDelegateStub: MessageManagerDelegate {
 	var function: String!
-	var params: ParamsType!
-	var id: RequestID!
 	var cause: Error!
 	var message: Message!
+	var params: ParamsType!
+	var id: RequestID!
 
 	func messageError(cause: Error, message: Message?) {
 		self.function = #function
@@ -26,6 +27,7 @@ class MessageManagerDelegateStub: MessageManagerDelegate {
 		self.function = #function
 		self.cause = cause
 	}
+
 
 	func cancelRequest(params: CancelParams) {
 		self.function = #function
@@ -61,7 +63,7 @@ class MessageManagerDelegateStub: MessageManagerDelegate {
 
 }
 
-class ApplicationResponceDelegateStub: ApplicationResponceDelegate {
+class ApplicationMessageDelegateStub: ApplicationMessageDelegate {
 	var function: String!
 	var result: ResultType!
 	var error: ErrorResponse!
@@ -87,7 +89,7 @@ class ApplicationResponceDelegateStub: ApplicationResponceDelegate {
 
 }
 
-class WorkspaceResponceDelegateStub: WorkspaceResponceDelegate {
+class WorkspaceMessageDelegateStub: WorkspaceMessageDelegate {
 	var function: String!
 	var result: ResultType!
 	var error: ErrorResponse!
@@ -113,7 +115,7 @@ class WorkspaceResponceDelegateStub: WorkspaceResponceDelegate {
 
 }
 
-class TextDocumentResponceDelegateStub: TextDocumentResponceDelegate {
+class TextDocumentMessageDelegateStub: TextDocumentMessageDelegate {
 	var function: String!
 	var result: ResultType!
 	var error: ErrorResponse!

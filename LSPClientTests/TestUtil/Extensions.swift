@@ -6,47 +6,48 @@
 //  Copyright © 2020 Shion. All rights reserved.
 //
 
+import XCTest
 import Foundation
 @testable import LSPClient
 
 extension AnyValue {
 
-	var isEmpty: Bool {
+	var isEmpty: Bool? {
 		if let value = value as? [String: Any?] {
 			return value.isEmpty
 		} else if let value = value as? [Any?] {
 			return value.isEmpty
 		} else {
-			fatalError()
+			return nil
 		}
 	}
 
-	var isVoid: Bool {
+	var isNull: Bool {
 		return value is ()
 	}
 
-	var count: Int {
+	var count: Int? {
 		if let value = value as? [String: Any?] {
 			return value.count
 		} else if let value = value as? [Any?] {
 			return value.count
 		} else {
-			fatalError()
+			return nil
 		}
 	}
 
-	subscript(_ key: String) -> AnyValue {
+	subscript(_ key: String) -> AnyValue? {
 		guard let value = value as? [String: Any?] else {
-			fatalError()
+			return nil
 		}
-		return AnyValue(value[key]!)
+		return value[key] != nil ? AnyValue(value[key]) : nil
 	}
 
-	subscript(_ index: Int) -> AnyValue {
+	subscript(_ index: Int) -> AnyValue? {
 		guard let value = value as? [Any?] else {
-			fatalError()
+			return nil
 		}
-		return AnyValue(value[index])
+		return value.count > index ? AnyValue(value[index]) : nil
 	}
 
 }

@@ -6,7 +6,9 @@
 //  Copyright © 2020 Shion. All rights reserved.
 //
 
+import XCTest
 import Foundation
+import Network
 @testable import LSPClient
 
 let REQUEST_HEADERS	= "Content-Length: %d\r\nContent-Type: application/vscode-jsonrpc; charset=utf8\r\n\r\n"
@@ -28,6 +30,7 @@ class TestConnection: LSPConnection {
 
 	func send(data: Data, completion: @escaping () -> ()) {
 		sendData = String(data: data, encoding: .utf8)
+		completion()
 	}
 
 	func receive(_ str: String) {
@@ -36,6 +39,11 @@ class TestConnection: LSPConnection {
 	}
 
 	func connection(host: String, port: Int) {}
+
+	func connectionError() {
+		let error = NWError.posix(POSIXErrorCode.E2BIG)
+		delegate?.connectionError(cause: error)
+	}
 
 	func close() {}
 

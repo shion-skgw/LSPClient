@@ -6,6 +6,7 @@
 //  Copyright © 2020 Shion. All rights reserved.
 //
 
+import XCTest
 import Foundation
 @testable import LSPClient
 

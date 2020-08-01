@@ -6,57 +6,48 @@
 //  Copyright © 2020 Shion. All rights reserved.
 //
 
-final class ApplicationMessage {
-
-	static let shared: ApplicationMessage = ApplicationMessage()
-	private unowned var messageManager: MessageManager = MessageManager.shared
-
-	private init() {}
-
-	func cancelRequest(params: CancelParams) {
-		let message = Message.notification(CANCEL_REQUEST, params)
-		messageManager.send(message: message)
-	}
-
-	func initialize(params: InitializeParams, source: ApplicationResponceDelegate) -> RequestID {
-		let context = RequestContext(method: INITIALIZE, source: source)
-		let id = messageManager.nextId
-		let message = Message.request(id, context.method, params)
-		messageManager.send(message: message, context: context)
-		return id
-	}
-
-	func initialized(params: InitializedParams) {
-		let message = Message.notification(INITIALIZED, params)
-		messageManager.send(message: message)
-	}
-
-	func shutdown(params: VoidValue, source: ApplicationResponceDelegate) -> RequestID {
-		let context = RequestContext(method: SHUTDOWN, source: source)
-		let id = messageManager.nextId
-		let message = Message.request(id, context.method, params)
-		messageManager.send(message: message, context: context)
-		return id
-	}
-
-	func exit(params: VoidValue) {
-		let message = Message.notification(EXIT, params)
-		messageManager.send(message: message)
-	}
-
-}
-
-protocol ApplicationResponceDelegate: ResponceDelegate {
+protocol ApplicationMessageDelegate: MessageDelegate {
 
 	func initialize(id: RequestID, result: Result<InitializeResult, ErrorResponse>)
 	func shutdown(id: RequestID, result: Result<VoidValue?, ErrorResponse>)
 
 }
 
-extension ApplicationResponceDelegate {
+extension ApplicationMessageDelegate {
+
+	func cancelRequest(params: CancelParams) {
+		let message = Message.notification(CANCEL_REQUEST, params)
+		MessageManager.shared.send(message: message)
+	}
+
+	func initialize(params: InitializeParams) -> RequestID {
+		let context = RequestContext(method: INITIALIZE, source: self)
+		let id = MessageManager.shared.nextId
+		let message = Message.request(id, context.method, params)
+		MessageManager.shared.send(message: message, context: context)
+		return id
+	}
+
+	func initialized(params: InitializedParams) {
+		let message = Message.notification(INITIALIZED, params)
+		MessageManager.shared.send(message: message)
+	}
+
+	func shutdown(params: VoidValue) -> RequestID {
+		let context = RequestContext(method: SHUTDOWN, source: self)
+		let id = MessageManager.shared.nextId
+		let message = Message.request(id, context.method, params)
+		MessageManager.shared.send(message: message, context: context)
+		return id
+	}
+
+	func exit(params: VoidValue) {
+		let message = Message.notification(EXIT, params)
+		MessageManager.shared.send(message: message)
+	}
 
 	func receiveResponse(id: RequestID, context: RequestContext, result: ResultType?, error: ErrorResponse?) throws -> Bool {
-		guard let source = context.source as? ApplicationResponceDelegate else {
+		guard let source = context.source as? ApplicationMessageDelegate else {
 			fatalError()
 		}
 

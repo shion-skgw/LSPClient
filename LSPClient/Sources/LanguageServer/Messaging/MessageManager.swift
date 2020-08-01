@@ -19,7 +19,7 @@ extension CodingUserInfoKey {
 
 struct RequestContext {
 	let method: String
-	weak var source: ResponceDelegate?
+	weak var source: MessageDelegate?
 }
 
 
@@ -37,7 +37,7 @@ final class MessageManager: LSPConnectionDelegate {
 
 	private var sendRequest: [RequestID: RequestContext] = Dictionary(minimumCapacity: 100)
 
-	private var currentId: Int = 1
+	private var currentId: Int = 0
 
 	var nextId: RequestID {
 		currentId += 1
@@ -53,7 +53,7 @@ final class MessageManager: LSPConnectionDelegate {
 
 	func connection(a: Int) {
 		connection.close()
-		currentId = 1
+		currentId = 0
 		sendRequest.removeAll()
 		connection.connection(host: "", port: 123)
 	}
@@ -67,8 +67,11 @@ final class MessageManager: LSPConnectionDelegate {
 	}
 
 	#if DEBUG
-	func appendSendRequest(id: RequestID, method: String, source: ResponceDelegate?) {
+	func appendSendRequest(id: RequestID, method: String, source: MessageDelegate?) {
 		sendRequest[id] = RequestContext(method: method, source: source)
+	}
+	var getSendRequest: [RequestID: RequestContext] {
+		return sendRequest
 	}
 	#endif
 
@@ -162,12 +165,22 @@ protocol MessageManagerDelegate: class {
 
 extension MessageManagerDelegate {
 
+	func showMessageRequest(id: RequestID, result: MessageActionItem?) {
+		let message = Message.response(id, result)
+		MessageManager.shared.send(message: message)
+	}
+
+	func applyEdit(id: RequestID, result: ApplyWorkspaceEditResponse) {
+		let message = Message.response(id, result)
+		MessageManager.shared.send(message: message)
+	}
+
 	func receiveRequest(id: RequestID, method: String, params: RequestParamsType) throws {
 		switch method {
 		case WINDOW_SHOW_MESSAGE_REQUEST:
-			showMessageRequest(id: id, params: params as! ShowMessageRequestParams)
+			showMessageRequest(id: id, params: to(params))
 		case WORKSPACE_APPLY_EDIT:
-			applyEdit(id: id, params: params as! ApplyWorkspaceEditParams)
+			applyEdit(id: id, params: to(params))
 		default:
 			throw MessageDecodingError.unsupportedMethod(id, method)
 		}
@@ -176,27 +189,35 @@ extension MessageManagerDelegate {
 	func receiveNotification(method: String, params: NotificationParamsType) throws {
 		switch method {
 		case CANCEL_REQUEST:
-			cancelRequest(params: params as! CancelParams)
+			cancelRequest(params: to(params))
 		case WINDOW_SHOW_MESSAGE:
-			showMessage(params: params as! ShowMessageParams)
+			showMessage(params: to(params))
 		case WINDOW_LOG_MESSAGE:
-			logMessage(params: params as! LogMessageParams)
+			logMessage(params: to(params))
 		case TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS:
-			publishDiagnostics(params: params as! PublishDiagnosticsParams)
+			publishDiagnostics(params: to(params))
 		default:
 			throw MessageDecodingError.unsupportedMethod(nil, method)
 		}
 	}
 
+	private func to<T: ParamsType>(_ params: ParamsType) -> T {
+		if let params = params as? T {
+			return params
+		} else {
+			fatalError()
+		}
+	}
+
 }
 
-protocol ResponceDelegate: class {
+protocol MessageDelegate: class {
 
 	func receiveResponse(id: RequestID, context: RequestContext, result: ResultType?, error: ErrorResponse?) throws -> Bool
 
 }
 
-extension ResponceDelegate {
+extension MessageDelegate {
 
 	func or<T: ResultType>(_ result: ResultType?, _ error: ErrorResponse?) -> Result<T, ErrorResponse> {
 		if let result = result as? T {

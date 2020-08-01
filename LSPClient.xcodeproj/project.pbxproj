@@ -10,7 +10,6 @@
 		0508BF2924C97267005488A9 /* ApplicationMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0508BF2824C97267005488A9 /* ApplicationMessage.swift */; };
 		0508BF2B24C97798005488A9 /* WorkspaceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0508BF2A24C97798005488A9 /* WorkspaceMessage.swift */; };
 		0508BF2D24C97905005488A9 /* TextDocumentMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0508BF2C24C97905005488A9 /* TextDocumentMessage.swift */; };
-		0508BF2F24C97BB9005488A9 /* ServerMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0508BF2E24C97BB9005488A9 /* ServerMessage.swift */; };
 		0514099A24B120920015BBDC /* VoidValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0514099924B120920015BBDC /* VoidValue.swift */; };
 		0529C51524D2DE37005AB13F /* LSPMessagingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0529C51424D2DE37005AB13F /* LSPMessagingTests.swift */; };
 		0529C51724D2DE4C005AB13F /* LSPCodingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0529C51624D2DE4C005AB13F /* LSPCodingTests.swift */; };
@@ -83,7 +82,6 @@
 		0508BF2824C97267005488A9 /* ApplicationMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationMessage.swift; sourceTree = "<group>"; };
 		0508BF2A24C97798005488A9 /* WorkspaceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceMessage.swift; sourceTree = "<group>"; };
 		0508BF2C24C97905005488A9 /* TextDocumentMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDocumentMessage.swift; sourceTree = "<group>"; };
-		0508BF2E24C97BB9005488A9 /* ServerMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerMessage.swift; sourceTree = "<group>"; };
 		0514099924B120920015BBDC /* VoidValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoidValue.swift; sourceTree = "<group>"; };
 		0529C51424D2DE37005AB13F /* LSPMessagingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPMessagingTests.swift; sourceTree = "<group>"; };
 		0529C51624D2DE4C005AB13F /* LSPCodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPCodingTests.swift; sourceTree = "<group>"; };
@@ -178,10 +176,10 @@
 		0529C51824D2DF34005AB13F /* TestUtil */ = {
 			isa = PBXGroup;
 			children = (
-				0529C51924D2DF43005AB13F /* TestConnection.swift */,
-				0529C51B24D2F33C005AB13F /* MessagingDelegateStub.swift */,
-				0529C51D24D2F379005AB13F /* Functions.swift */,
 				0529C51F24D2F3AD005AB13F /* Extensions.swift */,
+				0529C51D24D2F379005AB13F /* Functions.swift */,
+				0529C51B24D2F33C005AB13F /* MessagingDelegateStub.swift */,
+				0529C51924D2DF43005AB13F /* TestConnection.swift */,
 			);
 			path = TestUtil;
 			sourceTree = "<group>";
@@ -237,9 +235,9 @@
 		058B6A11248C683A0099B32F /* LanguageServer */ = {
 			isa = PBXGroup;
 			children = (
-				05BA10B024D2D97E009A3669 /* Messaging */,
 				05BA10AD24D2D905009A3669 /* Connection */,
 				058B6A14248CF9090099B32F /* JsonRPC */,
+				05BA10B024D2D97E009A3669 /* Messaging */,
 				058B6A15248CF9220099B32F /* Protocol */,
 			);
 			path = LanguageServer;
@@ -281,7 +279,6 @@
 			children = (
 				0508BF2824C97267005488A9 /* ApplicationMessage.swift */,
 				058B6A12248C687D0099B32F /* MessageManager.swift */,
-				0508BF2E24C97BB9005488A9 /* ServerMessage.swift */,
 				0508BF2C24C97905005488A9 /* TextDocumentMessage.swift */,
 				0508BF2A24C97798005488A9 /* WorkspaceMessage.swift */,
 			);
@@ -318,11 +315,11 @@
 		05CA5D0C248C5F1A00582319 /* LSPClientTests */ = {
 			isa = PBXGroup;
 			children = (
-				0529C51824D2DF34005AB13F /* TestUtil */,
 				05CA5D0F248C5F1A00582319 /* Info.plist */,
 				05CA5D0D248C5F1A00582319 /* LSPClientTests.swift */,
-				0529C51424D2DE37005AB13F /* LSPMessagingTests.swift */,
 				0529C51624D2DE4C005AB13F /* LSPCodingTests.swift */,
+				0529C51424D2DE37005AB13F /* LSPMessagingTests.swift */,
+				0529C51824D2DF34005AB13F /* TestUtil */,
 			);
 			path = LSPClientTests;
 			sourceTree = "<group>";
@@ -487,7 +484,6 @@
 				05CA5CF7248C5F1700582319 /* AppDelegate.swift in Sources */,
 				058B6A13248C687D0099B32F /* MessageManager.swift in Sources */,
 				056732CC24960A2100E7650B /* TextDocumentItem.swift in Sources */,
-				0508BF2F24C97BB9005488A9 /* ServerMessage.swift in Sources */,
 				0540195324936CC600287026 /* Diagnostic.swift in Sources */,
 				05BAAB2024A3531900A3EADC /* UserMessage.swift in Sources */,
 				0514099A24B120920015BBDC /* VoidValue.swift in Sources */,

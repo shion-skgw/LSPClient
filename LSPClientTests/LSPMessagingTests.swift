@@ -11,18 +11,19 @@ import XCTest
 
 class LSPMessagingTests: XCTestCase {
 
-	var messageManager: MessageManagerDelegateStub!
-	var application: ApplicationResponceDelegateStub!
-	var workspace: WorkspaceResponceDelegateStub!
-	var textDocument: TextDocumentResponceDelegateStub!
+	var manager: MessageManagerDelegateStub!
+	var application: ApplicationMessageDelegateStub!
+	var workspace: WorkspaceMessageDelegateStub!
+	var textDocument: TextDocumentMessageDelegateStub!
 
 	override func setUp() {
-		self.messageManager = MessageManagerDelegateStub()
-		self.application = ApplicationResponceDelegateStub()
-		self.workspace = WorkspaceResponceDelegateStub()
-		self.textDocument = TextDocumentResponceDelegateStub()
-		MessageManager.shared.delegate = self.messageManager
+		self.manager = MessageManagerDelegateStub()
+		self.application = ApplicationMessageDelegateStub()
+		self.workspace = WorkspaceMessageDelegateStub()
+		self.textDocument = TextDocumentMessageDelegateStub()
+		MessageManager.shared.delegate = self.manager
 		MessageManager.shared.connection = TestConnection.shared
+		MessageManager.shared.connection(a: 0)
 		TestConnection.shared.delegate = MessageManager.shared
 	}
 
@@ -34,15 +35,18 @@ class LSPMessagingTests: XCTestCase {
 		let json = #"{jsonrpc = 2.0}"#
 		TestConnection.shared.receive(json)
 
-		// Assert MessageManagerDelegate
-		XCTAssertEqual(messageManager.function, "messageError(cause:message:)")
-		XCTAssertNil(messageManager.params)
-		XCTAssertNil(messageManager.id)
-		XCTAssertNotNil(messageManager.cause)
-		XCTAssertNil(messageManager.message)
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertNotNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
 
 		// Assert Error
-		guard let cause = messageManager.cause else { XCTFail(); return }
+		guard let cause = manager.cause else { XCTFail(); return }
 		switch cause {
 		case DecodingError.dataCorrupted(_):
 			break
@@ -65,15 +69,18 @@ class LSPMessagingTests: XCTestCase {
 		"""#
 		TestConnection.shared.receive(json)
 
-		// Assert MessageManagerDelegate
-		XCTAssertEqual(messageManager.function, "messageError(cause:message:)")
-		XCTAssertNil(messageManager.params)
-		XCTAssertNil(messageManager.id)
-		XCTAssertNotNil(messageManager.cause)
-		XCTAssertNil(messageManager.message)
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertNotNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
 
 		// Assert Error
-		guard let cause = messageManager.cause else { XCTFail(); return }
+		guard let cause = manager.cause else { XCTFail(); return }
 		switch cause {
 		case DecodingError.dataCorrupted(let context):
 			XCTAssertEqual(context.codingPath.last?.stringValue, "jsonrpc")
@@ -92,15 +99,18 @@ class LSPMessagingTests: XCTestCase {
 		"""#
 		TestConnection.shared.receive(json)
 
-		// Assert MessageManagerDelegate
-		XCTAssertEqual(messageManager.function, "messageError(cause:message:)")
-		XCTAssertNil(messageManager.params)
-		XCTAssertNil(messageManager.id)
-		XCTAssertNotNil(messageManager.cause)
-		XCTAssertNil(messageManager.message)
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertNotNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
 
 		// Assert Error
-		guard let cause = messageManager.cause else { XCTFail(); return }
+		guard let cause = manager.cause else { XCTFail(); return }
 		switch cause {
 		case DecodingError.valueNotFound(_, _):
 			break
@@ -123,15 +133,18 @@ class LSPMessagingTests: XCTestCase {
 		"""#
 		TestConnection.shared.receive(json)
 
-		// Assert MessageManagerDelegate
-		XCTAssertEqual(messageManager.function, "messageError(cause:message:)")
-		XCTAssertNil(messageManager.params)
-		XCTAssertNil(messageManager.id)
-		XCTAssertNotNil(messageManager.cause)
-		XCTAssertNil(messageManager.message)
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertNotNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
 
 		// Assert Error
-		guard let cause = messageManager.cause else { XCTFail(); return }
+		guard let cause = manager.cause else { XCTFail(); return }
 		switch cause {
 		case DecodingError.dataCorrupted(_):
 			break
@@ -152,15 +165,18 @@ class LSPMessagingTests: XCTestCase {
 		"""#
 		TestConnection.shared.receive(json)
 
-		// Assert MessageManagerDelegate
-		XCTAssertEqual(messageManager.function, "messageError(cause:message:)")
-		XCTAssertNil(messageManager.params)
-		XCTAssertNil(messageManager.id)
-		XCTAssertNotNil(messageManager.cause)
-		XCTAssertNil(messageManager.message)
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertNotNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
 
 		// Assert Error
-		guard let cause = messageManager.cause else { XCTFail(); return }
+		guard let cause = manager.cause else { XCTFail(); return }
 		switch cause {
 		case MessageDecodingError.unsupportedMethod(_, _):
 			break
@@ -180,15 +196,18 @@ class LSPMessagingTests: XCTestCase {
 		"""#
 		TestConnection.shared.receive(json)
 
-		// Assert MessageManagerDelegate
-		XCTAssertEqual(messageManager.function, "messageError(cause:message:)")
-		XCTAssertNil(messageManager.params)
-		XCTAssertNil(messageManager.id)
-		XCTAssertNotNil(messageManager.cause)
-		XCTAssertNil(messageManager.message)
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertNotNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
 
 		// Assert Error
-		guard let cause = messageManager.cause else { XCTFail(); return }
+		guard let cause = manager.cause else { XCTFail(); return }
 		switch cause {
 		case MessageDecodingError.unsupportedMethod(_, _):
 			break
@@ -208,15 +227,18 @@ class LSPMessagingTests: XCTestCase {
 		"""#
 		TestConnection.shared.receive(json)
 
-		// Assert MessageManagerDelegate
-		XCTAssertEqual(messageManager.function, "messageError(cause:message:)")
-		XCTAssertNil(messageManager.params)
-		XCTAssertNil(messageManager.id)
-		XCTAssertNotNil(messageManager.cause)
-		XCTAssertNil(messageManager.message)
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertNotNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
 
 		// Assert Error
-		guard let cause = messageManager.cause else { XCTFail(); return }
+		guard let cause = manager.cause else { XCTFail(); return }
 		switch cause {
 		case MessageDecodingError.unknownRequestID:
 			break
@@ -236,15 +258,18 @@ class LSPMessagingTests: XCTestCase {
 		"""#
 		TestConnection.shared.receive(json)
 
-		// Assert MessageManagerDelegate
-		XCTAssertEqual(messageManager.function, "messageError(cause:message:)")
-		XCTAssertNil(messageManager.params)
-		XCTAssertNil(messageManager.id)
-		XCTAssertNotNil(messageManager.cause)
-		XCTAssertNil(messageManager.message)
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertNotNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
 
 		// Assert Error
-		guard let cause = messageManager.cause else { XCTFail(); return }
+		guard let cause = manager.cause else { XCTFail(); return }
 		switch cause {
 		case MessageDecodingError.unknownRequestID:
 			break
@@ -265,15 +290,18 @@ class LSPMessagingTests: XCTestCase {
 		"""#
 		TestConnection.shared.receive(json)
 
-		// Assert MessageManagerDelegate
-		XCTAssertEqual(messageManager.function, "messageError(cause:message:)")
-		XCTAssertNil(messageManager.params)
-		XCTAssertNil(messageManager.id)
-		XCTAssertNotNil(messageManager.cause)
-		XCTAssertNil(messageManager.message)
+		// Assert send request store
+		XCTAssertEqual(MessageManager.shared.getSendRequest.count, 1)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertNotNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
 
 		// Assert Error
-		guard let cause = messageManager.cause else { XCTFail(); return }
+		guard let cause = manager.cause else { XCTFail(); return }
 		switch cause {
 		case MessageDecodingError.unsupportedMethod(_, _):
 			break
@@ -299,15 +327,18 @@ class LSPMessagingTests: XCTestCase {
 		"""#
 		TestConnection.shared.receive(json)
 
-		// Assert MessageManagerDelegate
-		XCTAssertEqual(messageManager.function, "showMessage(params:)")
-		XCTAssertNotNil(messageManager.params)
-		XCTAssertNil(messageManager.id)
-		XCTAssertNil(messageManager.cause)
-		XCTAssertNil(messageManager.message)
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertEqual(manager.function, "showMessage(params:)")
+		XCTAssertNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNotNil(manager.params)
+		XCTAssertNil(manager.id)
 
 		// Assert ShowMessageParams
-		guard let params = messageManager.params as? ShowMessageParams else { XCTFail(); return }
+		guard let params = manager.params as? ShowMessageParams else { XCTFail(); return }
 		XCTAssertEqual(params.type, .error)
 		XCTAssertEqual(params.message, "MESSAGE")
 	}
@@ -330,15 +361,18 @@ class LSPMessagingTests: XCTestCase {
 		"""#
 		TestConnection.shared.receive(json)
 
-		// Assert MessageManagerDelegate
-		XCTAssertEqual(messageManager.function, "showMessageRequest(id:params:)")
-		XCTAssertNotNil(messageManager.params)
-		XCTAssertEqual(messageManager.id, .string("ID"))
-		XCTAssertNil(messageManager.cause)
-		XCTAssertNil(messageManager.message)
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
 
-		// Assert ShowMessageParams
-		guard let params = messageManager.params as? ShowMessageRequestParams else { XCTFail(); return }
+		// Assert MessageManagerDelegateStub
+		XCTAssertEqual(manager.function, "showMessageRequest(id:params:)")
+		XCTAssertNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNotNil(manager.params)
+		XCTAssertEqual(manager.id, .string("ID"))
+
+		// Assert ShowMessageRequestParams
+		guard let params = manager.params as? ShowMessageRequestParams else { XCTFail(); return }
 		XCTAssertEqual(params.type, .error)
 		XCTAssertEqual(params.message, "MESSAGE")
 		XCTAssertEqual(params.actions?.count, 1)
@@ -347,55 +381,378 @@ class LSPMessagingTests: XCTestCase {
 
 	func test_window_showMessageRequest_02() {
 		// Execute
-		ServerMessage.shared.showMessageRequest(id: .string("ID"), result: nil)
+		manager.showMessageRequest(id: .string("ID"), result: nil)
 
-		// Assert MessageManagerDelegate
-		XCTAssertNil(messageManager.function)
-		XCTAssertNil(messageManager.params)
-		XCTAssertNil(messageManager.id)
-		XCTAssertNil(messageManager.cause)
-		XCTAssertNil(messageManager.message)
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertNil(manager.function)
+		XCTAssertNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
 
 		// Assert content
 		let content = dictionary(TestConnection.shared.sendContent)
 		XCTAssertEqual(content["jsonrpc"], "2.0")
 		XCTAssertEqual(content["id"], "ID")
-		XCTAssertEqual(content["result"].isVoid, true)
+		XCTAssertEqual(content["result"]?.isNull, true)
 	}
 
 	func test_window_showMessageRequest_03() {
 		// Execute
 		let result = MessageActionItem(title: "TITLE")
-		ServerMessage.shared.showMessageRequest(id: .string("ID"), result: result)
+		manager.showMessageRequest(id: .string("ID"), result: result)
 
-		// Assert MessageManagerDelegate
-		XCTAssertNil(messageManager.function)
-		XCTAssertNil(messageManager.params)
-		XCTAssertNil(messageManager.id)
-		XCTAssertNil(messageManager.cause)
-		XCTAssertNil(messageManager.message)
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertNil(manager.function)
+		XCTAssertNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
 
 		// Assert content
 		let content = dictionary(TestConnection.shared.sendContent)
 		XCTAssertEqual(content["jsonrpc"], "2.0")
 		XCTAssertEqual(content["id"], "ID")
-		XCTAssertEqual(content["result"]["title"], "TITLE")
+		XCTAssertEqual(content["result"]?["title"], "TITLE")
 	}
 
-	func test_window_logMessage_01() {}
+	func test_window_logMessage_01() {
+		// Execute
+		let json = #"""
+		{
+			"jsonrpc": "2.0",
+			"method": "window/logMessage",
+			"params": {
+				"type": 2,
+				"message": "MESSAGE"
+			}
+		}
+		"""#
+		TestConnection.shared.receive(json)
 
-	func test_workspace_applyEdit_01() {}
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
 
-	func test_textDocument_publishDiagnostics_01() {}
+		// Assert MessageManagerDelegateStub
+		XCTAssertEqual(manager.function, "logMessage(params:)")
+		XCTAssertNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNotNil(manager.params)
+		XCTAssertNil(manager.id)
+
+		// Assert LogMessageParams
+		guard let params = manager.params as? LogMessageParams else { XCTFail(); return }
+		XCTAssertEqual(params.type, .warning)
+		XCTAssertEqual(params.message, "MESSAGE")
+	}
+
+	func test_workspace_applyEdit_01() {
+		// Execute
+		let json = #"""
+		{
+			"jsonrpc": "2.0",
+			"id": "ID",
+			"method": "workspace/applyEdit",
+			"params": {
+				"label": "LABEL",
+				"edit": {
+					"documentChanges": [
+						{
+							"textDocument": {
+								"uri": "file:///URI",
+								"version": 1
+							},
+							"edits": [
+								{
+									"range": { "start": { "line": 1, "character": 2 }, "end" : { "line": 3, "character": 4 } },
+									"newText": "NEW_TEXT"
+								}
+							]
+						}
+					]
+				}
+			}
+		}
+		"""#
+		TestConnection.shared.receive(json)
+
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertEqual(manager.function, "applyEdit(id:params:)")
+		XCTAssertNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNotNil(manager.params)
+		XCTAssertEqual(manager.id, .string("ID"))
+
+		// Assert ApplyWorkspaceEditParams
+		guard let params = manager.params as? ApplyWorkspaceEditParams else { XCTFail(); return }
+		XCTAssertEqual(params.label, "LABEL")
+		XCTAssertNil(params.edit.changes)
+		XCTAssertEqual(params.edit.documentChanges?.count, 1)
+		guard let documentChanges = params.edit.documentChanges?[0] else { XCTFail(); return }
+		switch documentChanges {
+		case .textDocumentEdit(let textDocumentEdit):
+			XCTAssertEqual(textDocumentEdit.textDocument.uri, URL(string: "file:///URI"))
+			XCTAssertEqual(textDocumentEdit.textDocument.version.value, 1)
+			XCTAssertEqual(textDocumentEdit.edits.count, 1)
+			XCTAssertEqual(textDocumentEdit.edits[0].range.start.line, 1)
+			XCTAssertEqual(textDocumentEdit.edits[0].range.start.character, 2)
+			XCTAssertEqual(textDocumentEdit.edits[0].range.end.line, 3)
+			XCTAssertEqual(textDocumentEdit.edits[0].range.end.character, 4)
+			XCTAssertEqual(textDocumentEdit.edits[0].newText, "NEW_TEXT")
+		default:
+			XCTFail()
+		}
+	}
+
+	func test_workspace_applyEdit_02() {
+		// Execute
+		let result = ApplyWorkspaceEditResponse(applied: true, failureReason: "FAILURE_REASON")
+		manager.applyEdit(id: .string("ID"), result: result)
+
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertNil(manager.function)
+		XCTAssertNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
+
+		// Assert content
+		let content = dictionary(TestConnection.shared.sendContent)
+		XCTAssertEqual(content["jsonrpc"], "2.0")
+		XCTAssertEqual(content["id"], "ID")
+		XCTAssertEqual(content["result"]?["applied"], true)
+		XCTAssertEqual(content["result"]?["failureReason"], "FAILURE_REASON")
+	}
+
+	func test_textDocument_publishDiagnostics_01() {
+		let json = #"""
+		{
+			"jsonrpc": "2.0",
+			"method": "textDocument/publishDiagnostics",
+			"params": {
+				"uri": "file:///URI",
+				"version": 1,
+				"diagnostics": [
+					{
+						"range": { "start": { "line": 1, "character": 2 }, "end": { "line": 3, "character": 4 } },
+						"severity": 1,
+						"code": "DIAGNOSTIC_CODE",
+						"source": "SOURCE",
+						"message": "MESSAGE",
+						"tags": [ 1 ],
+						"relatedInformation": [
+							{
+								"location": {
+									"uri": "file:///URI",
+									"range": { "start": { "line": 5, "character": 6 }, "end": { "line": 7, "character": 8 } }
+								},
+								"message": "MESSAGE"
+							}
+						]
+					}
+				]
+			}
+		}
+		"""#
+		TestConnection.shared.receive(json)
+
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertEqual(manager.function, "publishDiagnostics(params:)")
+		XCTAssertNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNotNil(manager.params)
+		XCTAssertNil(manager.id)
+
+		// Assert PublishDiagnosticsParams
+		guard let params = manager.params as? PublishDiagnosticsParams else { XCTFail(); return }
+		XCTAssertEqual(params.uri, URL(string: "file:///URI")!)
+		XCTAssertEqual(params.version, 1)
+		XCTAssertEqual(params.diagnostics.count, 1)
+		XCTAssertEqual(params.diagnostics[0].range.start.line, 1)
+		XCTAssertEqual(params.diagnostics[0].range.start.character, 2)
+		XCTAssertEqual(params.diagnostics[0].range.end.line, 3)
+		XCTAssertEqual(params.diagnostics[0].range.end.character, 4)
+		XCTAssertEqual(params.diagnostics[0].severity, .error)
+		switch params.diagnostics[0].code {
+		case .string("DIAGNOSTIC_CODE"):
+			break
+		default:
+			XCTFail()
+		}
+		XCTAssertEqual(params.diagnostics[0].message, "MESSAGE")
+		XCTAssertEqual(params.diagnostics[0].tags?.count, 1)
+		XCTAssertEqual(params.diagnostics[0].tags?[0], .unnecessary)
+		XCTAssertEqual(params.diagnostics[0].relatedInformation?.count, 1)
+		XCTAssertEqual(params.diagnostics[0].relatedInformation?[0].location.uri, URL(string: "file:///URI")!)
+		XCTAssertEqual(params.diagnostics[0].relatedInformation?[0].location.range.start.line, 5)
+		XCTAssertEqual(params.diagnostics[0].relatedInformation?[0].location.range.start.character, 6)
+		XCTAssertEqual(params.diagnostics[0].relatedInformation?[0].location.range.end.line, 7)
+		XCTAssertEqual(params.diagnostics[0].relatedInformation?[0].location.range.end.character, 8)
+		XCTAssertEqual(params.diagnostics[0].relatedInformation?[0].message, "MESSAGE")
+	}
 
 
 	// MARK: - Application message
 
-	func test_cancelRequest_01() {}
-	func test_initialize_01() {}
-	func test_initialized_01() {}
-	func test_shutdown_01() {}
-	func test_exit_01() {}
+	func test_cancelRequest_01() {
+		// Execute
+		let params = CancelParams(id: .number(1))
+		application.cancelRequest(params: params)
+
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertNil(manager.function)
+		XCTAssertNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
+
+		// Assert ApplicationMessageDelegateStub
+		XCTAssertNil(application.function)
+		XCTAssertNil(application.result)
+		XCTAssertNil(application.error)
+		XCTAssertNil(application.id)
+
+		// Assert content
+		let content = dictionary(TestConnection.shared.sendContent)
+		XCTAssertEqual(content["jsonrpc"], "2.0")
+		XCTAssertEqual(content["method"], "$/cancelRequest")
+		XCTAssertEqual(content["params"]?["id"], 1)
+	}
+
+	func test_initialize_01() {
+	}
+
+	func test_initialized_01() {
+		// Execute
+		let params = InitializedParams()
+		application.initialized(params: params)
+
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertNil(manager.function)
+		XCTAssertNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
+
+		// Assert ApplicationMessageDelegateStub
+		XCTAssertNil(application.function)
+		XCTAssertNil(application.result)
+		XCTAssertNil(application.error)
+		XCTAssertNil(application.id)
+
+		// Assert content
+		let content = dictionary(TestConnection.shared.sendContent)
+		XCTAssertEqual(content["jsonrpc"], "2.0")
+		XCTAssertEqual(content["method"], "initialized")
+		XCTAssertEqual(content["params"]?.isEmpty, true)
+	}
+
+	func test_shutdown_01() {
+		// Execute
+		let params = VoidValue()
+		_ = application.shutdown(params: params)
+
+		// Assert send request store
+		XCTAssertNotNil(MessageManager.shared.getSendRequest[.number(1)])
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertNil(manager.function)
+		XCTAssertNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
+
+		// Assert ApplicationMessageDelegateStub
+		XCTAssertNil(application.function)
+		XCTAssertNil(application.result)
+		XCTAssertNil(application.error)
+		XCTAssertNil(application.id)
+
+		// Assert content
+		let content = dictionary(TestConnection.shared.sendContent)
+		XCTAssertEqual(content["jsonrpc"], "2.0")
+		XCTAssertEqual(content["method"], "shutdown")
+		XCTAssertEqual(content["id"], 1)
+		XCTAssertEqual(content["params"]?.isEmpty, true)
+	}
+
+	func test_shutdown_02() {
+		// Execute
+		MessageManager.shared.appendSendRequest(id: .number(1), method: "shutdown", source: application)
+		let json = #"""
+		{
+			"jsonrpc": "2.0",
+			"id": 1,
+			"result": null
+		}
+		"""#
+		TestConnection.shared.receive(json)
+
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertNil(manager.function)
+		XCTAssertNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
+
+		// Assert ApplicationMessageDelegateStub
+		XCTAssertEqual(application.function, "shutdown(id:result:)")
+		XCTAssertNil(application.result)
+		XCTAssertNil(application.error)
+		XCTAssertEqual(application.id, .number(1))
+	}
+
+	func test_exit_01() {
+		// Execute
+		let params = VoidValue()
+		application.exit(params: params)
+
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertNil(manager.function)
+		XCTAssertNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
+
+		// Assert ApplicationMessageDelegateStub
+		XCTAssertNil(application.function)
+		XCTAssertNil(application.result)
+		XCTAssertNil(application.error)
+		XCTAssertNil(application.id)
+
+		// Assert content
+		let content = dictionary(TestConnection.shared.sendContent)
+		XCTAssertEqual(content["jsonrpc"], "2.0")
+		XCTAssertEqual(content["method"], "exit")
+		XCTAssertEqual(content["params"]?.isEmpty, true)
+	}
 
 
 	// MARK: - Workspace message

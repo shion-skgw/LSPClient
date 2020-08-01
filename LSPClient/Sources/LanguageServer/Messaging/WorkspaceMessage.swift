@@ -6,60 +6,51 @@
 //  Copyright © 2020 Shion. All rights reserved.
 //
 
-final class WorkspaceMessage {
-
-	static let shared: WorkspaceMessage = WorkspaceMessage()
-	private unowned var messageManager: MessageManager = MessageManager.shared
-
-	private init() {}
-
-	func didChangeConfiguration(params: DidChangeConfigurationParams) {
-		let message = Message.notification(WORKSPACE_DID_CHANGE_CONFIGURATION, params)
-		messageManager.send(message: message)
-	}
-
-	func didChangeWatchedFiles(params: DidChangeWatchedFilesParams) {
-		let message = Message.notification(WORKSPACE_DID_CHANGE_WATCHED_FILES, params)
-		messageManager.send(message: message)
-	}
-
-	func symbol(params: WorkspaceSymbolParams, source: WorkspaceResponceDelegate) -> RequestID {
-		let context = RequestContext(method: WORKSPACE_SYMBOL, source: source)
-		let id = messageManager.nextId
-		let message = Message.request(id, context.method, params)
-		messageManager.send(message: message, context: context)
-		return id
-	}
-
-	func executeCommand(params: ExecuteCommandParams, source: WorkspaceResponceDelegate) -> RequestID {
-		let context = RequestContext(method: WORKSPACE_EXECUTE_COMMAND, source: source)
-		let id = messageManager.nextId
-		let message = Message.request(id, context.method, params)
-		messageManager.send(message: message, context: context)
-		return id
-	}
-
-	func applyEdit(params: ApplyWorkspaceEditParams, source: WorkspaceResponceDelegate) -> RequestID {
-		let context = RequestContext(method: WORKSPACE_APPLY_EDIT, source: source)
-		let id = messageManager.nextId
-		let message = Message.request(id, context.method, params)
-		messageManager.send(message: message, context: context)
-		return id
-	}
-
-}
-
-protocol WorkspaceResponceDelegate: ResponceDelegate {
+protocol WorkspaceMessageDelegate: MessageDelegate {
 
 	func symbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>)
 	func executeCommand(id: RequestID, result: Result<AnyValue?, ErrorResponse>)
 
 }
 
-extension WorkspaceResponceDelegate {
+extension WorkspaceMessageDelegate {
+
+	func didChangeConfiguration(params: DidChangeConfigurationParams) {
+		let message = Message.notification(WORKSPACE_DID_CHANGE_CONFIGURATION, params)
+		MessageManager.shared.send(message: message)
+	}
+
+	func didChangeWatchedFiles(params: DidChangeWatchedFilesParams) {
+		let message = Message.notification(WORKSPACE_DID_CHANGE_WATCHED_FILES, params)
+		MessageManager.shared.send(message: message)
+	}
+
+	func symbol(params: WorkspaceSymbolParams) -> RequestID {
+		let context = RequestContext(method: WORKSPACE_SYMBOL, source: self)
+		let id = MessageManager.shared.nextId
+		let message = Message.request(id, context.method, params)
+		MessageManager.shared.send(message: message, context: context)
+		return id
+	}
+
+	func executeCommand(params: ExecuteCommandParams) -> RequestID {
+		let context = RequestContext(method: WORKSPACE_EXECUTE_COMMAND, source: self)
+		let id = MessageManager.shared.nextId
+		let message = Message.request(id, context.method, params)
+		MessageManager.shared.send(message: message, context: context)
+		return id
+	}
+
+	func applyEdit(params: ApplyWorkspaceEditParams) -> RequestID {
+		let context = RequestContext(method: WORKSPACE_APPLY_EDIT, source: self)
+		let id = MessageManager.shared.nextId
+		let message = Message.request(id, context.method, params)
+		MessageManager.shared.send(message: message, context: context)
+		return id
+	}
 
 	func receiveResponse(id: RequestID, context: RequestContext, result: ResultType?, error: ErrorResponse?) throws -> Bool {
-		guard let source = context.source as? WorkspaceResponceDelegate else {
+		guard let source = context.source as? WorkspaceMessageDelegate else {
 			fatalError()
 		}
 
