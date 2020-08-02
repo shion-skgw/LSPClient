@@ -397,7 +397,10 @@ class LSPMessagingTests: XCTestCase {
 		let content = dictionary(TestConnection.shared.sendContent)
 		XCTAssertEqual(content["jsonrpc"], "2.0")
 		XCTAssertEqual(content["id"], "ID")
+		XCTAssertEqual(content["method"], nil)
+		XCTAssertEqual(content["params"], nil)
 		XCTAssertEqual(content["result"]?.isNull, true)
+		XCTAssertEqual(content["error"], nil)
 	}
 
 	func test_window_showMessageRequest_03() {
@@ -419,7 +422,10 @@ class LSPMessagingTests: XCTestCase {
 		let content = dictionary(TestConnection.shared.sendContent)
 		XCTAssertEqual(content["jsonrpc"], "2.0")
 		XCTAssertEqual(content["id"], "ID")
+		XCTAssertEqual(content["method"], nil)
+		XCTAssertEqual(content["params"], nil)
 		XCTAssertEqual(content["result"]?["title"], "TITLE")
+		XCTAssertEqual(content["error"], nil)
 	}
 
 	func test_window_logMessage_01() {
@@ -532,8 +538,11 @@ class LSPMessagingTests: XCTestCase {
 		let content = dictionary(TestConnection.shared.sendContent)
 		XCTAssertEqual(content["jsonrpc"], "2.0")
 		XCTAssertEqual(content["id"], "ID")
+		XCTAssertEqual(content["method"], nil)
+		XCTAssertEqual(content["params"], nil)
 		XCTAssertEqual(content["result"]?["applied"], true)
 		XCTAssertEqual(content["result"]?["failureReason"], "FAILURE_REASON")
+		XCTAssertEqual(content["error"], nil)
 	}
 
 	func test_textDocument_publishDiagnostics_01() {
@@ -629,24 +638,24 @@ class LSPMessagingTests: XCTestCase {
 		XCTAssertNil(application.result)
 		XCTAssertNil(application.error)
 		XCTAssertNil(application.id)
+		XCTAssertNil(application.isSuccess)
 
 		// Assert content
 		let content = dictionary(TestConnection.shared.sendContent)
 		XCTAssertEqual(content["jsonrpc"], "2.0")
 		XCTAssertEqual(content["method"], "$/cancelRequest")
+		XCTAssertEqual(content["id"], nil)
 		XCTAssertEqual(content["params"]?["id"], 1)
+		XCTAssertEqual(content["result"], nil)
+		XCTAssertEqual(content["error"], nil)
 	}
 
 	func test_initialize_01() {
-	}
-
-	func test_initialized_01() {
-		// Execute
-		let params = InitializedParams()
-		application.initialized(params: params)
+		let params = InitializeParams(processId: nil, rootUri: URL(string: "file:///URL")!)
+		_ = application.initialize(params: params)
 
 		// Assert send request store
-		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+		XCTAssertNotNil(MessageManager.shared.getSendRequest[.number(1)])
 
 		// Assert MessageManagerDelegateStub
 		XCTAssertNil(manager.function)
@@ -660,12 +669,143 @@ class LSPMessagingTests: XCTestCase {
 		XCTAssertNil(application.result)
 		XCTAssertNil(application.error)
 		XCTAssertNil(application.id)
+		XCTAssertNil(application.isSuccess)
 
 		// Assert content
 		let content = dictionary(TestConnection.shared.sendContent)
 		XCTAssertEqual(content["jsonrpc"], "2.0")
-		XCTAssertEqual(content["method"], "initialized")
-		XCTAssertEqual(content["params"]?.isEmpty, true)
+		XCTAssertEqual(content["method"], "initialize")
+		XCTAssertEqual(content["id"], 1)
+		XCTAssertEqual(content["params"]?["processId"]?.isNull, true)
+		XCTAssertEqual(content["params"]?["rootUri"], "file:///URL")
+		XCTAssertEqual(content["params"]?["capabilities"]?.count, 2)
+		XCTAssertEqual(content["params"]?["capabilities"]?["value"], "VALUE")
+		XCTAssertEqual(content["params"]?["capabilities"]?["values"]?.count, 3)
+		XCTAssertEqual(content["params"]?["capabilities"]?["values"]?["val1"], "VAL1")
+		XCTAssertEqual(content["params"]?["capabilities"]?["values"]?["val2"], 2)
+		XCTAssertEqual(content["params"]?["capabilities"]?["values"]?["val3"], true)
+		XCTAssertEqual(content["params"]?["trace"], "off")
+		XCTAssertEqual(content["result"], nil)
+		XCTAssertEqual(content["error"], nil)
+	}
+
+	func test_initialize_02() {
+		let params = InitializeParams(processId: nil, rootUri: URL(string: "file:///URL")!)
+		_ = application.initialize(params: params)
+
+		// Assert send request store
+		XCTAssertNotNil(MessageManager.shared.getSendRequest[.number(1)])
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertNil(manager.function)
+		XCTAssertNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
+
+		// Assert ApplicationMessageDelegateStub
+		XCTAssertNil(application.function)
+		XCTAssertNil(application.result)
+		XCTAssertNil(application.error)
+		XCTAssertNil(application.id)
+		XCTAssertNil(application.isSuccess)
+
+		// Assert content
+		let content = dictionary(TestConnection.shared.sendContent)
+		XCTAssertEqual(content["jsonrpc"], "2.0")
+		XCTAssertEqual(content["method"], "initialize")
+		XCTAssertEqual(content["id"], 1)
+		XCTAssertEqual(content["params"]?["processId"]?.isNull, true)
+		XCTAssertEqual(content["params"]?["rootUri"], "file:///URL")
+		XCTAssertEqual(content["params"]?["capabilities"]?.count, 2)
+		XCTAssertEqual(content["params"]?["capabilities"]?["value"], "VALUE")
+		XCTAssertEqual(content["params"]?["capabilities"]?["values"]?.count, 3)
+		XCTAssertEqual(content["params"]?["capabilities"]?["values"]?["val1"], "VAL1")
+		XCTAssertEqual(content["params"]?["capabilities"]?["values"]?["val2"], 2)
+		XCTAssertEqual(content["params"]?["capabilities"]?["values"]?["val3"], true)
+		XCTAssertEqual(content["params"]?["trace"], "off")
+		XCTAssertEqual(content["result"], nil)
+		XCTAssertEqual(content["error"], nil)
+
+		// Execute
+		let json = #"""
+		{
+			"jsonrpc": "2.0",
+			"id": 1,
+			"result": {
+				"capabilities": {
+					"textDocumentSync": 2,
+					"completionProvider": {
+						"triggerCharacters": ["a"],
+						"allCommitCharacters": ["b"],
+						"resolveProvider": true
+					},
+					"hoverProvider": true,
+					"declarationProvider": true,
+					"definitionProvider": true,
+					"typeDefinitionProvider": true,
+					"implementationProvider": true,
+					"referencesProvider": true,
+					"documentHighlightProvider": true,
+					"documentSymbolProvider": true,
+					"codeActionProvider": true,
+					"documentFormattingProvider": true,
+					"documentRangeFormattingProvider": true,
+					"renameProvider": true,
+					"executeCommandProvider": {
+						"commands": ["A", "B"]
+					},
+					"workspaceSymbolProvider": true,
+					"experimental": true
+				}
+			}
+		}
+		"""#
+		TestConnection.shared.receive(json)
+
+		// Assert send request store
+		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
+
+		// Assert MessageManagerDelegateStub
+		XCTAssertNil(manager.function)
+		XCTAssertNil(manager.cause)
+		XCTAssertNil(manager.message)
+		XCTAssertNil(manager.params)
+		XCTAssertNil(manager.id)
+
+		// Assert ApplicationMessageDelegateStub
+		XCTAssertEqual(application.function, "initialize(id:result:)")
+		XCTAssertNotNil(application.result)
+		XCTAssertNil(application.error)
+		XCTAssertEqual(application.id, .number(1))
+		XCTAssertEqual(application.isSuccess, true)
+
+		// Assert InitializeResult
+		guard let result = application.result as? InitializeResult else { XCTFail(); return }
+		XCTAssertEqual(result.capabilities.textDocumentSync?.openClose, nil)
+		XCTAssertEqual(result.capabilities.textDocumentSync?.change, .incremental)
+		XCTAssertEqual(result.capabilities.completionProvider?.triggerCharacters?.count, 1)
+		XCTAssertEqual(result.capabilities.completionProvider?.triggerCharacters?[0], "a")
+		XCTAssertEqual(result.capabilities.completionProvider?.allCommitCharacters?.count, 1)
+		XCTAssertEqual(result.capabilities.completionProvider?.allCommitCharacters?[0], "b")
+		XCTAssertEqual(result.capabilities.completionProvider?.resolveProvider, true)
+		XCTAssertEqual(result.capabilities.hoverProvider?.isSupport, true)
+		XCTAssertEqual(result.capabilities.declarationProvider?.isSupport, true)
+		XCTAssertEqual(result.capabilities.definitionProvider?.isSupport, true)
+		XCTAssertEqual(result.capabilities.typeDefinitionProvider?.isSupport, true)
+		XCTAssertEqual(result.capabilities.implementationProvider?.isSupport, true)
+		XCTAssertEqual(result.capabilities.referencesProvider?.isSupport, true)
+		XCTAssertEqual(result.capabilities.documentHighlightProvider?.isSupport, true)
+		XCTAssertEqual(result.capabilities.documentSymbolProvider?.isSupport, true)
+		XCTAssertEqual(result.capabilities.codeActionProvider?.isSupport, true)
+		XCTAssertEqual(result.capabilities.documentFormattingProvider?.isSupport, true)
+		XCTAssertEqual(result.capabilities.documentRangeFormattingProvider?.isSupport, true)
+		XCTAssertEqual(result.capabilities.renameProvider?.isSupport, true)
+		XCTAssertEqual(result.capabilities.executeCommandProvider?.commands.count, 2)
+		XCTAssertEqual(result.capabilities.executeCommandProvider?.commands[0], "A")
+		XCTAssertEqual(result.capabilities.executeCommandProvider?.commands[1], "B")
+		XCTAssertEqual(result.capabilities.workspaceSymbolProvider?.isSupport, true)
+		XCTAssertEqual(result.capabilities.experimental?.value as? Bool, true)
 	}
 
 	func test_shutdown_01() {
@@ -688,6 +828,7 @@ class LSPMessagingTests: XCTestCase {
 		XCTAssertNil(application.result)
 		XCTAssertNil(application.error)
 		XCTAssertNil(application.id)
+		XCTAssertNil(application.isSuccess)
 
 		// Assert content
 		let content = dictionary(TestConnection.shared.sendContent)
@@ -695,11 +836,10 @@ class LSPMessagingTests: XCTestCase {
 		XCTAssertEqual(content["method"], "shutdown")
 		XCTAssertEqual(content["id"], 1)
 		XCTAssertEqual(content["params"]?.isEmpty, true)
-	}
+		XCTAssertEqual(content["result"], nil)
+		XCTAssertEqual(content["error"], nil)
 
-	func test_shutdown_02() {
 		// Execute
-		MessageManager.shared.appendSendRequest(id: .number(1), method: "shutdown", source: application)
 		let json = #"""
 		{
 			"jsonrpc": "2.0",
@@ -724,6 +864,7 @@ class LSPMessagingTests: XCTestCase {
 		XCTAssertNil(application.result)
 		XCTAssertNil(application.error)
 		XCTAssertEqual(application.id, .number(1))
+		XCTAssertEqual(application.isSuccess, true)
 	}
 
 	func test_exit_01() {
@@ -746,12 +887,16 @@ class LSPMessagingTests: XCTestCase {
 		XCTAssertNil(application.result)
 		XCTAssertNil(application.error)
 		XCTAssertNil(application.id)
+		XCTAssertNil(application.isSuccess)
 
 		// Assert content
 		let content = dictionary(TestConnection.shared.sendContent)
 		XCTAssertEqual(content["jsonrpc"], "2.0")
 		XCTAssertEqual(content["method"], "exit")
+		XCTAssertEqual(content["id"], nil)
 		XCTAssertEqual(content["params"]?.isEmpty, true)
+		XCTAssertEqual(content["result"], nil)
+		XCTAssertEqual(content["error"], nil)
 	}
 
 
@@ -760,7 +905,8 @@ class LSPMessagingTests: XCTestCase {
 	func test_workspace_didChangeConfiguration_01() {}
 	func test_workspace_didChangeWatchedFiles_01() {}
 	func test_workspace_symbol_01() {}
-	func test_workspace_executeCommand_01() {}
+	func test_workspace_executeCommand_01() {
+	}
 
 
 	// MARK: - TextDocument message

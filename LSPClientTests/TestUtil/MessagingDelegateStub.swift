@@ -68,11 +68,12 @@ class ApplicationMessageDelegateStub: ApplicationMessageDelegate {
 	var result: ResultType!
 	var error: ErrorResponse!
 	var id: RequestID!
+	var isSuccess: Bool!
 
 	func initialize(id: RequestID, result: Result<InitializeResult, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
@@ -81,7 +82,7 @@ class ApplicationMessageDelegateStub: ApplicationMessageDelegate {
 	func shutdown(id: RequestID, result: Result<VoidValue?, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
@@ -94,11 +95,12 @@ class WorkspaceMessageDelegateStub: WorkspaceMessageDelegate {
 	var result: ResultType!
 	var error: ErrorResponse!
 	var id: RequestID!
+	var isSuccess: Bool!
 
 	func symbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
@@ -107,7 +109,7 @@ class WorkspaceMessageDelegateStub: WorkspaceMessageDelegate {
 	func executeCommand(id: RequestID, result: Result<AnyValue?, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
@@ -120,11 +122,12 @@ class TextDocumentMessageDelegateStub: TextDocumentMessageDelegate {
 	var result: ResultType!
 	var error: ErrorResponse!
 	var id: RequestID!
+	var isSuccess: Bool!
 
 	func completion(id: RequestID, result: Result<CompletionList?, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
@@ -133,7 +136,7 @@ class TextDocumentMessageDelegateStub: TextDocumentMessageDelegate {
 	func completionResolve(id: RequestID, result: Result<CompletionItem, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
@@ -142,7 +145,7 @@ class TextDocumentMessageDelegateStub: TextDocumentMessageDelegate {
 	func hover(id: RequestID, result: Result<Hover?, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
@@ -151,7 +154,7 @@ class TextDocumentMessageDelegateStub: TextDocumentMessageDelegate {
 	func definition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
@@ -160,7 +163,7 @@ class TextDocumentMessageDelegateStub: TextDocumentMessageDelegate {
 	func typeDefinition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
@@ -169,7 +172,7 @@ class TextDocumentMessageDelegateStub: TextDocumentMessageDelegate {
 	func implementation(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
@@ -178,7 +181,7 @@ class TextDocumentMessageDelegateStub: TextDocumentMessageDelegate {
 	func references(id: RequestID, result: Result<[Location]?, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
@@ -187,7 +190,7 @@ class TextDocumentMessageDelegateStub: TextDocumentMessageDelegate {
 	func documentHighlight(id: RequestID, result: Result<[DocumentHighlight]?, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
@@ -196,7 +199,7 @@ class TextDocumentMessageDelegateStub: TextDocumentMessageDelegate {
 	func documentSymbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
@@ -205,7 +208,7 @@ class TextDocumentMessageDelegateStub: TextDocumentMessageDelegate {
 	func codeAction(id: RequestID, result: Result<CodeActionResult?, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
@@ -214,7 +217,7 @@ class TextDocumentMessageDelegateStub: TextDocumentMessageDelegate {
 	func rangeFormatting(id: RequestID, result: Result<[TextEdit]?, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
@@ -223,7 +226,7 @@ class TextDocumentMessageDelegateStub: TextDocumentMessageDelegate {
 	func rename(id: RequestID, result: Result<WorkspaceEdit?, ErrorResponse>) {
 		self.function = #function
 		switch result {
-		case .success(let result): self.result = result
+		case .success(let result): self.result = result; isSuccess = true
 		case .failure(let error):  self.error  = error
 		}
 		self.id = id
