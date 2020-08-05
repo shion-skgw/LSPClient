@@ -362,8 +362,8 @@
 		05CA5D18248C5F3400582319 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				05182B2224DA02E2007E8832 /* Config */,
 				05CA5CF6248C5F1700582319 /* AppDelegate.swift */,
+				05182B2224DA02E2007E8832 /* Config */,
 				058B6A11248C683A0099B32F /* LanguageServer */,
 				05D4D4A924D6AA0800A76239 /* Properties */,
 			);
