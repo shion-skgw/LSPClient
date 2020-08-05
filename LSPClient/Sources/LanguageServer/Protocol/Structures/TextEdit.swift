@@ -7,6 +7,6 @@
 //
 
 struct TextEdit: ResultType {
-	let range: Range
+	let range: TextRange
 	let newText: String
 }

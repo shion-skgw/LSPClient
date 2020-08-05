@@ -41,7 +41,7 @@ struct DidChangeTextDocumentParams: NotificationParamsType {
 
 enum TextDocumentContentChangeEvent: Codable {
 	case full(String)
-	case incremental(Range, Int, String)
+	case incremental(TextRange, Int, String)
 
 	private enum CodingKeys: String, CodingKey {
 		case range

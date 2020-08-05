@@ -10,6 +10,6 @@
 
 struct RenameParams: RequestParamsType, TextDocumentPositionParamsType {
 	let textDocument: TextDocumentIdentifier
-	let position: Position
+	let position: TextPosition
 	let newName: String
 }

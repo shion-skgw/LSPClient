@@ -26,6 +26,6 @@ struct FormattingOptions: Codable {
 
 struct DocumentRangeFormattingParams: RequestParamsType {
 	let textDocument: TextDocumentIdentifier
-	let range: Range
+	let range: TextRange
 	let options: FormattingOptions
 }

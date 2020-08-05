@@ -10,12 +10,12 @@
 
 struct HoverParams: RequestParamsType, TextDocumentPositionParamsType {
 	let textDocument: TextDocumentIdentifier
-	let position: Position
+	let position: TextPosition
 }
 
 struct Hover: ResultType {
 	let contents: MarkupContent
-	let range: Range?
+	let range: TextRange?
 
 	private enum CodingKeys: String, CodingKey {
 		case contents
@@ -33,7 +33,7 @@ struct Hover: ResultType {
 			self.range = nil
 		} else {
 			self.contents = try container.decode(MarkupContent.self, forKey: .contents)
-			self.range = try container.decode(Range.self, forKey: .range)
+			self.range = try container.decode(TextRange.self, forKey: .range)
 		}
 	}
 }

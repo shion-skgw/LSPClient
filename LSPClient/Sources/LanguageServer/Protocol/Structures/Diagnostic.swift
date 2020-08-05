@@ -7,7 +7,7 @@
 //
 
 struct Diagnostic: Codable {
-	let range: Range
+	let range: TextRange
 	let severity: DiagnosticSeverity?
 	let code: DiagnosticCode?
 	let source: String?

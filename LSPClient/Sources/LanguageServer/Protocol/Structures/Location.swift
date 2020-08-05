@@ -8,5 +8,5 @@
 
 struct Location: ResultType {
 	let uri: DocumentUri
-	let range: Range
+	let range: TextRange
 }

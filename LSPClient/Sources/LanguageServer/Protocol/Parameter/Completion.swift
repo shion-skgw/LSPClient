@@ -10,7 +10,7 @@
 
 struct CompletionParams: RequestParamsType, TextDocumentPositionParamsType {
 	let textDocument: TextDocumentIdentifier
-	let position: Position
+	let position: TextPosition
 	let context: CompletionContext?
 }
 

@@ -10,11 +10,11 @@
 
 struct DocumentHighlightParams: RequestParamsType, TextDocumentPositionParamsType {
 	let textDocument: TextDocumentIdentifier
-	let position: Position
+	let position: TextPosition
 }
 
 struct DocumentHighlight: ResultType {
-	let range: Range
+	let range: TextRange
 	let kind: DocumentHighlightKind?
 }
 

@@ -10,7 +10,7 @@
 
 struct CodeActionParams: RequestParamsType {
 	let textDocument: TextDocumentIdentifier
-	let range: Range
+	let range: TextRange
 	let context: CodeActionContext
 }
 

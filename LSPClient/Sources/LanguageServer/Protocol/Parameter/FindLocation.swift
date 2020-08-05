@@ -10,7 +10,7 @@
 
 struct DeclarationParams: RequestParamsType, TextDocumentPositionParamsType {
 	let textDocument: TextDocumentIdentifier
-	let position: Position
+	let position: TextPosition
 }
 
 struct FindLocationResult: ResultType {
@@ -32,7 +32,7 @@ struct FindLocationResult: ResultType {
 
 struct DefinitionParams: RequestParamsType, TextDocumentPositionParamsType {
 	let textDocument: TextDocumentIdentifier
-	let position: Position
+	let position: TextPosition
 }
 
 
@@ -40,7 +40,7 @@ struct DefinitionParams: RequestParamsType, TextDocumentPositionParamsType {
 
 struct TypeDefinitionParams: RequestParamsType, TextDocumentPositionParamsType {
 	let textDocument: TextDocumentIdentifier
-	let position: Position
+	let position: TextPosition
 }
 
 
@@ -48,7 +48,7 @@ struct TypeDefinitionParams: RequestParamsType, TextDocumentPositionParamsType {
 
 struct ImplementationParams: RequestParamsType, TextDocumentPositionParamsType {
 	let textDocument: TextDocumentIdentifier
-	let position: Position
+	let position: TextPosition
 }
 
 
@@ -56,7 +56,7 @@ struct ImplementationParams: RequestParamsType, TextDocumentPositionParamsType {
 
 struct ReferenceParams: RequestParamsType, TextDocumentPositionParamsType {
 	let textDocument: TextDocumentIdentifier
-	let position: Position
+	let position: TextPosition
 	let context: ReferenceContext
 }
 

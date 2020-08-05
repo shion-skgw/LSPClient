@@ -89,7 +89,7 @@ extension InitializeResult.ServerCapabilities {
 		}
 
 		init(from decoder: Decoder) throws {
-			if let value = try? decoder.singleValueContainer().decode(TextDocumentSyncKind?.self) {
+			if let value = try? decoder.singleValueContainer().decode(TextDocumentSyncKind.self) {
 				self.openClose = nil
 				self.change = value
 			} else {
@@ -116,8 +116,8 @@ extension InitializeResult.ServerCapabilities {
 		let isSupport: Bool
 
 		init(from decoder: Decoder) throws {
-			let value = try decoder.singleValueContainer().decode(AnyValue?.self)
-			self.isSupport = (value?.value as? Bool) == true || !(value?.value is Void)
+			let value = try decoder.singleValueContainer().decode(AnyValue.self)
+			self.isSupport = value.value as? Bool == true || !(value.value is Void)
 		}
 	}
 
@@ -125,8 +125,8 @@ extension InitializeResult.ServerCapabilities {
 		let isSupport: Bool
 
 		init(from decoder: Decoder) throws {
-			let value = try decoder.singleValueContainer().decode(AnyValue?.self)
-			self.isSupport = (value?.value as? Bool) == true || !(value?.value is Void)
+			let value = try decoder.singleValueContainer().decode(AnyValue.self)
+			self.isSupport = value.value as? Bool == true || !(value.value is Void)
 		}
 	}
 
@@ -134,8 +134,8 @@ extension InitializeResult.ServerCapabilities {
 		let isSupport: Bool
 
 		init(from decoder: Decoder) throws {
-			let value = try decoder.singleValueContainer().decode(AnyValue?.self)
-			self.isSupport = (value?.value as? Bool) == true || !(value?.value is Void)
+			let value = try decoder.singleValueContainer().decode(AnyValue.self)
+			self.isSupport = value.value as? Bool == true || !(value.value is Void)
 		}
 	}
 
@@ -143,8 +143,8 @@ extension InitializeResult.ServerCapabilities {
 		let isSupport: Bool
 
 		init(from decoder: Decoder) throws {
-			let value = try decoder.singleValueContainer().decode(AnyValue?.self)
-			self.isSupport = (value?.value as? Bool) == true || !(value?.value is Void)
+			let value = try decoder.singleValueContainer().decode(AnyValue.self)
+			self.isSupport = value.value as? Bool == true || !(value.value is Void)
 		}
 	}
 
@@ -152,8 +152,8 @@ extension InitializeResult.ServerCapabilities {
 		let isSupport: Bool
 
 		init(from decoder: Decoder) throws {
-			let value = try decoder.singleValueContainer().decode(AnyValue?.self)
-			self.isSupport = (value?.value as? Bool) == true || !(value?.value is Void)
+			let value = try decoder.singleValueContainer().decode(AnyValue.self)
+			self.isSupport = value.value as? Bool == true || !(value.value is Void)
 		}
 	}
 
@@ -161,8 +161,8 @@ extension InitializeResult.ServerCapabilities {
 		let isSupport: Bool
 
 		init(from decoder: Decoder) throws {
-			let value = try decoder.singleValueContainer().decode(AnyValue?.self)
-			self.isSupport = (value?.value as? Bool) == true || !(value?.value is Void)
+			let value = try decoder.singleValueContainer().decode(AnyValue.self)
+			self.isSupport = value.value as? Bool == true || !(value.value is Void)
 		}
 	}
 
@@ -170,8 +170,8 @@ extension InitializeResult.ServerCapabilities {
 		let isSupport: Bool
 
 		init(from decoder: Decoder) throws {
-			let value = try decoder.singleValueContainer().decode(AnyValue?.self)
-			self.isSupport = (value?.value as? Bool) == true || !(value?.value is Void)
+			let value = try decoder.singleValueContainer().decode(AnyValue.self)
+			self.isSupport = value.value as? Bool == true || !(value.value is Void)
 		}
 	}
 
@@ -179,8 +179,8 @@ extension InitializeResult.ServerCapabilities {
 		let isSupport: Bool
 
 		init(from decoder: Decoder) throws {
-			let value = try decoder.singleValueContainer().decode(AnyValue?.self)
-			self.isSupport = (value?.value as? Bool) == true || !(value?.value is Void)
+			let value = try decoder.singleValueContainer().decode(AnyValue.self)
+			self.isSupport = value.value as? Bool == true || !(value.value is Void)
 		}
 	}
 
@@ -193,7 +193,7 @@ extension InitializeResult.ServerCapabilities {
 		}
 
 		init(from decoder: Decoder) throws {
-			if let value = try? decoder.singleValueContainer().decode(Bool?.self) {
+			if let value = try? decoder.singleValueContainer().decode(Bool.self) {
 				self.isSupport = value
 				self.codeActionKinds = nil
 			} else {
@@ -208,8 +208,8 @@ extension InitializeResult.ServerCapabilities {
 		let isSupport: Bool
 
 		init(from decoder: Decoder) throws {
-			let value = try decoder.singleValueContainer().decode(AnyValue?.self)
-			self.isSupport = (value?.value as? Bool) == true || !(value?.value is Void)
+			let value = try decoder.singleValueContainer().decode(AnyValue.self)
+			self.isSupport = value.value as? Bool == true || !(value.value is Void)
 		}
 	}
 
@@ -217,8 +217,8 @@ extension InitializeResult.ServerCapabilities {
 		let isSupport: Bool
 
 		init(from decoder: Decoder) throws {
-			let value = try decoder.singleValueContainer().decode(AnyValue?.self)
-			self.isSupport = (value?.value as? Bool) == true || !(value?.value is Void)
+			let value = try decoder.singleValueContainer().decode(AnyValue.self)
+			self.isSupport = value.value as? Bool == true || !(value.value is Void)
 		}
 	}
 
@@ -231,7 +231,7 @@ extension InitializeResult.ServerCapabilities {
 		}
 
 		init(from decoder: Decoder) throws {
-			if let value = try? decoder.singleValueContainer().decode(Bool?.self) {
+			if let value = try? decoder.singleValueContainer().decode(Bool.self) {
 				self.isSupport = value
 				self.prepareProvider = nil
 			} else {
@@ -250,8 +250,8 @@ extension InitializeResult.ServerCapabilities {
 		let isSupport: Bool
 
 		init(from decoder: Decoder) throws {
-			let value = try decoder.singleValueContainer().decode(AnyValue?.self)
-			self.isSupport = (value?.value as? Bool) == true || !(value?.value is Void)
+			let value = try decoder.singleValueContainer().decode(AnyValue.self)
+			self.isSupport = value.value as? Bool == true || !(value.value is Void)
 		}
 	}
 
