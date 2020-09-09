@@ -16,8 +16,5 @@ protocol NotificationParamsType: ParamsType {}
 
 protocol ResultType: Codable {}
 
-struct TestResult: ResultType {
-}
-
 extension Array: ResultType where Element: ResultType {}
 extension Optional: ResultType where Wrapped: ResultType {}
