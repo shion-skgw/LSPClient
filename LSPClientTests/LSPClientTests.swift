@@ -32,8 +32,7 @@ class LSPClientTests: XCTestCase {
 		print(aa!)
 		print((a!.string as NSString).substring(with: aa!))
 
-		a!.replaceCharacters(in: NSMakeRange(a!.string.utf16.count, 0), with: "666666\n")
-		b.update(for: NSMakeRange(a!.string.utf16.count, 0))
+		b.replaceCharacters(in: NSMakeRange(a!.string.utf16.count, 0), with: "666666\n")
 		XCTAssertEqual((a!.string as NSString).substring(with: b.table[6]!), "666666\n")
 		print(a!)
 

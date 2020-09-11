@@ -37,8 +37,7 @@ final class TextStorage: NSTextStorage {
 
 	override func replaceCharacters(in range: NSRange, with str: String) {
 		beginEditing()
-		attributedString.replaceCharacters(in: range, with: str)
-		lineTable.update(for: range)
+		lineTable.replaceCharacters(in: range, with: str)
 		edited([.editedCharacters, .editedAttributes], range: range, changeInLength: str.count - range.length)
 		endEditing()
 	}
