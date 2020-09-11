@@ -14,38 +14,34 @@ extension String {
 	}
 }
 
-final class LineTableString: NSMutableAttributedString {
-	var lineTable: [Int: NSRange]
+final class LineTable {
+	var table: [Int: NSRange]
+	weak var content: NSMutableAttributedString?
 	private let newLine: NSRegularExpression = try! NSRegularExpression(pattern: "\n")
 
-	override init() {
-		self.lineTable = [:]
-		super.init()
+	init(string: NSMutableAttributedString) {
+		self.table = [:]
+		self.content = string
+		update(for: string.string.range)
 	}
 
-	override init(string: String) {
-		self.lineTable = [:]
-		super.init(string: string)
-		update(for: string.range)
-	}
-
-	required init?(coder: NSCoder) {
-		fatalError()
-	}
-
-	override func replaceCharacters(in range: NSRange, with str: String) {
-		super.replaceCharacters(in: range, with: str)
+	func replaceCharacters(in range: NSRange, with str: String) {
+		content?.replaceCharacters(in: range, with: str)
 		update(for: range)
 	}
 
-	private func update(for range: NSRange) {
+	func update(for range: NSRange) {
+		guard let string = content?.string else {
+			return
+		}
+
 		var testRange: NSRange
 		var lineNumber: Int
 		var previous: Int
-		if let lineTable = lineTable.filter({ NSLocationInRange(range.lowerBound, $0.value) }).first {
-			testRange = NSMakeRange(lineTable.value.location, string.range.length - lineTable.value.location)
-			lineNumber = lineTable.key
-			previous = lineTable.value.upperBound
+		if let lineRange = table.filter({ NSLocationInRange(range.lowerBound, $0.value) }).first {
+			testRange = NSMakeRange(lineRange.value.location, string.range.length - lineRange.value.location)
+			lineNumber = lineRange.key
+			previous = lineRange.value.upperBound
 		} else {
 			testRange = string.range
 			lineNumber = 0
@@ -66,31 +62,31 @@ final class LineTableString: NSMutableAttributedString {
 			newTable[lineNumber] = NSMakeRange(previous, string.range.upperBound - previous)
 		}
 		if let minLineNumber = newTable.min(by: { $0.key < $1.key })?.key, 0 < minLineNumber {
-			lineTable = newTable.merging(lineTable.filter({ $0.key < minLineNumber }), uniquingKeysWith: { (new, old) in new })
+			table = newTable.merging(table.filter({ $0.key < minLineNumber }), uniquingKeysWith: { (new, old) in new })
 		} else {
-			lineTable = newTable
+			table = newTable
 		}
 	}
 
 	func lineRange(for range: NSRange) -> NSRange? {
-		guard let start = lineTable.filter({ NSLocationInRange(range.lowerBound, $0.value) }).first?.value,
-				let end = lineTable.filter({ NSLocationInRange(range.upperBound, $0.value) }).first?.value else {
+		guard let start = table.filter({ NSLocationInRange(range.lowerBound, $0.value) }).first?.value,
+				let end = table.filter({ NSLocationInRange(range.upperBound, $0.value) }).first?.value else {
 			return nil
 		}
 		return NSMakeRange(start.lowerBound, end.upperBound)
 	}
 
 	func lineRange(for textRange: TextRange) -> NSRange? {
-		guard let start = lineTable[textRange.start.line],
-				let end = lineTable[textRange.end.line] else {
+		guard let start = table[textRange.start.line],
+				let end = table[textRange.end.line] else {
 			return nil
 		}
 		return NSMakeRange(start.lowerBound, end.upperBound)
 	}
 
 	func range(for textRange: TextRange) -> NSRange? {
-		guard let start = lineTable[textRange.start.line],
-				let end = lineTable[textRange.end.line] else {
+		guard let start = table[textRange.start.line],
+				let end = table[textRange.end.line] else {
 			return nil
 		}
 		let location = start.location + textRange.start.character
@@ -107,7 +103,7 @@ final class LineTableString: NSMutableAttributedString {
 	}
 
 	func position(for position: Int) -> TextPosition? {
-		guard let line = lineTable.filter({ NSLocationInRange(position, $0.value) }).first else {
+		guard let line = table.filter({ NSLocationInRange(position, $0.value) }).first else {
 			return nil
 		}
 		return TextPosition(line: line.key, character: position - line.value.location)

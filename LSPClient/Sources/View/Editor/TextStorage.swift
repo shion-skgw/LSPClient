@@ -10,16 +10,18 @@ import UIKit.NSTextStorage
 
 final class TextStorage: NSTextStorage {
 
-	private var lineTableString: LineTableString
+	private var attributedString: NSMutableAttributedString
+	private var lineTable: LineTable
 	private var tokens: [Token]
 	private var textAttribute: [NSAttributedString.Key: Any]
 
 	override var string: String {
-		return lineTableString.string
+		return attributedString.string
 	}
 
 	init(tokens: [Token]) {
-		self.lineTableString = LineTableString()
+		self.attributedString = NSMutableAttributedString()
+		self.lineTable = LineTable(string: self.attributedString)
 		self.tokens = tokens.sorted(by: { !$0.isMultipleLines && $1.isMultipleLines })
 		self.textAttribute = [NSAttributedString.Key: Any]()
 		super.init()
@@ -30,25 +32,26 @@ final class TextStorage: NSTextStorage {
 	}
 
 	override func attributes(at location: Int, effectiveRange range: NSRangePointer?) -> [NSAttributedString.Key : Any] {
-		return lineTableString.attributes(at: location, effectiveRange: range)
+		return attributedString.attributes(at: location, effectiveRange: range)
 	}
 
 	override func replaceCharacters(in range: NSRange, with str: String) {
 		beginEditing()
-		lineTableString.replaceCharacters(in: range, with: str)
+		attributedString.replaceCharacters(in: range, with: str)
+		lineTable.update(for: range)
 		edited([.editedCharacters, .editedAttributes], range: range, changeInLength: str.count - range.length)
 		endEditing()
 	}
 
 	override func setAttributes(_ attrs: [NSAttributedString.Key : Any]?, range: NSRange) {
 		beginEditing()
-		lineTableString.setAttributes(attrs, range: range)
+		attributedString.setAttributes(attrs, range: range)
 		edited(.editedAttributes, range: range, changeInLength: 0)
 		endEditing()
 	}
 
 	override func processEditing() {
-		guard let lineRange = lineTableString.lineRange(for: editedRange) else {
+		guard let lineRange = lineTable.lineRange(for: editedRange) else {
 			return
 		}
 		setAttributes(textAttribute, range: lineRange)
