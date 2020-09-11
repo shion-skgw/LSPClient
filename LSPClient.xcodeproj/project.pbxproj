@@ -47,7 +47,7 @@
 		056B5C2824E30E6C00797D95 /* LayoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056B5C2724E30E6C00797D95 /* LayoutManager.swift */; };
 		056B5C2B24E30EEC00797D95 /* EditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056B5C2A24E30EEC00797D95 /* EditorViewController.swift */; };
 		05828D7B249B6C7F008D2DA0 /* CodingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05828D7A249B6C7F008D2DA0 /* CodingError.swift */; };
-		0589B59024DD4EDD006E0C6F /* LineTableString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0589B58F24DD4EDD006E0C6F /* LineTableString.swift */; };
+		0589B59024DD4EDD006E0C6F /* LineTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0589B58F24DD4EDD006E0C6F /* LineTable.swift */; };
 		058B6A13248C687D0099B32F /* MessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058B6A12248C687D0099B32F /* MessageManager.swift */; };
 		058B6A17248CF9650099B32F /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058B6A16248CF9650099B32F /* Message.swift */; };
 		058B6A19248CF9DD0099B32F /* RequestID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058B6A18248CF9DD0099B32F /* RequestID.swift */; };
@@ -133,7 +133,7 @@
 		056B5C2724E30E6C00797D95 /* LayoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutManager.swift; sourceTree = "<group>"; };
 		056B5C2A24E30EEC00797D95 /* EditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorViewController.swift; sourceTree = "<group>"; };
 		05828D7A249B6C7F008D2DA0 /* CodingError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodingError.swift; sourceTree = "<group>"; };
-		0589B58F24DD4EDD006E0C6F /* LineTableString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineTableString.swift; sourceTree = "<group>"; };
+		0589B58F24DD4EDD006E0C6F /* LineTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineTable.swift; sourceTree = "<group>"; };
 		058B6A12248C687D0099B32F /* MessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageManager.swift; sourceTree = "<group>"; };
 		058B6A16248CF9650099B32F /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		058B6A18248CF9DD0099B32F /* RequestID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestID.swift; sourceTree = "<group>"; };
@@ -307,7 +307,7 @@
 				056B5C2324E30DFB00797D95 /* EditorView.swift */,
 				056B5C2A24E30EEC00797D95 /* EditorViewController.swift */,
 				056B5C2724E30E6C00797D95 /* LayoutManager.swift */,
-				0589B58F24DD4EDD006E0C6F /* LineTableString.swift */,
+				0589B58F24DD4EDD006E0C6F /* LineTable.swift */,
 				056B5C2524E30E2900797D95 /* TextStorage.swift */,
 				05E6E6FC24F07E3600364E89 /* Token.swift */,
 			);
@@ -582,7 +582,7 @@
 				0508BF2B24C97798005488A9 /* WorkspaceMessage.swift in Sources */,
 				056B5C2624E30E2900797D95 /* TextStorage.swift in Sources */,
 				054019552493703600287026 /* Command.swift in Sources */,
-				0589B59024DD4EDD006E0C6F /* LineTableString.swift in Sources */,
+				0589B59024DD4EDD006E0C6F /* LineTable.swift in Sources */,
 				056732C8249606C300E7650B /* WorkspaceEdit.swift in Sources */,
 				056732CA249609FB00E7650B /* TextDocumentIdentifier.swift in Sources */,
 				054019572493708400287026 /* TextEdit.swift in Sources */,

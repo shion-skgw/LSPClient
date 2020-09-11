@@ -1,5 +1,5 @@
 //
-//  LineTableString.swift
+//  LineTable.swift
 //  LSPClient
 //
 //  Created by Shion on 2020/08/07.
