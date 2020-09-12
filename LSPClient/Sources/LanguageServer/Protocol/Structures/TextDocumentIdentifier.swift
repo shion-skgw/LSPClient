@@ -7,9 +7,9 @@
 //
 
 protocol TextDocumentIdentifierType {
-	var uri: DocumentUri { get }
+    var uri: DocumentUri { get }
 }
 
 struct TextDocumentIdentifier: TextDocumentIdentifierType, Codable {
-	let uri: DocumentUri
+    let uri: DocumentUri
 }

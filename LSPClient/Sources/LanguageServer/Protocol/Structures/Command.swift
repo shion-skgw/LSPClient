@@ -7,7 +7,7 @@
 //
 
 struct Command: Codable {
-	let title: String
-	let command: String
-	let arguments: [AnyValue]?
+    let title: String
+    let command: String
+    let arguments: [AnyValue]?
 }

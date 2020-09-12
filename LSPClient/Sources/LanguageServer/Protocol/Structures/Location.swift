@@ -7,6 +7,6 @@
 //
 
 struct Location: ResultType {
-	let uri: DocumentUri
-	let range: TextRange
+    let uri: DocumentUri
+    let range: TextRange
 }

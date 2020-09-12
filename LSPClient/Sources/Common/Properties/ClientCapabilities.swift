@@ -9,21 +9,21 @@
 import Foundation
 
 struct ClientCapabilities: PropertiesType {
-	#if DEBUG
-	static let resourceName = "ClientCapabilities_test"
-	#else
-	static let resourceName = "ClientCapabilities"
-	#endif
+    #if DEBUG
+    static let resourceName = "ClientCapabilities_test"
+    #else
+    static let resourceName = "ClientCapabilities"
+    #endif
 
-	let value: AnyValue
+    let value: AnyValue
 
-	init(from decoder: Decoder) throws {
-		let container = try decoder.singleValueContainer()
-		self.value = try container.decode(AnyValue.self)
-	}
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.value = try container.decode(AnyValue.self)
+    }
 
-	func encode(to encoder: Encoder) throws {
-		var container = encoder.singleValueContainer()
-		try container.encode(value)
-	}
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(value)
+    }
 }

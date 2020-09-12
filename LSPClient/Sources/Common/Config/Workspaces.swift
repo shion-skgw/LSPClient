@@ -9,16 +9,16 @@
 import Foundation
 
 struct Workspaces: ConfigType {
-	static let configKey = "Workspaces"
-	var workspaces: [Workspace]
-	init() {
-		self.workspaces = []
-	}
+    static let configKey = "Workspaces"
+    var workspaces: [Workspace]
+    init() {
+        self.workspaces = []
+    }
 }
 
 struct Workspace: Codable {
-	let name: String
-	let serverId: ServerID
-	let root: DocumentUri
-	let comment: String
+    let name: String
+    let serverId: ServerID
+    let root: DocumentUri
+    let comment: String
 }

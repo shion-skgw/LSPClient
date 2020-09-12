@@ -9,28 +9,28 @@
 import Foundation
 
 enum RequestID: Hashable, Codable {
-	case number(Int)
-	case string(String)
+    case number(Int)
+    case string(String)
 
-	init(from decoder: Decoder) throws {
-		let container = try decoder.singleValueContainer()
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
 
-		if let value = try? container.decode(Int.self) {
-			self = .number(value)
-		} else {
-			self = .string(try container.decode(String.self))
-		}
-	}
+        if let value = try? container.decode(Int.self) {
+            self = .number(value)
+        } else {
+            self = .string(try container.decode(String.self))
+        }
+    }
 
-	func encode(to encoder: Encoder) throws {
-		var container = encoder.singleValueContainer()
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
 
-		switch self {
-		case .number(let value):
-			try container.encode(value)
-		case .string(let value):
-			try container.encode(value)
-		}
-	}
+        switch self {
+        case .number(let value):
+            try container.encode(value)
+        case .string(let value):
+            try container.encode(value)
+        }
+    }
 
 }

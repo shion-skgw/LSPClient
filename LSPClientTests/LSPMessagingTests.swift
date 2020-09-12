@@ -39,7 +39,7 @@ class LSPMessagingTests: XCTestCase {
 		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
 
 		// Assert MessageManagerDelegateStub
-		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertEqual(manager.function, "messageParseError(cause:message:)")
 		XCTAssertNotNil(manager.cause)
 		XCTAssertNil(manager.message)
 		XCTAssertNil(manager.params)
@@ -73,7 +73,7 @@ class LSPMessagingTests: XCTestCase {
 		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
 
 		// Assert MessageManagerDelegateStub
-		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertEqual(manager.function, "messageParseError(cause:message:)")
 		XCTAssertNotNil(manager.cause)
 		XCTAssertNil(manager.message)
 		XCTAssertNil(manager.params)
@@ -103,7 +103,7 @@ class LSPMessagingTests: XCTestCase {
 		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
 
 		// Assert MessageManagerDelegateStub
-		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertEqual(manager.function, "messageParseError(cause:message:)")
 		XCTAssertNotNil(manager.cause)
 		XCTAssertNil(manager.message)
 		XCTAssertNil(manager.params)
@@ -137,7 +137,7 @@ class LSPMessagingTests: XCTestCase {
 		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
 
 		// Assert MessageManagerDelegateStub
-		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertEqual(manager.function, "messageParseError(cause:message:)")
 		XCTAssertNotNil(manager.cause)
 		XCTAssertNil(manager.message)
 		XCTAssertNil(manager.params)
@@ -169,7 +169,7 @@ class LSPMessagingTests: XCTestCase {
 		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
 
 		// Assert MessageManagerDelegateStub
-		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertEqual(manager.function, "messageParseError(cause:message:)")
 		XCTAssertNotNil(manager.cause)
 		XCTAssertNil(manager.message)
 		XCTAssertNil(manager.params)
@@ -200,7 +200,7 @@ class LSPMessagingTests: XCTestCase {
 		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
 
 		// Assert MessageManagerDelegateStub
-		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertEqual(manager.function, "messageParseError(cause:message:)")
 		XCTAssertNotNil(manager.cause)
 		XCTAssertNil(manager.message)
 		XCTAssertNil(manager.params)
@@ -231,7 +231,7 @@ class LSPMessagingTests: XCTestCase {
 		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
 
 		// Assert MessageManagerDelegateStub
-		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertEqual(manager.function, "messageParseError(cause:message:)")
 		XCTAssertNotNil(manager.cause)
 		XCTAssertNil(manager.message)
 		XCTAssertNil(manager.params)
@@ -262,7 +262,7 @@ class LSPMessagingTests: XCTestCase {
 		XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
 
 		// Assert MessageManagerDelegateStub
-		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertEqual(manager.function, "messageParseError(cause:message:)")
 		XCTAssertNotNil(manager.cause)
 		XCTAssertNil(manager.message)
 		XCTAssertNil(manager.params)
@@ -294,7 +294,7 @@ class LSPMessagingTests: XCTestCase {
 		XCTAssertEqual(MessageManager.shared.getSendRequest.count, 1)
 
 		// Assert MessageManagerDelegateStub
-		XCTAssertEqual(manager.function, "messageError(cause:message:)")
+		XCTAssertEqual(manager.function, "messageParseError(cause:message:)")
 		XCTAssertNotNil(manager.cause)
 		XCTAssertNil(manager.message)
 		XCTAssertNil(manager.params)

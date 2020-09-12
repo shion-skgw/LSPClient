@@ -7,8 +7,8 @@
 //
 
 struct LocationLink: Codable {
-	let originSelectionRange: TextRange?
-	let targetUri: DocumentUri
-	let targetRange: TextRange
-	let targetSelectionRange: TextRange
+    let originSelectionRange: TextRange?
+    let targetUri: DocumentUri
+    let targetRange: TextRange
+    let targetSelectionRange: TextRange
 }

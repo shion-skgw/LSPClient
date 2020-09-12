@@ -7,21 +7,21 @@
 //
 
 struct RequiredValue<T: Codable> {
-	let value: T?
+    let value: T?
 
-	init(_ value: T?) {
-		self.value = value
-	}
+    init(_ value: T?) {
+        self.value = value
+    }
 }
 
 extension RequiredValue: Codable {
-	init(from decoder: Decoder) throws {
-		let container = try decoder.singleValueContainer()
-		self.init(try container.decode(T?.self))
-	}
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.init(try container.decode(T?.self))
+    }
 
-	func encode(to encoder: Encoder) throws {
-		var container = encoder.singleValueContainer()
-		try container.encode(value)
-	}
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(value)
+    }
 }

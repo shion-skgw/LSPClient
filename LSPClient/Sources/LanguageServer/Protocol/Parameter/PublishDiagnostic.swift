@@ -9,7 +9,7 @@
 // MARK: - PublishDiagnostics Notification (textDocument/publishDiagnostics)
 
 struct PublishDiagnosticsParams: NotificationParamsType {
-	let uri: DocumentUri
-	let version: Int?
-	let diagnostics: [Diagnostic]
+    let uri: DocumentUri
+    let version: Int?
+    let diagnostics: [Diagnostic]
 }

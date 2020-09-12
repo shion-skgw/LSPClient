@@ -9,5 +9,5 @@
 // MARK: - Workspace Symbols Request (workspace/symbol)
 
 struct WorkspaceSymbolParams: RequestParamsType {
-	let query: String
+    let query: String
 }

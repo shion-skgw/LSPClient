@@ -7,11 +7,11 @@
 //
 
 struct MarkupContent: Codable {
-	let kind: MarkupKind
-	let value: String
+    let kind: MarkupKind
+    let value: String
 }
 
 enum MarkupKind: String, Codable {
-	case plaintext = "plaintext"
-	case markdown = "markdown"
+    case plaintext = "plaintext"
+    case markdown = "markdown"
 }

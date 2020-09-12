@@ -7,6 +7,6 @@
 //
 
 struct TextDocumentEdit: Codable {
-	let textDocument: VersionedTextDocumentIdentifier
-	let edits: [TextEdit]
+    let textDocument: VersionedTextDocumentIdentifier
+    let edits: [TextEdit]
 }

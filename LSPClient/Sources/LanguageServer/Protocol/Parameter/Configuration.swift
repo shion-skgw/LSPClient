@@ -9,5 +9,5 @@
 // MARK: - DidChangeConfiguration Notification (workspace/didChangeConfiguration)
 
 struct DidChangeConfigurationParams: NotificationParamsType {
-	let settings: AnyValue
+    let settings: AnyValue
 }

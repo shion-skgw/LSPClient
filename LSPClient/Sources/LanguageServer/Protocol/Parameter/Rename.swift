@@ -9,7 +9,7 @@
 // MARK: - Rename Request (textDocument/rename)
 
 struct RenameParams: RequestParamsType, TextDocumentPositionParamsType {
-	let textDocument: TextDocumentIdentifier
-	let position: TextPosition
-	let newName: String
+    let textDocument: TextDocumentIdentifier
+    let position: TextPosition
+    let newName: String
 }

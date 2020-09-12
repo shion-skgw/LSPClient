@@ -9,23 +9,23 @@
 // MARK: - Document Formatting Request (textDocument/formatting)
 
 struct DocumentFormattingParams: RequestParamsType {
-	let textDocument: TextDocumentIdentifier
-	let options: FormattingOptions
+    let textDocument: TextDocumentIdentifier
+    let options: FormattingOptions
 }
 
 struct FormattingOptions: Codable {
-	let tabSize: Int
-	let insertSpaces: Bool
-	let trimTrailingWhitespace: Bool?
-	let insertFinalNewline: Bool?
-	let trimFinalNewlines: Bool?
+    let tabSize: Int
+    let insertSpaces: Bool
+    let trimTrailingWhitespace: Bool?
+    let insertFinalNewline: Bool?
+    let trimFinalNewlines: Bool?
 }
 
 
 // MARK: - Document Range Formatting Request (textDocument/rangeFormatting)
 
 struct DocumentRangeFormattingParams: RequestParamsType {
-	let textDocument: TextDocumentIdentifier
-	let range: TextRange
-	let options: FormattingOptions
+    let textDocument: TextDocumentIdentifier
+    let range: TextRange
+    let options: FormattingOptions
 }

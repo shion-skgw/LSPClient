@@ -9,6 +9,6 @@
 // MARK: - Execute a command (workspace/executeCommand)
 
 struct ExecuteCommandParams: RequestParamsType {
-	let command: String
-	let arguments: [AnyValue]?
+    let command: String
+    let arguments: [AnyValue]?
 }

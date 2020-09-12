@@ -7,9 +7,9 @@
 //
 
 struct DocumentFilter: Codable {
-	let language: LanguageID?
-	let scheme: String?
-	let pattern: String?
+    let language: LanguageID?
+    let scheme: String?
+    let pattern: String?
 }
 
 typealias DocumentSelector = [DocumentFilter]

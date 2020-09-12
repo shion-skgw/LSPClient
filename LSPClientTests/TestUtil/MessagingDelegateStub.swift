@@ -17,7 +17,7 @@ class MessageManagerDelegateStub: MessageManagerDelegate {
 	var params: ParamsType!
 	var id: RequestID!
 
-	func messageError(cause: Error, message: Message?) {
+	func messageParseError(cause: Error, message: Message?) {
 		self.function = #function
 		self.cause = cause
 		self.message = message

@@ -7,6 +7,6 @@
 //
 
 struct TextRange: Codable {
-	let start: TextPosition
-	let end: TextPosition
+    let start: TextPosition
+    let end: TextPosition
 }

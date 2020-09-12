@@ -7,11 +7,11 @@
 //
 
 protocol TextDocumentPositionParamsType {
-	var textDocument: TextDocumentIdentifier { get }
-	var position: TextPosition { get }
+    var textDocument: TextDocumentIdentifier { get }
+    var position: TextPosition { get }
 }
 
 struct TextDocumentPositionParams: TextDocumentPositionParamsType, Codable {
-	let textDocument: TextDocumentIdentifier
-	let position: TextPosition
+    let textDocument: TextDocumentIdentifier
+    let position: TextPosition
 }

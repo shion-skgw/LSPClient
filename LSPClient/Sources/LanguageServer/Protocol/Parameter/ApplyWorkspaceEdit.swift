@@ -9,11 +9,11 @@
 // MARK: - Applies a WorkspaceEdit (workspace/applyEdit)
 
 struct ApplyWorkspaceEditParams: RequestParamsType {
-	let label: String?
-	let edit: WorkspaceEdit
+    let label: String?
+    let edit: WorkspaceEdit
 }
 
 struct ApplyWorkspaceEditResponse: ResultType {
-	let applied: Bool
-	let failureReason: String?
+    let applied: Bool
+    let failureReason: String?
 }

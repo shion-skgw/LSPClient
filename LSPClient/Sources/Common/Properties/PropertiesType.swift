@@ -9,21 +9,21 @@
 import Foundation
 
 protocol PropertiesType: Codable {
-	static var resourceName: String { get }
+    static var resourceName: String { get }
 }
 
 extension PropertiesType {
 
-	init() {
-		guard let path = Bundle.main.path(forResource: Self.resourceName, ofType: "plist") else {
-			fatalError()
-		}
-		do {
-			let data = try Data(contentsOf: URL(fileURLWithPath: path))
-			self = try PropertyListDecoder().decode(Self.self, from: data)
-		} catch {
-			fatalError()
-		}
-	}
+    init() {
+        guard let path = Bundle.main.path(forResource: Self.resourceName, ofType: "plist") else {
+            fatalError()
+        }
+        do {
+            let data = try Data(contentsOf: URL(fileURLWithPath: path))
+            self = try PropertyListDecoder().decode(Self.self, from: data)
+        } catch {
+            fatalError()
+        }
+    }
 
 }

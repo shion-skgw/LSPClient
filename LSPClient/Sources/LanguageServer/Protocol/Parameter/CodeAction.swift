@@ -9,51 +9,51 @@
 // MARK: - Code Action Request (textDocument/codeAction)
 
 struct CodeActionParams: RequestParamsType {
-	let textDocument: TextDocumentIdentifier
-	let range: TextRange
-	let context: CodeActionContext
+    let textDocument: TextDocumentIdentifier
+    let range: TextRange
+    let context: CodeActionContext
 }
 
 enum CodeActionKind: String, Codable {
-	case empty = ""
-	case quickFix = "quickfix"
-	case refactor = "refactor"
-	case refactorExtract = "refactor.extract"
-	case refactorInline = "refactor.inline"
-	case refactorRewrite = "refactor.rewrite"
-	case source = "source"
-	case sourceOrganizeImports = "source.organizeImports"
+    case empty = ""
+    case quickFix = "quickfix"
+    case refactor = "refactor"
+    case refactorExtract = "refactor.extract"
+    case refactorInline = "refactor.inline"
+    case refactorRewrite = "refactor.rewrite"
+    case source = "source"
+    case sourceOrganizeImports = "source.organizeImports"
 }
 
 struct CodeActionContext: Codable {
-	let diagnostics: [Diagnostic]
-	let only: [CodeActionKind]?
+    let diagnostics: [Diagnostic]
+    let only: [CodeActionKind]?
 }
 
 enum CodeActionResult: ResultType {
-	case command([Command])
-	case codeAction([CodeAction])
+    case command([Command])
+    case codeAction([CodeAction])
 
-	init(from decoder: Decoder) throws {
-		let container = try decoder.singleValueContainer()
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
 
-		if let value = try? container.decode([Command].self) {
-			self = .command(value)
-		} else {
-			self = .codeAction(try container.decode([CodeAction].self))
-		}
-	}
+        if let value = try? container.decode([Command].self) {
+            self = .command(value)
+        } else {
+            self = .codeAction(try container.decode([CodeAction].self))
+        }
+    }
 
-	func encode(to encoder: Encoder) throws {
-		throw EncodingError.invalidValueError(self, encoder.codingPath, "Receive only.")
-	}
+    func encode(to encoder: Encoder) throws {
+        throw EncodingError.invalidValueError(self, encoder.codingPath, "Receive only.")
+    }
 }
 
 struct CodeAction: Codable {
-	let title: String
-	let kind: CodeActionKind?
-	let diagnostics: [Diagnostic]?
-	let isPreferred: Bool?
-	let edit: WorkspaceEdit?
-	let command: Command?
+    let title: String
+    let kind: CodeActionKind?
+    let diagnostics: [Diagnostic]?
+    let isPreferred: Bool?
+    let edit: WorkspaceEdit?
+    let command: Command?
 }

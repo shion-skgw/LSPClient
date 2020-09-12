@@ -7,6 +7,6 @@
 //
 
 struct VersionedTextDocumentIdentifier: TextDocumentIdentifierType, Codable {
-	let uri: DocumentUri
-	let version: RequiredValue<Int>
+    let uri: DocumentUri
+    let version: RequiredValue<Int>
 }

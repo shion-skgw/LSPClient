@@ -7,13 +7,13 @@
 //
 
 struct TextDocumentItem: Codable {
-	let uri: DocumentUri
-	let languageId: LanguageID
-	let version: Int
-	let text: String
+    let uri: DocumentUri
+    let languageId: LanguageID
+    let version: Int
+    let text: String
 }
 
 enum LanguageID: String, Codable {
-	case ABAP = "abap"
+    case ABAP = "abap"
 }
 // TODO

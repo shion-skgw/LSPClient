@@ -9,5 +9,5 @@
 // MARK: - Cancellation Support ($/cancelRequest)
 
 struct CancelParams: NotificationParamsType {
-	let id: RequestID
+    let id: RequestID
 }

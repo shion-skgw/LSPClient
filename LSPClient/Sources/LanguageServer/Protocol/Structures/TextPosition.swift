@@ -7,6 +7,6 @@
 //
 
 struct TextPosition: Codable {
-	let line: Int
-	let character: Int
+    let line: Int
+    let character: Int
 }

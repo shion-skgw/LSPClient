@@ -21,7 +21,7 @@ final class TextStorage: NSTextStorage {
 
 	init(tokens: [Token]) {
 		self.attributedString = NSMutableAttributedString()
-		self.lineTable = LineTable(string: self.attributedString)
+        self.lineTable = LineTable(content: self.attributedString)
 		self.tokens = tokens.sorted(by: { !$0.isMultipleLines && $1.isMultipleLines })
 		self.textAttribute = [NSAttributedString.Key: Any]()
 		super.init()

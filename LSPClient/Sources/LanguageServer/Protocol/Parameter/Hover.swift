@@ -9,52 +9,52 @@
 // MARK: - Hover Request (textDocument/hover)
 
 struct HoverParams: RequestParamsType, TextDocumentPositionParamsType {
-	let textDocument: TextDocumentIdentifier
-	let position: TextPosition
+    let textDocument: TextDocumentIdentifier
+    let position: TextPosition
 }
 
 struct Hover: ResultType {
-	let contents: MarkupContent
-	let range: TextRange?
+    let contents: MarkupContent
+    let range: TextRange?
 
-	private enum CodingKeys: String, CodingKey {
-		case contents
-		case range
-	}
+    private enum CodingKeys: String, CodingKey {
+        case contents
+        case range
+    }
 
-	init(from decoder: Decoder) throws {
-		let container = try decoder.container(keyedBy: CodingKeys.self)
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
 
-		if let value = try? container.decode(MarkedString.self, forKey: .contents) {
-			self.contents = MarkupContent(kind: .plaintext, value: value.value)
-			self.range = nil
-		} else if let value = try? container.decode([MarkedString].self, forKey: .contents) {
-			self.contents = MarkupContent(kind: .plaintext, value: value.first?.value ?? "")
-			self.range = nil
-		} else {
-			self.contents = try container.decode(MarkupContent.self, forKey: .contents)
-			self.range = try container.decode(TextRange.self, forKey: .range)
-		}
-	}
+        if let value = try? container.decode(MarkedString.self, forKey: .contents) {
+            self.contents = MarkupContent(kind: .plaintext, value: value.value)
+            self.range = nil
+        } else if let value = try? container.decode([MarkedString].self, forKey: .contents) {
+            self.contents = MarkupContent(kind: .plaintext, value: value.first?.value ?? "")
+            self.range = nil
+        } else {
+            self.contents = try container.decode(MarkupContent.self, forKey: .contents)
+            self.range = try container.decode(TextRange.self, forKey: .range)
+        }
+    }
 }
 
 struct MarkedString: Codable {
-	let language: String?
-	let value: String
+    let language: String?
+    let value: String
 
-	private enum CodingKeys: String, CodingKey {
-		case language
-		case value
-	}
+    private enum CodingKeys: String, CodingKey {
+        case language
+        case value
+    }
 
-	init(from decoder: Decoder) throws {
-		if let value = try? decoder.singleValueContainer().decode(String.self) {
-			self.language = nil
-			self.value = value
-		} else {
-			let container = try decoder.container(keyedBy: CodingKeys.self)
-			self.language = try container.decode(String.self, forKey: .language)
-			self.value = try container.decode(String.self, forKey: .value)
-		}
-	}
+    init(from decoder: Decoder) throws {
+        if let value = try? decoder.singleValueContainer().decode(String.self) {
+            self.language = nil
+            self.value = value
+        } else {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.language = try container.decode(String.self, forKey: .language)
+            self.value = try container.decode(String.self, forKey: .value)
+        }
+    }
 }

@@ -51,34 +51,34 @@ let TEXT_DOCUMENT_RENAME = "textDocument/rename"
 // MARK: - Type definition
 
 let REQUEST_PARAMS_TYPE: [String: RequestParamsType.Type] = [
-	WINDOW_SHOW_MESSAGE_REQUEST: ShowMessageRequestParams.self,
-	WORKSPACE_APPLY_EDIT: ApplyWorkspaceEditParams.self,
+    WINDOW_SHOW_MESSAGE_REQUEST: ShowMessageRequestParams.self,
+    WORKSPACE_APPLY_EDIT: ApplyWorkspaceEditParams.self,
 ]
 
 let NOTIFICATION_PARAMS_TYPE: [String: NotificationParamsType.Type] = [
-	CANCEL_REQUEST: CancelParams.self,
-	WINDOW_SHOW_MESSAGE: ShowMessageParams.self,
-	WINDOW_LOG_MESSAGE: LogMessageParams.self,
-	TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS: PublishDiagnosticsParams.self,
+    CANCEL_REQUEST: CancelParams.self,
+    WINDOW_SHOW_MESSAGE: ShowMessageParams.self,
+    WINDOW_LOG_MESSAGE: LogMessageParams.self,
+    TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS: PublishDiagnosticsParams.self,
 ]
 
 let RESPONSE_RESULT_TYPE: [String: ResultType.Type] = [
-	INITIALIZE: InitializeResult.self,
-	SHUTDOWN: VoidValue?.self,
-	WORKSPACE_SYMBOL: [SymbolInformation]?.self,
-	WORKSPACE_EXECUTE_COMMAND: AnyValue?.self,
-	TEXT_DOCUMENT_COMPLETION: CompletionList?.self,
-	COMPLETION_ITEM_RESOLVE: CompletionItem.self,
-	TEXT_DOCUMENT_HOVER: Hover?.self,
-//	TEXT_DOCUMENT_DECLARATION: FindLocationResult?.self,
-	TEXT_DOCUMENT_DEFINITION: FindLocationResult?.self,
-	TEXT_DOCUMENT_TYPE_DEFINITION: FindLocationResult?.self,
-	TEXT_DOCUMENT_IMPLEMENTATION: FindLocationResult?.self,
-	TEXT_DOCUMENT_REFERENCES: [Location]?.self,
-	TEXT_DOCUMENT_DOCUMENT_HIGHLIGHT: [DocumentHighlight]?.self,
-	TEXT_DOCUMENT_DOCUMENT_SYMBOL: [SymbolInformation]?.self,
-	TEXT_DOCUMENT_CODE_ACTION: CodeActionResult?.self,
-//	TEXT_DOCUMENT_FORMATTING: [TextEdit]?.self,
-	TEXT_DOCUMENT_RANGE_FORMATTING: [TextEdit]?.self,
-	TEXT_DOCUMENT_RENAME: WorkspaceEdit?.self,
+    INITIALIZE: InitializeResult.self,
+    SHUTDOWN: VoidValue?.self,
+    WORKSPACE_SYMBOL: [SymbolInformation]?.self,
+    WORKSPACE_EXECUTE_COMMAND: AnyValue?.self,
+    TEXT_DOCUMENT_COMPLETION: CompletionList?.self,
+    COMPLETION_ITEM_RESOLVE: CompletionItem.self,
+    TEXT_DOCUMENT_HOVER: Hover?.self,
+//    TEXT_DOCUMENT_DECLARATION: FindLocationResult?.self,
+    TEXT_DOCUMENT_DEFINITION: FindLocationResult?.self,
+    TEXT_DOCUMENT_TYPE_DEFINITION: FindLocationResult?.self,
+    TEXT_DOCUMENT_IMPLEMENTATION: FindLocationResult?.self,
+    TEXT_DOCUMENT_REFERENCES: [Location]?.self,
+    TEXT_DOCUMENT_DOCUMENT_HIGHLIGHT: [DocumentHighlight]?.self,
+    TEXT_DOCUMENT_DOCUMENT_SYMBOL: [SymbolInformation]?.self,
+    TEXT_DOCUMENT_CODE_ACTION: CodeActionResult?.self,
+//    TEXT_DOCUMENT_FORMATTING: [TextEdit]?.self,
+    TEXT_DOCUMENT_RANGE_FORMATTING: [TextEdit]?.self,
+    TEXT_DOCUMENT_RENAME: WorkspaceEdit?.self,
 ]

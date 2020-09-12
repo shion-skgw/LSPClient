@@ -9,17 +9,17 @@
 // MARK: - Document Highlights Request (textDocument/documentHighlight)
 
 struct DocumentHighlightParams: RequestParamsType, TextDocumentPositionParamsType {
-	let textDocument: TextDocumentIdentifier
-	let position: TextPosition
+    let textDocument: TextDocumentIdentifier
+    let position: TextPosition
 }
 
 struct DocumentHighlight: ResultType {
-	let range: TextRange
-	let kind: DocumentHighlightKind?
+    let range: TextRange
+    let kind: DocumentHighlightKind?
 }
 
 enum DocumentHighlightKind: Int, Codable {
-	case text = 1
-	case read = 2
-	case write = 3
+    case text = 1
+    case read = 2
+    case write = 3
 }

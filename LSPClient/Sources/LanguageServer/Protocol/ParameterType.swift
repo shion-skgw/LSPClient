@@ -8,13 +8,20 @@
 
 import Foundation
 
-protocol ParamsType: Codable {}
+protocol ParamsType: Codable {
+}
 
-protocol RequestParamsType: ParamsType {}
+protocol RequestParamsType: ParamsType {
+}
 
-protocol NotificationParamsType: ParamsType {}
+protocol NotificationParamsType: ParamsType {
+}
 
-protocol ResultType: Codable {}
+protocol ResultType: Codable {
+}
 
-extension Array: ResultType where Element: ResultType {}
-extension Optional: ResultType where Wrapped: ResultType {}
+extension Array: ResultType where Element: ResultType {
+}
+
+extension Optional: ResultType where Wrapped: ResultType {
+}
