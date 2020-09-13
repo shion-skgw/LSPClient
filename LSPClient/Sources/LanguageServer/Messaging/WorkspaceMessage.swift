@@ -56,9 +56,9 @@ extension WorkspaceMessageDelegate {
 
         switch context.method {
         case WORKSPACE_SYMBOL:
-            source.symbol(id: id, result: or(result, error))
+            source.symbol(id: id, result: toResult(result, error))
         case WORKSPACE_EXECUTE_COMMAND:
-            source.executeCommand(id: id, result: or(result, error))
+            source.executeCommand(id: id, result: toResult(result, error))
         default:
             throw MessageDecodingError.unsupportedMethod(id, context.method)
         }

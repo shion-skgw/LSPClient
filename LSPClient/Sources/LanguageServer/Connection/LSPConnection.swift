@@ -38,24 +38,3 @@ protocol LSPConnection: class {
     func send(data: Data, completion: @escaping () -> ())
 
 }
-
-
-///
-/// LSPConnection delegate
-///
-protocol LSPConnectionDelegate: class {
-
-    ///
-    /// Connection error handler
-    /// - Parameter cause       : Error cause
-    ///
-    func connectionError(cause: Error)
-
-    ///
-    /// Data receive handler
-    ///
-    /// - Parameter data        : Received data
-    ///
-    func didReceive(data: Data)
-
-}

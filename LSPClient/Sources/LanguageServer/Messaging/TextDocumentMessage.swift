@@ -166,36 +166,34 @@ extension TextDocumentMessageDelegate {
 
         switch context.method {
         case TEXT_DOCUMENT_COMPLETION:
-            source.completion(id: id, result: or(result, error))
-            if (result as? CompletionList)?.isIncomplete == true {
-                return false
-            }
+            source.completion(id: id, result: toResult(result, error))
+            return (result as? CompletionList)?.isIncomplete == false
         case COMPLETION_ITEM_RESOLVE:
-            source.completionResolve(id: id, result: or(result, error))
+            source.completionResolve(id: id, result: toResult(result, error))
         case TEXT_DOCUMENT_HOVER:
-            source.hover(id: id, result: or(result, error))
+            source.hover(id: id, result: toResult(result, error))
 //        case TEXT_DOCUMENT_DECLARATION:
 //            source.declaration(id: id, result: or(result, error))
         case TEXT_DOCUMENT_DEFINITION:
-            source.definition(id: id, result: or(result, error))
+            source.definition(id: id, result: toResult(result, error))
         case TEXT_DOCUMENT_TYPE_DEFINITION:
-            source.typeDefinition(id: id, result: or(result, error))
+            source.typeDefinition(id: id, result: toResult(result, error))
         case TEXT_DOCUMENT_IMPLEMENTATION:
-            source.implementation(id: id, result: or(result, error))
+            source.implementation(id: id, result: toResult(result, error))
         case TEXT_DOCUMENT_REFERENCES:
-            source.references(id: id, result: or(result, error))
+            source.references(id: id, result: toResult(result, error))
         case TEXT_DOCUMENT_DOCUMENT_HIGHLIGHT:
-            source.documentHighlight(id: id, result: or(result, error))
+            source.documentHighlight(id: id, result: toResult(result, error))
         case TEXT_DOCUMENT_DOCUMENT_SYMBOL:
-            source.documentSymbol(id: id, result: or(result, error))
+            source.documentSymbol(id: id, result: toResult(result, error))
         case TEXT_DOCUMENT_CODE_ACTION:
-            source.codeAction(id: id, result: or(result, error))
+            source.codeAction(id: id, result: toResult(result, error))
 //        case TEXT_DOCUMENT_FORMATTING:
 //            source.formatting(id: id, result: or(result, error))
         case TEXT_DOCUMENT_RANGE_FORMATTING:
-            source.rangeFormatting(id: id, result: or(result, error))
+            source.rangeFormatting(id: id, result: toResult(result, error))
         case TEXT_DOCUMENT_RENAME:
-            source.rename(id: id, result: or(result, error))
+            source.rename(id: id, result: toResult(result, error))
         default:
             throw MessageDecodingError.unsupportedMethod(id, context.method)
         }

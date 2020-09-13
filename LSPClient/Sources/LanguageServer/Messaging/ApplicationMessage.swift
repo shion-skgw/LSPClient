@@ -53,9 +53,9 @@ extension ApplicationMessageDelegate {
 
         switch context.method {
         case INITIALIZE:
-            source.initialize(id: id, result: or(result, error))
+            source.initialize(id: id, result: toResult(result, error))
         case SHUTDOWN:
-            source.shutdown(id: id, result: or(result, error))
+            source.shutdown(id: id, result: toResult(result, error))
         default:
             throw MessageDecodingError.unsupportedMethod(id, context.method)
         }
