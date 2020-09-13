@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0508BF2924C97267005488A9 /* ApplicationMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0508BF2824C97267005488A9 /* ApplicationMessage.swift */; };
-		0508BF2B24C97798005488A9 /* WorkspaceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0508BF2A24C97798005488A9 /* WorkspaceMessage.swift */; };
-		0508BF2D24C97905005488A9 /* TextDocumentMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0508BF2C24C97905005488A9 /* TextDocumentMessage.swift */; };
+		0508BF2924C97267005488A9 /* ApplicationMessageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0508BF2824C97267005488A9 /* ApplicationMessageDelegate.swift */; };
+		0508BF2B24C97798005488A9 /* WorkspaceMessageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0508BF2A24C97798005488A9 /* WorkspaceMessageDelegate.swift */; };
+		0508BF2D24C97905005488A9 /* TextDocumentMessageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0508BF2C24C97905005488A9 /* TextDocumentMessageDelegate.swift */; };
 		05114213250E7733002A4056 /* LSPConnectionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05114212250E7733002A4056 /* LSPConnectionDelegate.swift */; };
 		05114215250E7774002A4056 /* MessageManagerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05114214250E7774002A4056 /* MessageManagerDelegate.swift */; };
 		05114217250E77A1002A4056 /* MessageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05114216250E77A1002A4056 /* MessageDelegate.swift */; };
@@ -96,9 +96,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0508BF2824C97267005488A9 /* ApplicationMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationMessage.swift; sourceTree = "<group>"; };
-		0508BF2A24C97798005488A9 /* WorkspaceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceMessage.swift; sourceTree = "<group>"; };
-		0508BF2C24C97905005488A9 /* TextDocumentMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDocumentMessage.swift; sourceTree = "<group>"; };
+		0508BF2824C97267005488A9 /* ApplicationMessageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationMessageDelegate.swift; sourceTree = "<group>"; };
+		0508BF2A24C97798005488A9 /* WorkspaceMessageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceMessageDelegate.swift; sourceTree = "<group>"; };
+		0508BF2C24C97905005488A9 /* TextDocumentMessageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDocumentMessageDelegate.swift; sourceTree = "<group>"; };
 		05114212250E7733002A4056 /* LSPConnectionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPConnectionDelegate.swift; sourceTree = "<group>"; };
 		05114214250E7774002A4056 /* MessageManagerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageManagerDelegate.swift; sourceTree = "<group>"; };
 		05114216250E77A1002A4056 /* MessageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDelegate.swift; sourceTree = "<group>"; };
@@ -375,12 +375,12 @@
 		05BA10B024D2D97E009A3669 /* Messaging */ = {
 			isa = PBXGroup;
 			children = (
-				0508BF2824C97267005488A9 /* ApplicationMessage.swift */,
+				0508BF2824C97267005488A9 /* ApplicationMessageDelegate.swift */,
 				05114216250E77A1002A4056 /* MessageDelegate.swift */,
 				058B6A12248C687D0099B32F /* MessageManager.swift */,
 				05114214250E7774002A4056 /* MessageManagerDelegate.swift */,
-				0508BF2C24C97905005488A9 /* TextDocumentMessage.swift */,
-				0508BF2A24C97798005488A9 /* WorkspaceMessage.swift */,
+				0508BF2C24C97905005488A9 /* TextDocumentMessageDelegate.swift */,
+				0508BF2A24C97798005488A9 /* WorkspaceMessageDelegate.swift */,
 			);
 			path = Messaging;
 			sourceTree = "<group>";
@@ -575,7 +575,7 @@
 				05BAAB1E24A3530E00A3EADC /* Initialize.swift in Sources */,
 				05BAAB2224A3532300A3EADC /* Configuration.swift in Sources */,
 				058B6A19248CF9DD0099B32F /* RequestID.swift in Sources */,
-				0508BF2D24C97905005488A9 /* TextDocumentMessage.swift in Sources */,
+				0508BF2D24C97905005488A9 /* TextDocumentMessageDelegate.swift in Sources */,
 				05BAAB3824A3538D00A3EADC /* Symbol.swift in Sources */,
 				05114217250E77A1002A4056 /* MessageDelegate.swift in Sources */,
 				05BAAB2E24A3535F00A3EADC /* PublishDiagnostic.swift in Sources */,
@@ -587,11 +587,11 @@
 				05114215250E7774002A4056 /* MessageManagerDelegate.swift in Sources */,
 				05BAAB3C24A3539F00A3EADC /* CodeFormat.swift in Sources */,
 				05182B2424DA0364007E8832 /* ConfigType.swift in Sources */,
-				0508BF2924C97267005488A9 /* ApplicationMessage.swift in Sources */,
+				0508BF2924C97267005488A9 /* ApplicationMessageDelegate.swift in Sources */,
 				0540195124936C8200287026 /* LocationLink.swift in Sources */,
 				05BAAB3024A3536900A3EADC /* Completion.swift in Sources */,
 				05BAAB3A24A3539600A3EADC /* CodeAction.swift in Sources */,
-				0508BF2B24C97798005488A9 /* WorkspaceMessage.swift in Sources */,
+				0508BF2B24C97798005488A9 /* WorkspaceMessageDelegate.swift in Sources */,
 				056B5C2624E30E2900797D95 /* TextStorage.swift in Sources */,
 				054019552493703600287026 /* Command.swift in Sources */,
 				0589B59024DD4EDD006E0C6F /* LineTable.swift in Sources */,
