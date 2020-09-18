@@ -12,103 +12,103 @@ import Foundation
 
 extension AnyValue {
 
-	var isEmpty: Bool? {
-		if let value = value as? [String: Any?] {
-			return value.isEmpty
-		} else if let value = value as? [Any?] {
-			return value.isEmpty
-		} else {
-			return nil
-		}
-	}
+    var isEmpty: Bool? {
+        if let value = value as? [String: Any?] {
+            return value.isEmpty
+        } else if let value = value as? [Any?] {
+            return value.isEmpty
+        } else {
+            return nil
+        }
+    }
 
-	var isNull: Bool {
-		return value is ()
-	}
+    var isNull: Bool {
+        return value is ()
+    }
 
-	var count: Int? {
-		if let value = value as? [String: Any?] {
-			return value.count
-		} else if let value = value as? [Any?] {
-			return value.count
-		} else {
-			return nil
-		}
-	}
+    var count: Int? {
+        if let value = value as? [String: Any?] {
+            return value.count
+        } else if let value = value as? [Any?] {
+            return value.count
+        } else {
+            return nil
+        }
+    }
 
-	subscript(_ key: String) -> AnyValue? {
-		guard let value = value as? [String: Any?] else {
-			return nil
-		}
-		return value[key] != nil ? AnyValue(value[key]) : nil
-	}
+    subscript(_ key: String) -> AnyValue? {
+        guard let value = value as? [String: Any?] else {
+            return nil
+        }
+        return value[key] != nil ? AnyValue(value[key]) : nil
+    }
 
-	subscript(_ index: Int) -> AnyValue? {
-		guard let value = value as? [Any?] else {
-			return nil
-		}
-		return value.count > index ? AnyValue(value[index]) : nil
-	}
+    subscript(_ index: Int) -> AnyValue? {
+        guard let value = value as? [Any?] else {
+            return nil
+        }
+        return value.count > index ? AnyValue(value[index]) : nil
+    }
 
 }
 
 extension AnyValue: Equatable {
 
-	public static func == (lhs: AnyValue, rhs: AnyValue) -> Bool {
-		switch (lhs.value, rhs.value) {
-		case is (Void, Void):
-			return true
-		case let (lhs as Bool, rhs as Bool):
-			return lhs == rhs
-		case let (lhs as Int, rhs as Int):
-			return lhs == rhs
-		case let (lhs as Double, rhs as Double):
-			return lhs == rhs
-		case let (lhs as String, rhs as String):
-			return lhs == rhs
-		case let (lhs as [AnyValue], rhs as [AnyValue]):
-			return lhs == rhs
-		case let (lhs as [String : AnyValue], rhs as [String : AnyValue]):
-			return lhs == rhs
-		default:
-			return false
-		}
-	}
+    public static func == (lhs: AnyValue, rhs: AnyValue) -> Bool {
+        switch (lhs.value, rhs.value) {
+        case is (Void, Void):
+            return true
+        case let (lhs as Bool, rhs as Bool):
+            return lhs == rhs
+        case let (lhs as Int, rhs as Int):
+            return lhs == rhs
+        case let (lhs as Double, rhs as Double):
+            return lhs == rhs
+        case let (lhs as String, rhs as String):
+            return lhs == rhs
+        case let (lhs as [AnyValue], rhs as [AnyValue]):
+            return lhs == rhs
+        case let (lhs as [String : AnyValue], rhs as [String : AnyValue]):
+            return lhs == rhs
+        default:
+            return false
+        }
+    }
 
 }
 
 extension AnyValue: CustomStringConvertible {
 
-	public var description: String {
-		switch value {
-		case is Void:
-			return String(describing: nil as Any?)
-		case let value as CustomStringConvertible:
-			return value.description
-		default:
-			return String(describing: value)
-		}
-	}
+    public var description: String {
+        switch value {
+        case is Void:
+            return String(describing: nil as Any?)
+        case let value as CustomStringConvertible:
+            return value.description
+        default:
+            return String(describing: value)
+        }
+    }
 
 }
 
 extension AnyValue: ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral, ExpressibleByBooleanLiteral, ExpressibleByStringLiteral {
 
-	public init(integerLiteral value: Int) {
-		self = AnyValue(value)
-	}
+    public init(integerLiteral value: Int) {
+        self = AnyValue(value)
+    }
 
-	public init(floatLiteral value: Float) {
-		self = AnyValue(value)
-	}
+    public init(floatLiteral value: Float) {
+        self = AnyValue(value)
+    }
 
-	public init(booleanLiteral value: Bool) {
-		self = AnyValue(value)
-	}
+    public init(booleanLiteral value: Bool) {
+        self = AnyValue(value)
+    }
 
-	public init(stringLiteral value: String) {
-		self = AnyValue(value)
-	}
+    public init(stringLiteral value: String) {
+        self = AnyValue(value)
+    }
 
 }
 

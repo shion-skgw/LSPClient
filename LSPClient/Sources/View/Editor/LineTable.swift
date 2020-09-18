@@ -8,12 +8,6 @@
 
 import Foundation
 
-extension String {
-    var range: NSRange {
-        NSMakeRange(0, utf16.count)
-    }
-}
-
 ///
 /// Line range table
 ///

@@ -15,36 +15,36 @@ let REQUEST_HEADERS	= "Content-Length: %d\r\nContent-Type: application/vscode-js
 
 class TestConnection: LSPConnection {
 
-	static var shared = TestConnection()
+    static var shared = TestConnection()
 
-	weak var delegate: LSPConnectionDelegate?
+    weak var delegate: LSPConnectionDelegate?
 
-	var sendData: String!
+    var sendData: String!
 
-	var sendContent: String {
-		guard let firstIndex = sendData.firstIndex(of: "{") else {
-			fatalError()
-		}
-		return String(sendData[firstIndex..<sendData.endIndex])
-	}
+    var sendContent: String {
+        guard let firstIndex = sendData.firstIndex(of: "{") else {
+            fatalError()
+        }
+        return String(sendData[firstIndex..<sendData.endIndex])
+    }
 
-	func send(data: Data, completion: @escaping () -> ()) {
-		sendData = String(data: data, encoding: .utf8)
-		completion()
-	}
+    func send(data: Data, completion: @escaping () -> ()) {
+        sendData = String(data: data, encoding: .utf8)
+        completion()
+    }
 
-	func receive(_ str: String) {
-		let data = (REQUEST_HEADERS + str).data(using: .utf8)!
-		delegate?.didReceive(data: data)
-	}
+    func receive(_ str: String) {
+        let data = (REQUEST_HEADERS + str).data(using: .utf8)!
+        delegate?.didReceive(data: data)
+    }
 
-	func connection(host: String, port: Int) {}
+    func connection(host: String, port: Int) {}
 
-	func connectionError() {
-		let error = NWError.posix(POSIXErrorCode.E2BIG)
-		delegate?.connectionError(cause: error)
-	}
+    func connectionError() {
+        let error = NWError.posix(POSIXErrorCode.E2BIG)
+        delegate?.connectionError(cause: error)
+    }
 
-	func close() {}
+    func close() {}
 
 }

@@ -28,7 +28,7 @@ struct InitializeParams: RequestParamsType {
         self.rootPath = rootPath
         self.rootUri = rootUri
         self.initializationOptions = initializationOptions
-        self.capabilities = ClientCapabilities()
+        self.capabilities = ClientCapabilities.load()
         self.trace = trace
     }
 }

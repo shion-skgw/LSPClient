@@ -55,7 +55,7 @@ extension Message: Codable {
 
         case (let id?, nil, true, false):
             /* Response */
-            guard let method = (decoder.userInfo[.storedRequest] as? StoredRequest)?(id) else {
+            guard let method = (decoder.userInfo[.storedRequest] as? MessageManager.StoredRequest)?(id) else {
                 throw MessageDecodingError.unknownRequestID
             }
             guard let resultType = RESPONSE_RESULT_TYPE[method] else {
@@ -66,7 +66,7 @@ extension Message: Codable {
 
         case (let id?, nil, false, true):
             /* Error response */
-            guard (decoder.userInfo[.storedRequest] as? StoredRequest)?(id) != nil else {
+            guard (decoder.userInfo[.storedRequest] as? MessageManager.StoredRequest)?(id) != nil else {
                 throw MessageDecodingError.unknownRequestID
             }
             let error = try container.decode(ErrorResponse.self, forKey: .error)

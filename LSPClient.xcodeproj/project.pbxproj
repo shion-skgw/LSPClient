@@ -56,6 +56,11 @@
 		058B6A19248CF9DD0099B32F /* RequestID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058B6A18248CF9DD0099B32F /* RequestID.swift */; };
 		058B6A1B248D3D7C0099B32F /* ErrorResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058B6A1A248D3D7C0099B32F /* ErrorResponse.swift */; };
 		058B6A1D248D79C00099B32F /* AnyValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058B6A1C248D79C00099B32F /* AnyValue.swift */; };
+		058F7EC3251084890063D9AF /* CodeStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058F7EC2251084890063D9AF /* CodeStyle.swift */; };
+		058F7EC52510B0C40063D9AF /* EditorSetting.plist in Resources */ = {isa = PBXBuildFile; fileRef = 058F7EC42510B0C40063D9AF /* EditorSetting.plist */; };
+		058F7EC72510B0F20063D9AF /* EditorSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058F7EC62510B0F20063D9AF /* EditorSetting.swift */; };
+		058F7ECA2511BFD00063D9AF /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058F7EC92511BFD00063D9AF /* String.swift */; };
+		058F7ECC2511C0890063D9AF /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058F7ECB2511C0890063D9AF /* UIColor.swift */; };
 		05BA10AF24D2D922009A3669 /* LSPConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BA10AE24D2D922009A3669 /* LSPConnection.swift */; };
 		05BAAB1C24A3530500A3EADC /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BAAB1B24A3530500A3EADC /* Common.swift */; };
 		05BAAB1E24A3530E00A3EADC /* Initialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BAAB1D24A3530E00A3EADC /* Initialize.swift */; };
@@ -145,6 +150,11 @@
 		058B6A18248CF9DD0099B32F /* RequestID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestID.swift; sourceTree = "<group>"; };
 		058B6A1A248D3D7C0099B32F /* ErrorResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorResponse.swift; sourceTree = "<group>"; };
 		058B6A1C248D79C00099B32F /* AnyValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyValue.swift; sourceTree = "<group>"; };
+		058F7EC2251084890063D9AF /* CodeStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeStyle.swift; sourceTree = "<group>"; };
+		058F7EC42510B0C40063D9AF /* EditorSetting.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = EditorSetting.plist; sourceTree = "<group>"; };
+		058F7EC62510B0F20063D9AF /* EditorSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorSetting.swift; sourceTree = "<group>"; };
+		058F7EC92511BFD00063D9AF /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		058F7ECB2511C0890063D9AF /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		05BA10AE24D2D922009A3669 /* LSPConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPConnection.swift; sourceTree = "<group>"; };
 		05BAAB1B24A3530500A3EADC /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		05BAAB1D24A3530E00A3EADC /* Initialize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Initialize.swift; sourceTree = "<group>"; };
@@ -221,6 +231,7 @@
 				05182B2324DA0364007E8832 /* ConfigType.swift */,
 				05182B2524DA0D52007E8832 /* LanguageServers.swift */,
 				05182B2724DA0E03007E8832 /* Workspaces.swift */,
+				058F7EC2251084890063D9AF /* CodeStyle.swift */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -323,6 +334,7 @@
 		0589B58D24DD4C9C006E0C6F /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				058F7EC82511BFC20063D9AF /* Extension */,
 				05182B2224DA02E2007E8832 /* Config */,
 				05D4D4A924D6AA0800A76239 /* Properties */,
 			);
@@ -360,6 +372,15 @@
 				0540194724936B4E00287026 /* Structures */,
 			);
 			path = Protocol;
+			sourceTree = "<group>";
+		};
+		058F7EC82511BFC20063D9AF /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				058F7EC92511BFD00063D9AF /* String.swift */,
+				058F7ECB2511C0890063D9AF /* UIColor.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 		05BA10AD24D2D905009A3669 /* Connection */ = {
@@ -440,10 +461,11 @@
 		05CA5D19248C5F4600582319 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				05182B2024D9F362007E8832 /* ClientCapabilities.plist */,
-				05D4D4AE24D6B13500A76239 /* ClientCapabilities_test.plist */,
-				05CA5D04248C5F1900582319 /* Info.plist */,
 				05CA5CFF248C5F1900582319 /* Assets.xcassets */,
+				05D4D4AE24D6B13500A76239 /* ClientCapabilities_test.plist */,
+				05182B2024D9F362007E8832 /* ClientCapabilities.plist */,
+				058F7EC42510B0C40063D9AF /* EditorSetting.plist */,
+				05CA5D04248C5F1900582319 /* Info.plist */,
 				05CA5D01248C5F1900582319 /* LaunchScreen.storyboard */,
 			);
 			path = Resources;
@@ -453,6 +475,7 @@
 			isa = PBXGroup;
 			children = (
 				05D4D4AC24D6AB8600A76239 /* ClientCapabilities.swift */,
+				058F7EC62510B0F20063D9AF /* EditorSetting.swift */,
 				05D4D4AA24D6AA7400A76239 /* PropertiesType.swift */,
 			);
 			path = Properties;
@@ -503,7 +526,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1150;
-				LastUpgradeCheck = 1150;
+				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = Shion;
 				TargetAttributes = {
 					05CA5CF2248C5F1700582319 = {
@@ -541,6 +564,7 @@
 			files = (
 				05CA5D03248C5F1900582319 /* LaunchScreen.storyboard in Resources */,
 				05182B1D24D9DFE6007E8832 /* ClientCapabilities.yaml in Resources */,
+				058F7EC52510B0C40063D9AF /* EditorSetting.plist in Resources */,
 				05182B2124D9F362007E8832 /* ClientCapabilities.plist in Resources */,
 				05D4D4AF24D6B13500A76239 /* ClientCapabilities_test.plist in Resources */,
 				05CA5D00248C5F1900582319 /* Assets.xcassets in Resources */,
@@ -614,12 +638,16 @@
 				058B6A13248C687D0099B32F /* MessageManager.swift in Sources */,
 				056732CC24960A2100E7650B /* TextDocumentItem.swift in Sources */,
 				0540195324936CC600287026 /* Diagnostic.swift in Sources */,
+				058F7ECA2511BFD00063D9AF /* String.swift in Sources */,
 				05182B2624DA0D52007E8832 /* LanguageServers.swift in Sources */,
 				05BAAB2024A3531900A3EADC /* UserMessage.swift in Sources */,
 				0514099A24B120920015BBDC /* VoidValue.swift in Sources */,
+				058F7ECC2511C0890063D9AF /* UIColor.swift in Sources */,
 				056732D224960D4600E7650B /* DocumentFilter.swift in Sources */,
 				0540191C24929D2100287026 /* RequiredValue.swift in Sources */,
 				05828D7B249B6C7F008D2DA0 /* CodingError.swift in Sources */,
+				058F7EC72510B0F20063D9AF /* EditorSetting.swift in Sources */,
+				058F7EC3251084890063D9AF /* CodeStyle.swift in Sources */,
 				05182B2824DA0E03007E8832 /* Workspaces.swift in Sources */,
 				05D4D4AD24D6AB8600A76239 /* ClientCapabilities.swift in Sources */,
 				056732CE24960A8800E7650B /* VersionedTextDocumentIdentifier.swift in Sources */,
@@ -691,6 +719,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -715,7 +744,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -751,6 +780,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -769,7 +799,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

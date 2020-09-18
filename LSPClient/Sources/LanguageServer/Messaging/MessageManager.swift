@@ -8,26 +8,23 @@
 
 import Foundation
 
+// MARK: - Constant definition
+
 /// LSP request header format
 private let REQUEST_HEADERS	= "Content-Length: %d\r\nContent-Type: application/vscode-jsonrpc; charset=utf8\r\n\r\n"
 /// Open curly bracket "{"
 private let OPEN_CURLY_BRACKET = UInt8(123)
 
-typealias StoredRequest = (RequestID) -> String?
 
-extension CodingUserInfoKey {
-	static let storedRequest = CodingUserInfoKey(rawValue: "lsp.jsonrpc.storedRequest")!
-}
-
-struct RequestContext {
-	let method: String
-	weak var source: MessageDelegate?
-}
+// MARK: - MessageManager
 
 ///
 /// LSP Message manager
 ///
 final class MessageManager: LSPConnectionDelegate {
+
+    /// Get request method
+    typealias StoredRequest = (RequestID) -> String?
 
     /// MessageManager shared instance
     static let shared: MessageManager = MessageManager()
@@ -201,4 +198,24 @@ final class MessageManager: LSPConnectionDelegate {
     }
     #endif
 
+}
+
+
+// MARK: - Extension
+
+extension MessageManager {
+    ///
+    /// RequestContext
+    ///
+    struct RequestContext {
+        /// Request method
+        let method: String
+        /// Request source
+        weak var source: MessageDelegate?
+    }
+}
+
+extension CodingUserInfoKey {
+    /// Get request method
+    static let storedRequest = CodingUserInfoKey(rawValue: "lsp.jsonrpc.storedRequest")!
 }

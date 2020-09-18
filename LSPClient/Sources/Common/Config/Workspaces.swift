@@ -6,10 +6,9 @@
 //  Copyright © 2020 Shion. All rights reserved.
 //
 
-import Foundation
-
 struct Workspaces: ConfigType {
     static let configKey = "Workspaces"
+    static var cache: Workspaces?
     var workspaces: [Workspace]
     init() {
         self.workspaces = []

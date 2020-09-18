@@ -14,6 +14,7 @@ struct ClientCapabilities: PropertiesType {
     #else
     static let resourceName = "ClientCapabilities"
     #endif
+    static var cache: ClientCapabilities?
 
     let value: AnyValue
 

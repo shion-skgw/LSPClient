@@ -12,9 +12,15 @@ struct CreateFileOptions: Codable {
 }
 
 struct CreateFile: Codable {
-    let kind: ResourceChangeKind = .create
+    let kind: ResourceChangeKind
     let uri: DocumentUri
     let options: CreateFileOptions?
+
+    init(uri: DocumentUri, options: CreateFileOptions?) {
+        self.kind = .create
+        self.uri = uri
+        self.options = options
+    }
 }
 
 struct RenameFileOptions: Codable {
@@ -23,10 +29,17 @@ struct RenameFileOptions: Codable {
 }
 
 struct RenameFile: Codable {
-    let kind: ResourceChangeKind = .rename
+    let kind: ResourceChangeKind
     let oldUri: DocumentUri
     let newUri: DocumentUri
     let options: RenameFileOptions?
+
+    init(oldUri: DocumentUri, newUri: DocumentUri, options: RenameFileOptions?) {
+        self.kind = .rename
+        self.oldUri = oldUri
+        self.newUri = newUri
+        self.options = options
+    }
 }
 
 struct DeleteFileOptions: Codable {
@@ -35,9 +48,15 @@ struct DeleteFileOptions: Codable {
 }
 
 struct DeleteFile: Codable {
-    let kind: ResourceChangeKind = .delete
+    let kind: ResourceChangeKind
     let uri: DocumentUri
     let options: DeleteFileOptions?
+
+    init(uri: DocumentUri, options: DeleteFileOptions?) {
+        self.kind = .delete
+        self.uri = uri
+        self.options = options
+    }
 }
 
 enum ResourceChangeKind: String, Codable {

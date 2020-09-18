@@ -10,6 +10,7 @@ import Foundation
 
 struct LanguageServers: ConfigType {
     static let configKey = "LanguageServers"
+    static var cache: LanguageServers?
     var servers: [ServerID: LanguageServer]
     init() {
         self.servers = [:]

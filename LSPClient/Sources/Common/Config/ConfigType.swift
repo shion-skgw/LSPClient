@@ -8,31 +8,70 @@
 
 import Foundation
 
+///
+/// ConfigType
+///
 protocol ConfigType: Codable {
+
+    /// Identification key value
     static var configKey: String { get }
+    /// Cache
+    static var cache: Self? { get set }
+
+    ///
+    /// Initialize
+    ///
     init()
+
 }
 
 extension ConfigType {
 
+    ///
+    /// Initialize config
+    ///
+    /// - Returns: initial value
+    ///
+    static func initialize() -> Self {
+        let value = Self.init()
+        value.save()
+        return value
+    }
+
+    ///
+    /// Load config
+    ///
+    /// - Returns: config
+    ///
     static func load() -> Self {
-        if let data = UserDefaults.standard.data(forKey: Self.configKey) {
-            do {
-                return try JSONDecoder().decode(self, from: data)
-            } catch {
-                fatalError(error.localizedDescription)
-            }
+        if let value = cache {
+            return value
+        }
+
+        if let data = UserDefaults.standard.data(forKey: Self.configKey),
+                let value = try? JSONDecoder().decode(self, from: data) {
+            return value
         } else {
-            let date = Self.init()
-            date.save()
-            return date
+            return initialize()
         }
     }
 
+    ///
+    /// Remove config
+    ///
+    static func remove() {
+        UserDefaults.standard.removeObject(forKey: Self.configKey)
+        cache = nil
+    }
+
+    ///
+    /// Save config
+    ///
     func save() {
         do {
             let data = try JSONEncoder().encode(self)
             UserDefaults.standard.set(data, forKey: Self.configKey)
+            Self.cache = self
         } catch {
             fatalError(error.localizedDescription)
         }

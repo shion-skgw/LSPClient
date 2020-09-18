@@ -6,14 +6,34 @@
 //  Copyright © 2020 Shion. All rights reserved.
 //
 
+///
+/// MessageDelegate
+///
 protocol MessageDelegate: class {
 
-    func receiveResponse(id: RequestID, context: RequestContext, result: ResultType?, error: ErrorResponse?) throws -> Bool
+    ///
+    /// Response receive handler
+    ///
+    /// - Parameter id          : Request ID
+    /// - Parameter context     : Request context
+    /// - Parameter result      : Result
+    /// - Parameter error       : Error
+    /// - Throws                : Unsupported methods
+    /// - Returns               : Delete stored request
+    ///
+    func receiveResponse(id: RequestID, context: MessageManager.RequestContext, result: ResultType?, error: ErrorResponse?) throws -> Bool
 
 }
 
 extension MessageDelegate {
 
+    ///
+    /// Create Result object
+    ///
+    /// - Parameter result      : Result
+    /// - Parameter error       : Error
+    /// - Returns               : Result object
+    ///
     func toResult<T: ResultType>(_ result: ResultType?, _ error: ErrorResponse?) -> Result<T, ErrorResponse> {
         if let result = result as? T {
             return .success(result)
