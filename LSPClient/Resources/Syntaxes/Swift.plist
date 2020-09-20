@@ -6,8 +6,8 @@
 	<array>
 		<string>swift</string>
 	</array>
-	<key>wordBoundary</key>
-	<string>a</string>
+	<key>allowTokenPattern</key>
+	<string>\w`</string>
 	<key>definitions</key>
 	<array>
 		<dict>

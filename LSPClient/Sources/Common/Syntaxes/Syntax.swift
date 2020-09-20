@@ -24,13 +24,22 @@ final class SyntaxLoader {
         var tokens = [Token]()
         definitions.definitions.forEach() {
             let type = $0.type.tokenType
-            var wordBoundary = definitions.wordBoundary != nil ? "(?(?=[\\w`])(?<![\\w`])|(?<![^\\w`]))" : defaultWordBoundary // TODO: doesn't work
-            wordBoundary = defaultWordBoundary
-            let pattern = $0.regex == true ? $0.strings[0] : "\(wordBoundary)(\($0.strings.joined(separator: "|")))\(wordBoundary)"
-            print(pattern)
             let isIgnoreCase = $0.ignoreCase == true
             let isMultipleLines = $0.multipleLines == true
-            tokens.append(Token(type: type, pattern: pattern, isIgnoreCase: isIgnoreCase, isMultipleLines: isMultipleLines))
+
+            if $0.regex == true {
+                tokens.append(Token(type: type, pattern: $0.strings[0], isIgnoreCase: isIgnoreCase, isMultipleLines: isMultipleLines))
+
+            } else if let allowTokenPattern = definitions.allowTokenPattern {
+                let before = "(?<=[^\(allowTokenPattern)]|^)"
+                let after = "(?=[^\(allowTokenPattern)]|$)"
+                let pattern = "\(before)(\($0.strings.joined(separator: "|")))\(after)"
+                tokens.append(Token(type: type, pattern: pattern, isIgnoreCase: isIgnoreCase, isMultipleLines: isMultipleLines))
+
+            } else {
+                let pattern = "\\b(\($0.strings.joined(separator: "|")))\\b"
+                tokens.append(Token(type: type, pattern: pattern, isIgnoreCase: isIgnoreCase, isMultipleLines: isMultipleLines))
+            }
         }
         return tokens
     }
@@ -60,7 +69,7 @@ extension SyntaxLoader {
 
     struct SyntaxDefinition: Decodable {
         let extensions: [String]
-        let wordBoundary: String?
+        let allowTokenPattern: String?
         let definitions: [Definition]
     }
 
