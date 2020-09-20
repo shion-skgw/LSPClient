@@ -14,6 +14,8 @@ final class EditorViewController: UIViewController {
     private weak var lineTable: LineTable!
 
     override func loadView() {
+        super.loadView()
+
         // TextContainer
         let textContainer = NSTextContainer()
 
@@ -26,14 +28,22 @@ final class EditorViewController: UIViewController {
         // TextStorage
         let textStorage = TextStorage()
         textStorage.set(codeStyle: CodeStyle.load())
+        textStorage.set(tokens: SyntaxLoader.tokens(fileExtension: "swift"))
         textStorage.addLayoutManager(layoutManager)
 
-        // Init view
+        // EditorView
         let editorView = EditorView(textContainer: textContainer)
         editorView.set(editorSetting: EditorSetting.load())
         editorView.set(codeStyle: CodeStyle.load())
+
+        // Initialize
         self.view = editorView
         self.lineTable = textStorage.lineTable
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.frame = CGRect(x: 100, y: 50, width: 200, height: 300)
     }
 
 }
@@ -58,7 +68,6 @@ extension EditorViewController: TextDocumentMessageDelegate {
 
     func completion(id: RequestID, result: Result<CompletionList?, ErrorResponse>) {
         guard requestId != id else {
-            requestId = nil
             return
         }
     }

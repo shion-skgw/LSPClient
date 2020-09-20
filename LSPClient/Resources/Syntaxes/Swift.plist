@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>extensions</key>
+	<array>
+		<string>swift</string>
+	</array>
+	<key>wordBoundary</key>
+	<string>a</string>
+	<key>definitions</key>
+	<array>
+		<dict>
+			<key>description</key>
+			<string>Multi-line string</string>
+			<key>type</key>
+			<string>keyword</string>
+			<key>strings</key>
+			<array>
+				<string>nil</string>
+				<string>true</string>
+				<string>false</string>
+			</array>
+		</dict>
+		<dict>
+			<key>description</key>
+			<string>Multi-line string</string>
+			<key>type</key>
+			<string>string</string>
+			<key>strings</key>
+			<array>
+				<string>&quot;&quot;&quot;[\s\S]*&quot;&quot;&quot;</string>
+			</array>
+			<key>regex</key>
+			<true/>
+			<key>multipleLines</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>description</key>
+			<string>Multi-line comment</string>
+			<key>type</key>
+			<string>string</string>
+			<key>strings</key>
+			<array>
+				<string>/\*[\s\S]*\*/</string>
+			</array>
+			<key>regex</key>
+			<true/>
+			<key>multipleLines</key>
+			<true/>
+		</dict>
+	</array>
+</dict>
+</plist>

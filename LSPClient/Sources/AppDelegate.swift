@@ -18,15 +18,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         a.backgroundColor.uiColor = UIColor.lightGray
         a.font.uiFont = UIFont.monospacedSystemFont(ofSize: 14.0, weight: .regular)
         a.fontColor.uiColor = UIColor.darkGray
+        a.invisiblesFontColor.uiColor = UIColor.yellow
         a.save()
         let window = UIWindow(frame: UIScreen.main.bounds)
-//        window.rootViewController = UIViewController()
-//        window.rootViewController?.addChild(EditorViewController())
-        window.rootViewController = EditorViewController()
-        window.backgroundColor = .lightGray
+        let root = ViewController()
+        let sub = EditorViewController()
+        root.view.addSubview(sub.view)
+        root.addChild(sub)
+        sub.didMove(toParent: root)
+        window.rootViewController = root
+        window.backgroundColor = .systemFill
         window.makeKeyAndVisible()
         self.window = window
         return true
     }
 
+}
+
+final class ViewController: UIViewController {
 }

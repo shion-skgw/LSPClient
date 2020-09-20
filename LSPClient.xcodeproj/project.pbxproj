@@ -38,6 +38,8 @@
 		054019592493718200287026 /* TextDocumentEdit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054019582493718200287026 /* TextDocumentEdit.swift */; };
 		0540195B249373E700287026 /* FileResourceChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0540195A249373E700287026 /* FileResourceChanges.swift */; };
 		0541881D2490C71900C6D9A2 /* ParameterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0541881C2490C71900C6D9A2 /* ParameterType.swift */; };
+		056706A7251521AB00F9D7E7 /* Swift.plist in Resources */ = {isa = PBXBuildFile; fileRef = 056706A6251521AB00F9D7E7 /* Swift.plist */; };
+		056706AD2515261900F9D7E7 /* Syntax.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056706AC2515261900F9D7E7 /* Syntax.swift */; };
 		056732C8249606C300E7650B /* WorkspaceEdit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056732C7249606C300E7650B /* WorkspaceEdit.swift */; };
 		056732CA249609FB00E7650B /* TextDocumentIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056732C9249609FB00E7650B /* TextDocumentIdentifier.swift */; };
 		056732CC24960A2100E7650B /* TextDocumentItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056732CB24960A2100E7650B /* TextDocumentItem.swift */; };
@@ -88,6 +90,7 @@
 		05D4D4AD24D6AB8600A76239 /* ClientCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D4D4AC24D6AB8600A76239 /* ClientCapabilities.swift */; };
 		05D4D4AF24D6B13500A76239 /* ClientCapabilities_test.plist in Resources */ = {isa = PBXBuildFile; fileRef = 05D4D4AE24D6B13500A76239 /* ClientCapabilities_test.plist */; };
 		05E6E6FD24F07E3600364E89 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E6E6FC24F07E3600364E89 /* Token.swift */; };
+		05F0264725168C0E003CCEA4 /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F0264625168C0E003CCEA4 /* UIViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -132,6 +135,8 @@
 		054019582493718200287026 /* TextDocumentEdit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDocumentEdit.swift; sourceTree = "<group>"; };
 		0540195A249373E700287026 /* FileResourceChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileResourceChanges.swift; sourceTree = "<group>"; };
 		0541881C2490C71900C6D9A2 /* ParameterType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterType.swift; sourceTree = "<group>"; };
+		056706A6251521AB00F9D7E7 /* Swift.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Swift.plist; sourceTree = "<group>"; };
+		056706AC2515261900F9D7E7 /* Syntax.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Syntax.swift; sourceTree = "<group>"; };
 		056732C7249606C300E7650B /* WorkspaceEdit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceEdit.swift; sourceTree = "<group>"; };
 		056732C9249609FB00E7650B /* TextDocumentIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDocumentIdentifier.swift; sourceTree = "<group>"; };
 		056732CB24960A2100E7650B /* TextDocumentItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDocumentItem.swift; sourceTree = "<group>"; };
@@ -186,6 +191,7 @@
 		05D4D4AC24D6AB8600A76239 /* ClientCapabilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientCapabilities.swift; sourceTree = "<group>"; };
 		05D4D4AE24D6B13500A76239 /* ClientCapabilities_test.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ClientCapabilities_test.plist; sourceTree = "<group>"; };
 		05E6E6FC24F07E3600364E89 /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
+		05F0264625168C0E003CCEA4 /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -271,6 +277,33 @@
 			path = Structures;
 			sourceTree = "<group>";
 		};
+		056706A5251512DE00F9D7E7 /* Syntaxes */ = {
+			isa = PBXGroup;
+			children = (
+				056706A6251521AB00F9D7E7 /* Swift.plist */,
+			);
+			path = Syntaxes;
+			sourceTree = "<group>";
+		};
+		056706AA251525CF00F9D7E7 /* Setting */ = {
+			isa = PBXGroup;
+			children = (
+				05D4D4AE24D6B13500A76239 /* ClientCapabilities_test.plist */,
+				05182B2024D9F362007E8832 /* ClientCapabilities.plist */,
+				058F7EC42510B0C40063D9AF /* EditorSetting.plist */,
+			);
+			path = Setting;
+			sourceTree = "<group>";
+		};
+		056706AB251525FC00F9D7E7 /* Syntaxes */ = {
+			isa = PBXGroup;
+			children = (
+				05E6E6FC24F07E3600364E89 /* Token.swift */,
+				056706AC2515261900F9D7E7 /* Syntax.swift */,
+			);
+			path = Syntaxes;
+			sourceTree = "<group>";
+		};
 		056732D5249643EC00E7650B /* Parameter */ = {
 			isa = PBXGroup;
 			children = (
@@ -305,6 +338,7 @@
 		0589B58824DCF869006E0C6F /* View */ = {
 			isa = PBXGroup;
 			children = (
+				05F0264A25168F29003CCEA4 /* Diagnostic */,
 				056B5C2924E30EC600797D95 /* Console */,
 				0589B58A24DCF8FF006E0C6F /* Editor */,
 			);
@@ -326,7 +360,6 @@
 				056B5C2724E30E6C00797D95 /* LayoutManager.swift */,
 				0589B58F24DD4EDD006E0C6F /* LineTable.swift */,
 				056B5C2524E30E2900797D95 /* TextStorage.swift */,
-				05E6E6FC24F07E3600364E89 /* Token.swift */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -334,6 +367,7 @@
 		0589B58D24DD4C9C006E0C6F /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				056706AB251525FC00F9D7E7 /* Syntaxes */,
 				058F7EC82511BFC20063D9AF /* Extension */,
 				05182B2224DA02E2007E8832 /* Config */,
 				05D4D4A924D6AA0800A76239 /* Properties */,
@@ -379,6 +413,7 @@
 			children = (
 				058F7EC92511BFD00063D9AF /* String.swift */,
 				058F7ECB2511C0890063D9AF /* UIColor.swift */,
+				05F0264625168C0E003CCEA4 /* UIViewController.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -461,12 +496,11 @@
 		05CA5D19248C5F4600582319 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				05CA5CFF248C5F1900582319 /* Assets.xcassets */,
-				05D4D4AE24D6B13500A76239 /* ClientCapabilities_test.plist */,
-				05182B2024D9F362007E8832 /* ClientCapabilities.plist */,
-				058F7EC42510B0C40063D9AF /* EditorSetting.plist */,
 				05CA5D04248C5F1900582319 /* Info.plist */,
+				05CA5CFF248C5F1900582319 /* Assets.xcassets */,
 				05CA5D01248C5F1900582319 /* LaunchScreen.storyboard */,
+				056706AA251525CF00F9D7E7 /* Setting */,
+				056706A5251512DE00F9D7E7 /* Syntaxes */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -479,6 +513,13 @@
 				05D4D4AA24D6AA7400A76239 /* PropertiesType.swift */,
 			);
 			path = Properties;
+			sourceTree = "<group>";
+		};
+		05F0264A25168F29003CCEA4 /* Diagnostic */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Diagnostic;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -567,6 +608,7 @@
 				058F7EC52510B0C40063D9AF /* EditorSetting.plist in Resources */,
 				05182B2124D9F362007E8832 /* ClientCapabilities.plist in Resources */,
 				05D4D4AF24D6B13500A76239 /* ClientCapabilities_test.plist in Resources */,
+				056706A7251521AB00F9D7E7 /* Swift.plist in Resources */,
 				05CA5D00248C5F1900582319 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -599,10 +641,12 @@
 				05BAAB1E24A3530E00A3EADC /* Initialize.swift in Sources */,
 				05BAAB2224A3532300A3EADC /* Configuration.swift in Sources */,
 				058B6A19248CF9DD0099B32F /* RequestID.swift in Sources */,
+				05F0264725168C0E003CCEA4 /* UIViewController.swift in Sources */,
 				0508BF2D24C97905005488A9 /* TextDocumentMessageDelegate.swift in Sources */,
 				05BAAB3824A3538D00A3EADC /* Symbol.swift in Sources */,
 				05114217250E77A1002A4056 /* MessageDelegate.swift in Sources */,
 				05BAAB2E24A3535F00A3EADC /* PublishDiagnostic.swift in Sources */,
+				056706AD2515261900F9D7E7 /* Syntax.swift in Sources */,
 				05D4D4AB24D6AA7400A76239 /* PropertiesType.swift in Sources */,
 				05BAAB2A24A3534D00A3EADC /* ExecuteCommand.swift in Sources */,
 				056B5C2824E30E6C00797D95 /* LayoutManager.swift in Sources */,

@@ -11,7 +11,7 @@ import UIKit.NSLayoutManager
 final class LayoutManager: NSLayoutManager {
 
     private let invisibles: [String: NSRegularExpression] = [
-        "\u{21B5}": try! NSRegularExpression(pattern: "\r", options: []),       // "↵" New line
+        "\u{21B5}": try! NSRegularExpression(pattern: "\n", options: []),       // "↵" New line
         "\u{226B}": try! NSRegularExpression(pattern: "\t", options: []),       // "≫" Tab
         "\u{22C5}": try! NSRegularExpression(pattern: "\u{0020}", options: []), // "⋅" Space
         "\u{25A1}": try! NSRegularExpression(pattern: "\u{3000}", options: []), // "□" Full space

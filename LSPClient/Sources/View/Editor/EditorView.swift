@@ -31,6 +31,9 @@ final class EditorView: UITextView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+    }
     override var selectedTextRange: UITextRange? {
         didSet {
             setNeedsDisplay()
@@ -101,7 +104,6 @@ extension EditorView {
         }
     }
 
-    @inline(__always)
     private func drawLineNumber(_ lineNumber: Int, _ usedRect: CGRect) {
         let number = NSAttributedString(string: "\(lineNumber)", attributes: lineNumberAttribute)
         let size = number.size()
@@ -121,7 +123,6 @@ extension EditorView {
         cgContext.fill(lineRect)
     }
 
-    @inline(__always)
     private func boundingRect(forGlyphRange range: NSRange) -> CGRect {
         var rect = layoutManager.boundingRect(forGlyphRange: range, in: textContainer)
 
