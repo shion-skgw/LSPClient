@@ -12,7 +12,7 @@
 	<array>
 		<dict>
 			<key>description</key>
-			<string>Multi-line string</string>
+			<string>Keyword</string>
 			<key>type</key>
 			<string>keyword</string>
 			<key>strings</key>
@@ -20,6 +20,9 @@
 				<string>nil</string>
 				<string>true</string>
 				<string>false</string>
+				<string>あ</string>
+				<string>-a\+</string>
+				<string>a a</string>
 			</array>
 		</dict>
 		<dict>

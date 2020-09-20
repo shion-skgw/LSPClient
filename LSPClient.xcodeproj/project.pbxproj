@@ -39,7 +39,7 @@
 		0540195B249373E700287026 /* FileResourceChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0540195A249373E700287026 /* FileResourceChanges.swift */; };
 		0541881D2490C71900C6D9A2 /* ParameterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0541881C2490C71900C6D9A2 /* ParameterType.swift */; };
 		056706A7251521AB00F9D7E7 /* Swift.plist in Resources */ = {isa = PBXBuildFile; fileRef = 056706A6251521AB00F9D7E7 /* Swift.plist */; };
-		056706AD2515261900F9D7E7 /* Syntax.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056706AC2515261900F9D7E7 /* Syntax.swift */; };
+		056706AD2515261900F9D7E7 /* SyntaxLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056706AC2515261900F9D7E7 /* SyntaxLoader.swift */; };
 		056732C8249606C300E7650B /* WorkspaceEdit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056732C7249606C300E7650B /* WorkspaceEdit.swift */; };
 		056732CA249609FB00E7650B /* TextDocumentIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056732C9249609FB00E7650B /* TextDocumentIdentifier.swift */; };
 		056732CC24960A2100E7650B /* TextDocumentItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056732CB24960A2100E7650B /* TextDocumentItem.swift */; };
@@ -136,7 +136,7 @@
 		0540195A249373E700287026 /* FileResourceChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileResourceChanges.swift; sourceTree = "<group>"; };
 		0541881C2490C71900C6D9A2 /* ParameterType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterType.swift; sourceTree = "<group>"; };
 		056706A6251521AB00F9D7E7 /* Swift.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Swift.plist; sourceTree = "<group>"; };
-		056706AC2515261900F9D7E7 /* Syntax.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Syntax.swift; sourceTree = "<group>"; };
+		056706AC2515261900F9D7E7 /* SyntaxLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxLoader.swift; sourceTree = "<group>"; };
 		056732C7249606C300E7650B /* WorkspaceEdit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceEdit.swift; sourceTree = "<group>"; };
 		056732C9249609FB00E7650B /* TextDocumentIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDocumentIdentifier.swift; sourceTree = "<group>"; };
 		056732CB24960A2100E7650B /* TextDocumentItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDocumentItem.swift; sourceTree = "<group>"; };
@@ -234,10 +234,10 @@
 		05182B2224DA02E2007E8832 /* Config */ = {
 			isa = PBXGroup;
 			children = (
+				058F7EC2251084890063D9AF /* CodeStyle.swift */,
 				05182B2324DA0364007E8832 /* ConfigType.swift */,
 				05182B2524DA0D52007E8832 /* LanguageServers.swift */,
 				05182B2724DA0E03007E8832 /* Workspaces.swift */,
-				058F7EC2251084890063D9AF /* CodeStyle.swift */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -298,8 +298,8 @@
 		056706AB251525FC00F9D7E7 /* Syntaxes */ = {
 			isa = PBXGroup;
 			children = (
+				056706AC2515261900F9D7E7 /* SyntaxLoader.swift */,
 				05E6E6FC24F07E3600364E89 /* Token.swift */,
-				056706AC2515261900F9D7E7 /* Syntax.swift */,
 			);
 			path = Syntaxes;
 			sourceTree = "<group>";
@@ -338,8 +338,8 @@
 		0589B58824DCF869006E0C6F /* View */ = {
 			isa = PBXGroup;
 			children = (
-				05F0264A25168F29003CCEA4 /* Diagnostic */,
 				056B5C2924E30EC600797D95 /* Console */,
+				05F0264A25168F29003CCEA4 /* Diagnostic */,
 				0589B58A24DCF8FF006E0C6F /* Editor */,
 			);
 			path = View;
@@ -367,7 +367,6 @@
 		0589B58D24DD4C9C006E0C6F /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				056706AB251525FC00F9D7E7 /* Syntaxes */,
 				058F7EC82511BFC20063D9AF /* Extension */,
 				05182B2224DA02E2007E8832 /* Config */,
 				05D4D4A924D6AA0800A76239 /* Properties */,
@@ -488,6 +487,7 @@
 				0589B58D24DD4C9C006E0C6F /* Common */,
 				0589B58924DCF87E006E0C6F /* FileManager */,
 				058B6A11248C683A0099B32F /* LanguageServer */,
+				056706AB251525FC00F9D7E7 /* Syntaxes */,
 				0589B58824DCF869006E0C6F /* View */,
 			);
 			path = Sources;
@@ -646,7 +646,7 @@
 				05BAAB3824A3538D00A3EADC /* Symbol.swift in Sources */,
 				05114217250E77A1002A4056 /* MessageDelegate.swift in Sources */,
 				05BAAB2E24A3535F00A3EADC /* PublishDiagnostic.swift in Sources */,
-				056706AD2515261900F9D7E7 /* Syntax.swift in Sources */,
+				056706AD2515261900F9D7E7 /* SyntaxLoader.swift in Sources */,
 				05D4D4AB24D6AA7400A76239 /* PropertiesType.swift in Sources */,
 				05BAAB2A24A3534D00A3EADC /* ExecuteCommand.swift in Sources */,
 				056B5C2824E30E6C00797D95 /* LayoutManager.swift in Sources */,

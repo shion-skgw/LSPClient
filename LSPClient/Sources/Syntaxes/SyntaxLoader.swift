@@ -28,7 +28,9 @@ final class SyntaxLoader {
             let isMultipleLines = $0.multipleLines == true
 
             if $0.regex == true {
-                tokens.append(Token(type: type, pattern: $0.strings[0], isIgnoreCase: isIgnoreCase, isMultipleLines: isMultipleLines))
+                $0.strings.forEach() {
+                    tokens.append(Token(type: type, pattern: $0, isIgnoreCase: isIgnoreCase, isMultipleLines: isMultipleLines))
+                }
 
             } else if let allowTokenPattern = definitions.allowTokenPattern {
                 let before = "(?<=[^\(allowTokenPattern)]|^)"
