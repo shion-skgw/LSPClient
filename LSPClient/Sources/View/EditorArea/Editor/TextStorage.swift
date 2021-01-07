@@ -59,11 +59,11 @@ final class TextStorage: NSTextStorage {
     private func applySyntaxHighlight(_ range: NSRange) {
         for token in tokens {
             token.regex.enumerateMatches(in: string, options: [], range: token.isMultipleLines ? string.range : range) {
-                [unowned self, token] (result, _, _) in
-                guard let range = result?.range else {
+                [weak self, token] (result, _, _) in
+                guard let range = result?.range, let self = self else {
                     return
                 }
-                self.addAttributes(token.textAttribute, range: range)
+                self.content.addAttributes(token.textAttribute, range: range)
             }
         }
     }
@@ -87,7 +87,7 @@ extension TextStorage {
         // Font settings
         self.textAttribute.removeAll()
         self.textAttribute[.font] = codeStyle.font.uiFont
-        self.textAttribute[.foregroundColor] = codeStyle.fontColor.uiColor
+        self.textAttribute[.foregroundColor] = codeStyle.fontColor.text.uiColor
 
         // Tab settings
         let paragraphStyle = NSMutableParagraphStyle()

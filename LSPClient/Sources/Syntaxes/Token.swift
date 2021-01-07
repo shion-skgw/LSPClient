@@ -9,35 +9,13 @@
 import UIKit.UIColor
 
 struct Token {
-    let type: TokenType
     let regex: NSRegularExpression
     let isMultipleLines: Bool
     let textAttribute: [NSAttributedString.Key: Any]
 
-    init(type: TokenType, pattern: String, isIgnoreCase: Bool, isMultipleLines: Bool) {
-        self.type = type
+    init(pattern: String, isIgnoreCase: Bool, isMultipleLines: Bool, textColor: UIColor) {
         self.regex = try! NSRegularExpression(pattern: pattern, options: isIgnoreCase ? .caseInsensitive : [])
         self.isMultipleLines = isMultipleLines
-        self.textAttribute = [.foregroundColor: type.color]
-    }
-}
-
-extension Token {
-    enum TokenType {
-        case keyword
-        case function
-        case number
-        case string
-        case comment
-
-        var color: UIColor {
-            switch self {
-            case .keyword : return UIColor.green
-            case .function: return UIColor.green
-            case .number  : return UIColor.green
-            case .string  : return UIColor.green
-            case .comment : return UIColor.green
-            }
-        }
+        self.textAttribute = [.foregroundColor: textColor]
     }
 }

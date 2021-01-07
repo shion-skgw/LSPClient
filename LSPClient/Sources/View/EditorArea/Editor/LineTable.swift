@@ -28,7 +28,7 @@ final class LineTable {
     init(content: NSMutableAttributedString) {
         self.table = [:]
         self.content = content
-        update(for: content.string.range)
+        update(content.string.range)
     }
 
     ///
@@ -39,7 +39,7 @@ final class LineTable {
     ///
     func replaceCharacters(in range: NSRange, with str: String) {
         content?.replaceCharacters(in: range, with: str)
-        update(for: range)
+        update(range)
     }
 
     ///
@@ -47,7 +47,7 @@ final class LineTable {
     ///
     /// - Parameter range       : Update range
     ///
-    private func update(for range: NSRange) {
+    private func update(_ range: NSRange) {
         guard let string = content?.string else {
             return
         }
@@ -102,7 +102,7 @@ final class LineTable {
         }
         return NSMakeRange(start.lowerBound, end.upperBound)
     }
-    
+
     ///
     /// Returns line range
     ///
@@ -116,7 +116,7 @@ final class LineTable {
         }
         return NSMakeRange(start.lowerBound, end.upperBound)
     }
-    
+
     ///
     /// Convert characters range
     ///
@@ -132,7 +132,7 @@ final class LineTable {
         let length = end.location - start.location + textRange.end.character
         return NSMakeRange(location, length)
     }
-    
+
     ///
     /// Convert characters range
     ///
@@ -146,7 +146,7 @@ final class LineTable {
         }
         return TextRange(start: start, end: end)
     }
-    
+
     ///
     /// Convert characters position
     ///

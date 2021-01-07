@@ -11,39 +11,35 @@ import UIKit
 final class EditorViewController: UIViewController {
 
     private var requestId: RequestID?
-    private weak var lineTable: LineTable!
+    private weak var textStorage: TextStorage!
 
     override func loadView() {
-        super.loadView()
+        let codeStyle = CodeStyle.load()
+        let editorSetting = EditorSetting.load()
 
         // TextContainer
         let textContainer = NSTextContainer()
 
         // LayoutManager
         let layoutManager = LayoutManager()
-        layoutManager.set(editorSetting: EditorSetting.load())
-        layoutManager.set(codeStyle: CodeStyle.load())
+        layoutManager.set(editorSetting: editorSetting)
+        layoutManager.set(codeStyle: codeStyle)
         layoutManager.addTextContainer(textContainer)
 
         // TextStorage
         let textStorage = TextStorage()
-        textStorage.set(codeStyle: CodeStyle.load())
-        textStorage.set(tokens: SyntaxLoader.tokens(fileExtension: "swift"))
+        textStorage.set(codeStyle: codeStyle)
+        textStorage.set(tokens: SyntaxLoader.tokens(fileExtension: "swift", codeStyle: codeStyle))
         textStorage.addLayoutManager(layoutManager)
 
         // EditorView
-        let editorView = EditorView(textContainer: textContainer)
-        editorView.set(editorSetting: EditorSetting.load())
-        editorView.set(codeStyle: CodeStyle.load())
+        let editorView = EditorView(frame: .zero, textContainer: textContainer)
+        editorView.set(editorSetting: editorSetting)
+        editorView.set(codeStyle: codeStyle)
 
         // Initialize
         self.view = editorView
-        self.lineTable = textStorage.lineTable
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.frame = CGRect(x: 100, y: 50, width: 200, height: 300)
+        self.textStorage = textStorage
     }
 
 }
@@ -52,7 +48,7 @@ extension EditorViewController: UITextViewDelegate {
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         let textDocument = TextDocumentIdentifier(uri: URL(string: "")!)
-        let position = lineTable.position(for: range.location)!
+        let position = textStorage.lineTable.position(for: range.location)!
         let params = CompletionParams(textDocument: textDocument, position: position, context: nil)
         requestId = completion(params: params)
 

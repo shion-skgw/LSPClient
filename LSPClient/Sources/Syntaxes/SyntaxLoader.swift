@@ -6,7 +6,7 @@
 //  Copyright © 2020 Shion. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 final class SyntaxLoader {
 
@@ -19,28 +19,28 @@ final class SyntaxLoader {
 
     private init() {}
 
-    static func tokens(fileExtension: String) -> [Token] {
+    static func tokens(fileExtension: String, codeStyle: CodeStyle) -> [Token] {
         let definitions = loadDefinitions(fileExtension)
         var tokens = [Token]()
-        definitions.definitions.forEach() {
-            let type = $0.type.tokenType
-            let isIgnoreCase = $0.ignoreCase == true
-            let isMultipleLines = $0.multipleLines == true
+        for definition in definitions.definitions {
+            let ignoreCase = definition.ignoreCase == true
+            let multipleLines = definition.multipleLines == true
+            let color = textColor(definition.type, codeStyle)
 
-            if $0.regex == true {
-                $0.strings.forEach() {
-                    tokens.append(Token(type: type, pattern: $0, isIgnoreCase: isIgnoreCase, isMultipleLines: isMultipleLines))
+            if definition.regex == true {
+                definition.strings.forEach() {
+                    tokens.append(Token(pattern: $0, isIgnoreCase: ignoreCase, isMultipleLines: multipleLines, textColor: color))
                 }
 
             } else if let allowTokenPattern = definitions.allowTokenPattern {
                 let before = "(?<=[^\(allowTokenPattern)]|^)"
                 let after = "(?=[^\(allowTokenPattern)]|$)"
-                let pattern = "\(before)(\($0.strings.joined(separator: "|")))\(after)"
-                tokens.append(Token(type: type, pattern: pattern, isIgnoreCase: isIgnoreCase, isMultipleLines: isMultipleLines))
+                let pattern = "\(before)(\(definition.strings.joined(separator: "|")))\(after)"
+                tokens.append(Token(pattern: pattern, isIgnoreCase: ignoreCase, isMultipleLines: multipleLines, textColor: color))
 
             } else {
-                let pattern = "\\b(\($0.strings.joined(separator: "|")))\\b"
-                tokens.append(Token(type: type, pattern: pattern, isIgnoreCase: isIgnoreCase, isMultipleLines: isMultipleLines))
+                let pattern = "\\b(\(definition.strings.joined(separator: "|")))\\b"
+                tokens.append(Token(pattern: pattern, isIgnoreCase: ignoreCase, isMultipleLines: multipleLines, textColor: color))
             }
         }
         return tokens
@@ -61,6 +61,16 @@ final class SyntaxLoader {
             return definitions
         } catch {
             fatalError()
+        }
+    }
+
+    private static func textColor(_ type: SyntaxType, _ codeStyle: CodeStyle) -> UIColor {
+        switch type {
+        case .keyword: return codeStyle.fontColor.keyword.uiColor
+        case .function: return codeStyle.fontColor.function.uiColor
+        case .number: return codeStyle.fontColor.number.uiColor
+        case .string: return codeStyle.fontColor.string.uiColor
+        case .comment: return codeStyle.fontColor.comment.uiColor
         }
     }
 
@@ -90,16 +100,6 @@ extension SyntaxLoader {
         case number
         case string
         case comment
-
-        var tokenType: Token.TokenType {
-            switch self {
-            case .keyword : return .keyword
-            case .function: return .function
-            case .number  : return .number
-            case .string  : return .string
-            case .comment : return .comment
-            }
-        }
     }
 
 }

@@ -14,26 +14,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        CodeStyle.remove()
         var a = CodeStyle.load()
-        a.backgroundColor.uiColor = UIColor.lightGray
-        a.font.uiFont = UIFont.monospacedSystemFont(ofSize: 14.0, weight: .regular)
-        a.fontColor.uiColor = UIColor.darkGray
-        a.invisiblesFontColor.uiColor = UIColor.yellow
+        a.backgroundColor.uiColor = UIColor.brown
         a.save()
-        let window = UIWindow(frame: UIScreen.main.bounds)
-        let root = ViewController()
-        let sub = EditorViewController()
-        root.view.addSubview(sub.view)
-        root.addChild(sub)
-        sub.didMove(toParent: root)
-        window.rootViewController = root
-        window.backgroundColor = .systemFill
+//        a.backgroundColor.uiColor = UIColor.lightGray
+//        a.font.uiFont = UIFont.monospacedSystemFont(ofSize: 14.0, weight: .regular)
+//        a.save()
+
+
+
+        let rootViewController = RootViewController()
+        rootViewController.view.backgroundColor = UIColor.systemBackground
+
+        let window = UIWindow()
+        window.rootViewController = rootViewController
         window.makeKeyAndVisible()
+
         self.window = window
         return true
     }
 
-}
-
-final class ViewController: UIViewController {
 }
