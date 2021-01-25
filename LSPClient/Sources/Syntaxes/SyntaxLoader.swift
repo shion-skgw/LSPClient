@@ -10,7 +10,6 @@ import UIKit
 
 final class SyntaxLoader {
 
-    private static let defaultWordBoundary = "\\b"
     private static let syntaxMap: [String: String] = [
         "swift": "Swift",
     ]
@@ -18,6 +17,14 @@ final class SyntaxLoader {
     private static var syntaxes: [SyntaxDefinition] = []
 
     private init() {}
+
+    static func wordBoundaryPattern(fileExtension: String) -> String {
+        if let allowTokenPattern = loadDefinitions(fileExtension).allowTokenPattern {
+            return "[^\(allowTokenPattern)]"
+        } else {
+            return "\\B"
+        }
+    }
 
     static func tokens(fileExtension: String, codeStyle: CodeStyle) -> [Token] {
         let definitions = loadDefinitions(fileExtension)
@@ -52,7 +59,7 @@ final class SyntaxLoader {
         }
 
         guard let path = Bundle.main.path(forResource: syntaxMap[fileExtension], ofType: "plist") else {
-            fatalError()
+            return SyntaxDefinition(extensions: [], allowTokenPattern: nil, definitions: [])
         }
         do {
             let data = try Data(contentsOf: URL(fileURLWithPath: path))
@@ -60,7 +67,8 @@ final class SyntaxLoader {
             syntaxes.append(definitions)
             return definitions
         } catch {
-            fatalError()
+            return SyntaxDefinition(extensions: [], allowTokenPattern: nil, definitions: [])
+//            fatalError()
         }
     }
 

@@ -28,7 +28,7 @@ final class MutableTabController: UIViewController {
         let codeStyle = CodeStyle.load()
 
         let tabContainer = TabView()
-        tabContainer.backgroundColor = codeStyle.backgroundColor.uiColor.contrast(0.3)
+        tabContainer.backgroundColor = codeStyle.tabAreaColor.uiColor
         view.addSubview(tabContainer)
         self.tabContainer = tabContainer
 
@@ -36,8 +36,9 @@ final class MutableTabController: UIViewController {
         viewContainer.backgroundColor = codeStyle.backgroundColor.uiColor
         view.addSubview(viewContainer)
         self.viewContainer = viewContainer
-        os_log("aaaaaaaaaaaaaaaaaaaaaaa")
-        os_log(.debug, "aaaaaaaaaaaaa")
+
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(refreshCodeStyle), name: .didChangeCodeStyle, object: nil)
     }
 
     override func viewDidLayoutSubviews() {
@@ -51,36 +52,47 @@ final class MutableTabController: UIViewController {
         viewContainerFrame.origin.y += tabHeight
         viewContainerFrame.size.height -= tabHeight
         viewContainer.frame = viewContainerFrame
+
+        let editorViewFrame = CGRect(origin: .zero, size: viewContainer.bounds.size)
+        viewContainer.subviews.forEach({ $0.frame = editorViewFrame })
     }
 
     @objc func selectTab(sender: TabItem) {
         tabContainer.tabItems.forEach({ $0.isActive = $0.tag == sender.tag })
-        viewContainer.subviews.forEach({ $0.isHidden = $0.tag != sender.tag })
+        viewContainer.subviews.forEach() {
+            if $0.tag == sender.tag {
+                $0.isHidden = false
+                $0.becomeFirstResponder()
+            } else {
+                $0.isHidden = true
+                $0.resignFirstResponder()
+            }
+        }
     }
 
     @objc func closeTab(sender: UIButton) {
         guard let tabItem = tabContainer.tabItems.filter({ $0.tag == sender.tag }).first,
-                let child = children.filter({ $0.view.tag == sender.tag }).first else {
+                let controller = children.filter({ $0.view.tag == sender.tag }).first else {
             return
         }
 
         tabContainer.remove(item: tabItem)
-        child.willMove(toParent: nil)
-        child.view.removeFromSuperview()
-        child.removeFromParent()
+        controller.willMove(toParent: nil)
+        controller.view.removeFromSuperview()
+        controller.removeFromParent()
 
-        if viewContainer.subviews.filter({ !$0.isHidden }).isEmpty,
-                let lastAddView = viewContainer.subviews.max(by: { $0.tag < $1.tag }) {
-            lastAddView.isHidden = false
-            tabContainer.tabItems.forEach({ $0.isActive = $0.tag == lastAddView.tag })
+        if tabContainer.tabItems.filter({ $0.isActive }).isEmpty,
+                let lastAddTab = tabContainer.tabItems.max(by: { $0.tag < $1.tag }) {
+            selectTab(sender: lastAddTab)
         }
     }
 
     func addTab(title: String, viewController: EditorViewController) {
         let tagNumber = nextTagNumber
 
-        // Add child, sub view
+        // Add child controller
         viewController.view.tag = tagNumber
+        viewController.view.frame = viewContainer.bounds
         addChild(viewController)
         viewContainer.addSubview(viewController.view)
         viewController.didMove(toParent: self)
@@ -95,8 +107,15 @@ final class MutableTabController: UIViewController {
         tabItem.closeButton.addTarget(self, action: #selector(closeTab(sender:)), for: .touchUpInside)
         tabContainer.add(item: tabItem)
 
-        tabContainer.tabItems.forEach({ $0.isActive = $0.tag == tagNumber })
-        viewContainer.subviews.forEach({ $0.isHidden = $0.tag != tagNumber })
+        // Select tab
+        selectTab(sender: tabItem)
+    }
+
+    @objc func refreshCodeStyle() {
+        let codeStyle = CodeStyle.load()
+        tabContainer.backgroundColor = .secondarySystemBackground
+        tabContainer.tabItems.forEach({ $0.set(codeStyle: codeStyle) })
+        viewContainer.backgroundColor = codeStyle.backgroundColor.uiColor
     }
 
 }

@@ -10,6 +10,7 @@ import UIKit
 
 final class RootViewController: UIViewController {
 
+    weak var viewContainer: UIView!
     weak var mainMenu: MainMenuViewController!
     weak var editor: MutableTabController!
 
@@ -17,12 +18,16 @@ final class RootViewController: UIViewController {
         super.viewDidLoad()
 
         let mainMenu = MainMenuViewController()
+        mainMenu.view.backgroundColor = .secondarySystemBackground
         add(child: mainMenu)
         self.mainMenu = mainMenu
 
         let editor = MutableTabController()
         add(child: editor)
         self.editor = editor
+
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(change), name: UIResponder.keyboardDidChangeFrameNotification, object: nil)
     }
 
     override func viewDidLayoutSubviews() {
@@ -33,9 +38,26 @@ final class RootViewController: UIViewController {
         mainMenu.view.frame = mainMenuFrame
 
         var editorFrame = view.safeAreaLayoutGuide.layoutFrame
-        editorFrame.size.height -= mainMenuFrame.height
-        editorFrame.origin.y = mainMenuFrame.maxY
+        editorFrame.size.height -= mainMenuFrame.height + 5
+        editorFrame.origin.y = mainMenuFrame.maxY + 5
         editor.view.frame = editorFrame
+    }
+
+
+
+
+    func didBecomeActive() {
+        
+    }
+
+    func willResignActive() {
+
+    }
+
+    @objc private func change() {
+        guard let keyboardView = UIApplication.shared.keyboardView else {
+            return
+        }
     }
 
 }

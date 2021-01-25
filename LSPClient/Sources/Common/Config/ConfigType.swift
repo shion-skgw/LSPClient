@@ -27,6 +27,10 @@ protocol ConfigType: Codable {
 
 extension ConfigType {
 
+    static var hasValue: Bool {
+        UserDefaults.standard.object(forKey: Self.configKey) != nil
+    }
+
     ///
     /// Initialize config
     ///

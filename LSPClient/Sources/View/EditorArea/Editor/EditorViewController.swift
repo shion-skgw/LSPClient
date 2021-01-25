@@ -8,10 +8,12 @@
 
 import UIKit
 
-final class EditorViewController: UIViewController {
+final class EditorViewController: UIViewController, UITextViewDelegate {
 
+    var uri: DocumentUri!
     private var requestId: RequestID?
     private weak var textStorage: TextStorage!
+    private weak var layoutManager: LayoutManager!
 
     override func loadView() {
         let codeStyle = CodeStyle.load()
@@ -25,40 +27,221 @@ final class EditorViewController: UIViewController {
         layoutManager.set(editorSetting: editorSetting)
         layoutManager.set(codeStyle: codeStyle)
         layoutManager.addTextContainer(textContainer)
+        self.layoutManager = layoutManager
 
         // TextStorage
         let textStorage = TextStorage()
         textStorage.set(codeStyle: codeStyle)
         textStorage.set(tokens: SyntaxLoader.tokens(fileExtension: "swift", codeStyle: codeStyle))
         textStorage.addLayoutManager(layoutManager)
+        self.textStorage = textStorage
 
         // EditorView
         let editorView = EditorView(frame: .zero, textContainer: textContainer)
         editorView.set(editorSetting: editorSetting)
         editorView.set(codeStyle: codeStyle)
-
-        // Initialize
+        editorView.controller = self
+        editorView.delegate = self
         self.view = editorView
-        self.textStorage = textStorage
+
+        // NotificationCenter
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(refreshCodeStyle), name: .didChangeCodeStyle, object: nil)
+
+        // UndoManager
+        undoManager?.registerUndo(withTarget: editorView, selector: #selector(editorView.undo), object: nil)
     }
 
-}
+    @objc func refreshCodeStyle() {
+        guard let editorView = view as? EditorView else {
+            return
+        }
+        let codeStyle = CodeStyle.load()
+        editorView.set(codeStyle: codeStyle)
+        textStorage.set(codeStyle: codeStyle)
+        textStorage.set(tokens: SyntaxLoader.tokens(fileExtension: "swift", codeStyle: codeStyle))
+        layoutManager.set(codeStyle: codeStyle)
+    }
 
-extension EditorViewController: UITextViewDelegate {
 
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        let textDocument = TextDocumentIdentifier(uri: URL(string: "")!)
-        let position = textStorage.lineTable.position(for: range.location)!
-        let params = CompletionParams(textDocument: textDocument, position: position, context: nil)
-        requestId = completion(params: params)
 
-        let textDocument_ = VersionedTextDocumentIdentifier(uri: URL(string: "")!, version: RequiredValue(1))
-        let params_ = DidChangeTextDocumentParams(textDocument: textDocument_, contentChanges: [])
-        didChange(params: params_)
+    // MARK: - Command
+    override var keyCommands: [UIKeyCommand]? {
+        return [
+            UIKeyCommand(input: "\t", modifierFlags: [.shift], action: #selector(deindent(_:))),
+            UIKeyCommand(input: " ", modifierFlags: [.alternate], action: #selector(completion(_:))),
+        ]
+    }
+
+    @objc func deindent(_ sender: UIKeyCommand) {
+        print(#function)
+    }
+
+    @objc func completion(_ sender: UIKeyCommand) {
+        print(#function)
+    }
+
+
+    override var canBecomeFirstResponder: Bool {
         return true
     }
 
+    // MARK: - Editing
+
+    private let nonWord = try! NSRegularExpression(pattern: "\\W", options: [])
+
+    var currentChangeReason: ChangeReason = .changeSelection
+    var previousChangeReason: ChangeReason = .changeSelection
+    var completionTrigger = ["あ"]
+    var needCommit = false
+
+
+    struct EditHistory {
+        var range: NSRange
+        var text: String
+//        var scrollPoint: CGPoint
+    }
+    var currentVersion = 1
+    var editHistories: [EditHistory] = [
+        EditHistory(range: NSMakeRange(0, 0), text: "")
+    ]
+
+    var editLocation: Int = -1
+    var editLength: Int = 0
+    var editText: String = ""
+
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        guard textView.markedTextRange == nil else {
+            return true
+        }
+
+        currentChangeReason = changeReason(range, text)
+
+        if completionTrigger.contains(text) {
+            needCommit = true
+        } else if previousChangeReason == .word && currentChangeReason != .word {
+            needCommit = true
+        } else if previousChangeReason != .newLine && currentChangeReason == .newLine {
+            needCommit = true
+        } else if previousChangeReason != .delete && currentChangeReason == .delete {
+            needCommit = true
+        } else if currentChangeReason == .paste {
+            needCommit = true
+        } else if currentChangeReason == .cut {
+            needCommit = true
+        }
+
+        if editText.isEmpty {
+            editLocation = range.location
+            editLength = text.range.length
+            editText = text
+        } else {
+            editLength += text.range.length
+            editText += text
+        }
+
+        if editHistories.count > currentVersion {
+            editHistories.removeLast(editHistories.count - currentVersion)
+            currentVersion = editHistories.count
+        }
+
+        return true
+    }
+
+    func textViewDidChangeSelection(_ textView: UITextView) {
+        guard let editorView = view as? EditorView, editorView.markedTextRange == nil else {
+            return
+        }
+
+        if needCommit || previousChangeReason != .changeSelection && currentChangeReason == .changeSelection {
+            commitEditHistory()
+            undoManager?.registerUndo(withTarget: editorView, selector: #selector(editorView.undo), object: nil)
+            needCommit = false
+            editText = ""
+        }
+
+        previousChangeReason = currentChangeReason
+        currentChangeReason = .changeSelection
+    }
+
+    func commitEditHistory() {
+        guard !editText.isEmpty else {
+            return
+        }
+        let range = NSMakeRange(editLocation, editLength)
+        let editHistory = EditHistory(range: range, text: editText)
+        editHistories.append(editHistory)
+        currentVersion = editHistories.count
+        print(editHistory)
+    }
+
+    func undo() {
+        guard let editorView = view as? EditorView, let undoManager = self.undoManager, undoManager.canUndo else {
+            print("can't undo")
+            return
+        }
+
+        commitEditHistory()
+        undoManager.registerUndo(withTarget: editorView, selector: #selector(editorView.redo), object: nil)
+
+        currentVersion -= 1
+        let editHistory = editHistories[currentVersion]
+        currentChangeReason = .cut
+        editText = ""
+
+        textStorage.replaceCharacters(in: editHistory.range, with: "")
+        editorView.selectedRange = NSMakeRange(editHistory.range.location, 0)
+    }
+
+    func redo() {
+        guard let editorView = view as? EditorView, let undoManager = self.undoManager, undoManager.canRedo else {
+            print("can't redo")
+            return
+        }
+        undoManager.registerUndo(withTarget: editorView, selector: #selector(editorView.undo), object: nil)
+
+        let editHistory = editHistories[currentVersion]
+        currentVersion += 1
+        currentChangeReason = .paste
+        editText = ""
+        textStorage.replaceCharacters(in: NSMakeRange(editHistory.range.location, 0), with: editHistory.text)
+        editorView.selectedRange = NSMakeRange(editHistory.range.upperBound, 0)
+    }
+
+    enum ChangeReason {
+        case word
+        case nonWord
+        case newLine
+        case indent
+        case deindent
+        case delete
+        case paste
+        case cut
+        case changeSelection
+    }
+
+    private func changeReason(_ range: NSRange, _ text: String) -> ChangeReason {
+        if text.isEmpty {
+            return range.length == 1 ? .delete : .cut
+        } else if text.count >= 2 {
+            return .paste
+        } else {
+            if range.length > 1 && text == .tab {
+                return .indent
+            } else if text == .lineFeed {
+                return .newLine
+            } else if nonWord.firstMatch(in: text, options: [], range: text.range) != nil {
+                return .nonWord
+            } else {
+                return .word
+            }
+        }
+    }
+
+
+
 }
+
 
 extension EditorViewController: TextDocumentMessageDelegate {
 

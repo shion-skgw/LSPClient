@@ -11,9 +11,9 @@ import UIKit.NSTextStorage
 final class TextStorage: NSTextStorage {
 
     let lineTable: LineTable
-    private let content: NSMutableAttributedString
-    private var tokens: [Token]
-    private var textAttribute: [NSAttributedString.Key: Any]
+    let content: NSMutableAttributedString
+    private(set) var tokens: [Token]
+    private(set) var textAttribute: [NSAttributedString.Key: Any]
 
     override var string: String {
         return content.string
@@ -37,7 +37,8 @@ final class TextStorage: NSTextStorage {
 
     override func replaceCharacters(in range: NSRange, with str: String) {
         beginEditing()
-        lineTable.replaceCharacters(in: range, with: str)
+        content.replaceCharacters(in: range, with: str)
+        lineTable.update(for: range)
         edited([.editedCharacters, .editedAttributes], range: range, changeInLength: str.count - range.length)
         endEditing()
     }
@@ -73,7 +74,8 @@ final class TextStorage: NSTextStorage {
 extension TextStorage {
 
     func set(string: String) {
-        self.lineTable.replaceCharacters(in: self.string.range, with: string)
+        content.replaceCharacters(in: self.string.range, with: string)
+        lineTable.update(for: self.string.range)
         self.applySyntaxHighlight(self.string.range) // TODO: 必要か確認する
     }
 

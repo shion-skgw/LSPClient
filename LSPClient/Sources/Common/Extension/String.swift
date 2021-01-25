@@ -12,5 +12,10 @@ extension String {
     var range: NSRange {
         NSMakeRange(0, utf16.count)
     }
+    static let null = "\u{0000}"
+    static let tab = "\u{0009}"
+    static let spase = "\u{0020}"
+    static let lineFeed = "\u{000A}"
+    static let delete = "\u{007F}"
 }
 

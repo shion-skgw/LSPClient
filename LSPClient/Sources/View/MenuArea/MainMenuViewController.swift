@@ -13,15 +13,7 @@ final class MainMenuViewController: UIViewController {
     private(set) weak var leftMenu: MainMenuView!
     private(set) weak var rightMenu: MainMenuView!
     private(set) weak var add: UIButton!
-
-    override func loadView() {
-        let borderView = BorderView()
-        borderView.backgroundColor = CommonView.background
-        borderView.borderPosition = [.bottom]
-        borderView.borderWidth = 0.5
-        borderView.borderColor = CommonView.backgroundBorder.cgColor
-        self.view = borderView
-    }
+    private(set) weak var change: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,11 +24,15 @@ final class MainMenuViewController: UIViewController {
         add.addTarget(self, action: #selector(add(sender:)), for: .touchUpInside)
         leftMenu.addSubview(add)
         self.add = add
-        leftMenu.addSubview(UIButton(type: .contactAdd))
-        leftMenu.addSubview(UIButton(type: .contactAdd))
-        leftMenu.addSubview(UIButton(type: .contactAdd))
-        leftMenu.addSubview(UIButton(type: .contactAdd))
-        leftMenu.addSubview(UIButton(type: .contactAdd))
+
+        let change = UIButton(type: .contactAdd)
+        change.addTarget(self, action: #selector(changeColor), for: .touchUpInside)
+        leftMenu.addSubview(change)
+        self.change = change
+
+        let git = UIButton(frame: CGRect(x: 0, y: 0, width: 32, height: 32))
+        git.setImage(UIImage.gitIcon, for: .normal)
+        leftMenu.addSubview(git)
 //        leftMenu.backgroundColor = .gray
         view.addSubview(leftMenu)
         self.leftMenu = leftMenu
@@ -67,9 +63,15 @@ final class MainMenuViewController: UIViewController {
     @objc func add(sender: UIButton) {
         let aaa = parent as! RootViewController
         let a = EditorViewController()
-        var aa = CGRect(origin: .zero, size: aaa.editor.viewContainer.bounds.size)
-        a.view.frame = aa
+        a.view.frame = CGRect(origin: .zero, size: aaa.editor.viewContainer.bounds.size)
         aaa.editor.addTab(title: "aaaaaaaaa", viewController: a)
+    }
+
+    @objc func changeColor() {
+        var a = CodeStyle.load()
+        a.backgroundColor.uiColor = UIColor.black
+        a.save()
+        NotificationCenter.default.post(name: .didChangeCodeStyle, object: nil)
     }
 
 }

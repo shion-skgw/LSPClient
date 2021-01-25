@@ -43,8 +43,6 @@ final class TabItem: UIButton {
         self.titleLabel?.textAlignment = .center
 
         // Design setting
-//        self.layer.borderWidth = 0.5
-//        self.layer.borderColor = UIColor.darkGray.cgColor
         self.layer.cornerRadius = 3.0
         self.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
     }
@@ -67,8 +65,8 @@ final class TabItem: UIButton {
         self.setAttributedTitle(title, for: .normal)
 
         // Set background color
-        self.activeColor = codeStyle.backgroundColor.uiColor
-        self.inactiveColor = codeStyle.backgroundColor.uiColor.contrast(0.5)
+        self.activeColor = codeStyle.activeTabColor.uiColor
+        self.inactiveColor = codeStyle.inactiveTabColor.uiColor
         self.backgroundColor = self.isActive ? self.activeColor : self.inactiveColor
     }
 

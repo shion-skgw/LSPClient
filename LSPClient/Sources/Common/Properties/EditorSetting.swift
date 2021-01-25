@@ -6,12 +6,12 @@
 //  Copyright © 2020 Shion. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 struct EditorSetting: PropertiesType {
     static let resourceName = "EditorSetting"
     static var cache: EditorSetting?
 
-    let gutterWidth: Float
-    let verticalMargin: Float
+    let gutterWidth: CGFloat
+    let verticalMargin: CGFloat
 }

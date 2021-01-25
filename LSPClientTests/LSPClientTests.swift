@@ -46,12 +46,12 @@ class LSPClientTests: XCTestCase {
 		print(aa!)
 		print((a!.string as NSString).substring(with: aa!))
 
-		b.replaceCharacters(in: NSMakeRange(a!.string.utf16.count, 0), with: "666666\n")
+//		b.replaceCharacters(in: NSMakeRange(a!.string.utf16.count, 0), with: "666666\n")
 		XCTAssertEqual((a!.string as NSString).substring(with: b.table[6]!), "666666\n")
 		print(a!)
 
 		a = nil
-        b.replaceCharacters(in: NSMakeRange(0, 0), with: "666666\n")
+//        b.replaceCharacters(in: NSMakeRange(0, 0), with: "666666\n")
 	}
 
 	func testPerformanceExample() throws {

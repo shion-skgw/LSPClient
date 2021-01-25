@@ -13,6 +13,11 @@ import Foundation
 ///
 final class LineTable {
 
+    struct Context {
+        let lineRange: NSRange
+        let indentLevel: Int
+    }
+
     /// Line range table (Key: Zero based line number, Value: Line range)
     var table: [Int: NSRange]
     /// Text contents
@@ -28,18 +33,7 @@ final class LineTable {
     init(content: NSMutableAttributedString) {
         self.table = [:]
         self.content = content
-        update(content.string.range)
-    }
-
-    ///
-    /// Replaces characters
-    ///
-    /// - Parameter range       : Replacement range
-    /// - Parameter str         : Replacement string
-    ///
-    func replaceCharacters(in range: NSRange, with str: String) {
-        content?.replaceCharacters(in: range, with: str)
-        update(range)
+        update(for: content.string.range)
     }
 
     ///
@@ -47,7 +41,7 @@ final class LineTable {
     ///
     /// - Parameter range       : Update range
     ///
-    private func update(_ range: NSRange) {
+    func update(for range: NSRange) {
         guard let string = content?.string else {
             return
         }

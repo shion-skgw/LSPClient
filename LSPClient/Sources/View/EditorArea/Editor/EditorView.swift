@@ -10,6 +10,7 @@ import UIKit
 
 final class EditorView: UITextView {
 
+    weak var controller: EditorViewController?
     private var gutterColor: CGColor = UIColor.white.cgColor
     private var gutterEdgeColor: CGColor = UIColor.white.cgColor
     private var lineHighlight: Bool = false
@@ -41,6 +42,25 @@ final class EditorView: UITextView {
     override func deleteBackward() {
         setNeedsDisplay()
         super.deleteBackward()
+    }
+
+}
+
+
+// MARK: - Undo / Redo
+
+extension EditorView {
+
+    override var undoManager: UndoManager? {
+        controller?.undoManager
+    }
+
+    @objc func undo() {
+        controller?.undo()
+    }
+
+    @objc func redo() {
+        controller?.redo()
     }
 
 }
@@ -122,22 +142,22 @@ extension EditorView {
 extension EditorView {
 
     func set(editorSetting: EditorSetting) {
-        let verticalMargin = CGFloat(editorSetting.verticalMargin)
-        let gutterWidth = CGFloat(editorSetting.gutterWidth)
+        let verticalMargin = editorSetting.verticalMargin
+        let gutterWidth = editorSetting.gutterWidth
         self.textContainerInset.top = verticalMargin
         self.textContainerInset.bottom = verticalMargin
         self.textContainerInset.left = gutterWidth
     }
 
     func set(codeStyle: CodeStyle) {
-        self.gutterColor = codeStyle.backgroundColor.uiColor.cgColor
-        self.gutterEdgeColor = codeStyle.backgroundColor.uiColor.cgColor
+        self.gutterColor = codeStyle.gutterColor.uiColor.cgColor
+        self.gutterEdgeColor = codeStyle.gutterEdgeColor.uiColor.cgColor
 
         self.lineHighlight = codeStyle.lineHighlight
-        self.lineHighlightColor = codeStyle.backgroundColor.uiColor.contrast(0.2).cgColor
+        self.lineHighlightColor = codeStyle.lineHighlightColor.uiColor.cgColor
         self.lineNumberAttribute.removeAll()
-        self.lineNumberAttribute[.font] = codeStyle.font.uiFont.withSize(codeStyle.font.uiFont.pointSize * 0.8)
-        self.lineNumberAttribute[.foregroundColor] = codeStyle.backgroundColor.uiColor.contrast(0.3)
+        self.lineNumberAttribute[.font] = codeStyle.font.uiFont.withSize(codeStyle.lineNumberSize)
+        self.lineNumberAttribute[.foregroundColor] = codeStyle.lineNumberColor.uiColor
 
         // UITextView
         self.font = codeStyle.font.uiFont

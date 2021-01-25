@@ -23,12 +23,43 @@ struct CodeStyle: ConfigType {
     init() {
         self.font = Font()
         self.fontColor = FontColor()
-        self.backgroundColor = Color.white
+        self.backgroundColor = .white
         self.tabSize = 4
         self.useHardTab = true
         self.showInvisibles = true
         self.lineHighlight = true
     }
+}
+
+extension CodeStyle {
+
+    var tabAreaColor: Color {
+        Color(uiColor: self.backgroundColor.uiColor.contrast(0.2))
+    }
+    var activeTabColor: Color {
+        self.backgroundColor
+    }
+    var inactiveTabColor: Color {
+        Color(uiColor: self.backgroundColor.uiColor.contrast(0.4))
+    }
+
+    var gutterColor: Color {
+        self.backgroundColor
+    }
+    var gutterEdgeColor: Color {
+        Color(uiColor: self.backgroundColor.uiColor.contrast(0.25))
+    }
+    var lineNumberColor: Color {
+        Color(uiColor: self.backgroundColor.uiColor.contrast(0.5))
+    }
+    var lineNumberSize: CGFloat {
+        CGFloat(Int(font.size * 0.8))
+    }
+
+    var lineHighlightColor: Color {
+        Color(uiColor: self.backgroundColor.uiColor.contrast(0.2))
+    }
+
 }
 
 extension CodeStyle {
@@ -77,11 +108,19 @@ extension CodeStyle {
         }
 
         static var black: Color {
-            self.init(hue: 0.0, saturation: 0.0, brightness: 0.0, alpha: 1.0)
+            self.init(uiColor: .black)
         }
 
         static var white: Color {
-            self.init(hue: 0.0, saturation: 0.0, brightness: 1.0, alpha: 1.0)
+            self.init(uiColor: .white)
+        }
+
+        init(uiColor: UIColor) {
+            let hue = uiColor.hue
+            self.hue = hue.hue
+            self.saturation = hue.saturation
+            self.brightness = hue.brightness
+            self.alpha = hue.alpha
         }
 
         init(hue: CGFloat, saturation: CGFloat, brightness: CGFloat, alpha: CGFloat) {
