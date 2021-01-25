@@ -1,5 +1,5 @@
 //
-//  LayoutManager.swift
+//  EditorLayoutManager.swift
 //  LSPClient
 //
 //  Created by Shion on 2020/08/12.
@@ -8,7 +8,7 @@
 
 import UIKit.NSLayoutManager
 
-final class LayoutManager: NSLayoutManager {
+final class EditorLayoutManager: NSLayoutManager {
 
     private static let invisibles: [String: NSRegularExpression] = [
         "\u{21B5}": try! NSRegularExpression(pattern: "\n", options: []),       // "↵" New line
@@ -39,7 +39,7 @@ final class LayoutManager: NSLayoutManager {
             return
         }
 
-        for invisible in LayoutManager.invisibles {
+        for invisible in EditorLayoutManager.invisibles {
             let char = invisible.key
             let charSize = char.size(withAttributes: invisiblesAttribute)
 
@@ -72,7 +72,7 @@ final class LayoutManager: NSLayoutManager {
 
 }
 
-extension LayoutManager {
+extension EditorLayoutManager {
 
     func set(editorSetting: EditorSetting) {
         self.gutterWidth = CGFloat(editorSetting.gutterWidth)

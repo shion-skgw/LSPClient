@@ -12,8 +12,8 @@ final class EditorViewController: UIViewController, UITextViewDelegate {
 
     var uri: DocumentUri!
     private var requestId: RequestID?
-    private weak var textStorage: TextStorage!
-    private weak var layoutManager: LayoutManager!
+    private weak var editorTextStorage: EditorTextStorage!
+    private weak var editorLayoutManager: EditorLayoutManager!
 
     override func loadView() {
         let codeStyle = CodeStyle.load()
@@ -23,18 +23,18 @@ final class EditorViewController: UIViewController, UITextViewDelegate {
         let textContainer = NSTextContainer()
 
         // LayoutManager
-        let layoutManager = LayoutManager()
-        layoutManager.set(editorSetting: editorSetting)
-        layoutManager.set(codeStyle: codeStyle)
-        layoutManager.addTextContainer(textContainer)
-        self.layoutManager = layoutManager
+        let editorLayoutManager = EditorLayoutManager()
+        editorLayoutManager.set(editorSetting: editorSetting)
+        editorLayoutManager.set(codeStyle: codeStyle)
+        editorLayoutManager.addTextContainer(textContainer)
+        self.editorLayoutManager = editorLayoutManager
 
         // TextStorage
-        let textStorage = TextStorage()
-        textStorage.set(codeStyle: codeStyle)
-        textStorage.set(tokens: SyntaxLoader.tokens(fileExtension: "swift", codeStyle: codeStyle))
-        textStorage.addLayoutManager(layoutManager)
-        self.textStorage = textStorage
+        let editorTextStorage = EditorTextStorage()
+        editorTextStorage.set(codeStyle: codeStyle)
+        editorTextStorage.set(tokens: SyntaxLoader.tokens(fileExtension: "swift", codeStyle: codeStyle))
+        editorTextStorage.addLayoutManager(editorLayoutManager)
+        self.editorTextStorage = editorTextStorage
 
         // EditorView
         let editorView = EditorView(frame: .zero, textContainer: textContainer)
@@ -58,9 +58,9 @@ final class EditorViewController: UIViewController, UITextViewDelegate {
         }
         let codeStyle = CodeStyle.load()
         editorView.set(codeStyle: codeStyle)
-        textStorage.set(codeStyle: codeStyle)
-        textStorage.set(tokens: SyntaxLoader.tokens(fileExtension: "swift", codeStyle: codeStyle))
-        layoutManager.set(codeStyle: codeStyle)
+        editorTextStorage.set(codeStyle: codeStyle)
+        editorTextStorage.set(tokens: SyntaxLoader.tokens(fileExtension: "swift", codeStyle: codeStyle))
+        editorLayoutManager.set(codeStyle: codeStyle)
     }
 
 
@@ -189,7 +189,7 @@ final class EditorViewController: UIViewController, UITextViewDelegate {
         currentChangeReason = .cut
         editText = ""
 
-        textStorage.replaceCharacters(in: editHistory.range, with: "")
+        editorTextStorage.replaceCharacters(in: editHistory.range, with: "")
         editorView.selectedRange = NSMakeRange(editHistory.range.location, 0)
     }
 
@@ -204,7 +204,7 @@ final class EditorViewController: UIViewController, UITextViewDelegate {
         currentVersion += 1
         currentChangeReason = .paste
         editText = ""
-        textStorage.replaceCharacters(in: NSMakeRange(editHistory.range.location, 0), with: editHistory.text)
+        editorTextStorage.replaceCharacters(in: NSMakeRange(editHistory.range.location, 0), with: editHistory.text)
         editorView.selectedRange = NSMakeRange(editHistory.range.upperBound, 0)
     }
 

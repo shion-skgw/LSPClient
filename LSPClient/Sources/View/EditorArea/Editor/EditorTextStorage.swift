@@ -1,5 +1,5 @@
 //
-//  TextStorage.swift
+//  EditorTextStorage.swift
 //  LSPClient
 //
 //  Created by Shion on 2020/08/12.
@@ -8,7 +8,7 @@
 
 import UIKit.NSTextStorage
 
-final class TextStorage: NSTextStorage {
+final class EditorTextStorage: NSTextStorage {
 
     let lineTable: LineTable
     let content: NSMutableAttributedString
@@ -71,12 +71,13 @@ final class TextStorage: NSTextStorage {
 
 }
 
-extension TextStorage {
+extension EditorTextStorage {
 
     func set(string: String) {
-        content.replaceCharacters(in: self.string.range, with: string)
-        lineTable.update(for: self.string.range)
-        self.applySyntaxHighlight(self.string.range) // TODO: 必要か確認する
+        let range = self.string.range
+        content.replaceCharacters(in: range, with: string)
+        lineTable.update(for: range)
+        self.applySyntaxHighlight(range) // TODO: 必要か確認する
     }
 
     func set(tokens: [Token]) {
