@@ -16,7 +16,7 @@ final class EditorTextStorage: NSTextStorage {
     private(set) var textAttribute: [NSAttributedString.Key: Any]
 
     override var string: String {
-        return content.string
+        content.string
     }
 
     override init() {
@@ -32,7 +32,7 @@ final class EditorTextStorage: NSTextStorage {
     }
 
     override func attributes(at location: Int, effectiveRange range: NSRangePointer?) -> [NSAttributedString.Key : Any] {
-        return content.attributes(at: location, effectiveRange: range)
+        content.attributes(at: location, effectiveRange: range)
     }
 
     override func replaceCharacters(in range: NSRange, with str: String) {

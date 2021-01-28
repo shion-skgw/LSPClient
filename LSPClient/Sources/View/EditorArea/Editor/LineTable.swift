@@ -51,7 +51,7 @@ final class LineTable {
         var lineNumber: Int
         var previousLineEnd: Int
         if let lineRange = table.filter({ NSLocationInRange(range.lowerBound, $0.value) }).first {
-            testRange = NSMakeRange(lineRange.value.location, string.range.length - lineRange.value.location)
+            testRange = NSMakeRange(lineRange.value.location, string.length - lineRange.value.location)
             lineNumber = lineRange.key
             previousLineEnd = lineRange.value.upperBound
         } else {

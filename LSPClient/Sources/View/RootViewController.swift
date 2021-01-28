@@ -55,9 +55,9 @@ final class RootViewController: UIViewController {
     }
 
     @objc private func change() {
-        guard let keyboardView = UIApplication.shared.keyboardView else {
-            return
-        }
+//        guard let keyboardView = UIApplication.shared.keyboardView else {
+//            return
+//        }
     }
 
 }

@@ -391,10 +391,10 @@
 			children = (
 				056B5C2724E30E6C00797D95 /* EditorLayoutManager.swift */,
 				056B5C2524E30E2900797D95 /* EditorTextStorage.swift */,
+				053F624B25BEC70900A4A0B1 /* EditorUndoManager.swift */,
 				056B5C2324E30DFB00797D95 /* EditorView.swift */,
 				056B5C2A24E30EEC00797D95 /* EditorViewController.swift */,
 				0589B58F24DD4EDD006E0C6F /* LineTable.swift */,
-				053F624B25BEC70900A4A0B1 /* EditorUndoManager.swift */,
 			);
 			path = Editor;
 			sourceTree = "<group>";

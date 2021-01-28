@@ -34,6 +34,12 @@ final class EditorView: UITextView {
         }
     }
 
+    override var selectedRange: NSRange {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
+
     override func insertText(_ text: String) {
         setNeedsDisplay()
         super.insertText(text)

@@ -39,7 +39,7 @@ final class EditorLayoutManager: NSLayoutManager {
             return
         }
 
-        for invisible in EditorLayoutManager.invisibles {
+        for invisible in Self.invisibles {
             let char = invisible.key
             let charSize = char.size(withAttributes: invisiblesAttribute)
 
