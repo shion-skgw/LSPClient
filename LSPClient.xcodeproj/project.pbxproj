@@ -364,24 +364,14 @@
 			path = Parameter;
 			sourceTree = "<group>";
 		};
-		0586CD5C25A2D56B0047C7BB /* MenuArea */ = {
-			isa = PBXGroup;
-			children = (
-				0586CD5D25A2D78F0047C7BB /* MainMenuView.swift */,
-				0586CD6325A2D7B90047C7BB /* MainMenuViewController.swift */,
-			);
-			path = MenuArea;
-			sourceTree = "<group>";
-		};
 		0589B58824DCF869006E0C6F /* View */ = {
 			isa = PBXGroup;
 			children = (
-				051F887325AB3F3B0041BE4E /* RootView.swift */,
-				0586CD5825A2C40A0047C7BB /* RootViewController.swift */,
-				058E1DE125354637000A948E /* ConsoleArea */,
-				058E1DDF253545E8000A948E /* EditorArea */,
-				0586CD5C25A2D56B0047C7BB /* MenuArea */,
-				058E1DE025354622000A948E /* WorkspaceArea */,
+				05F45C0F25CA3B0200C96ADB /* EditorView */,
+				05F45C1025CA3B1300C96ADB /* MenuView */,
+				05F45C1225CA3B6200C96ADB /* RootView */,
+				05F45C0E25CA3AF500C96ADB /* TabView */,
+				05F45C1125CA3B2200C96ADB /* WorkspaceView */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -389,23 +379,10 @@
 		0589B58924DCF87E006E0C6F /* WorkspaceManager */ = {
 			isa = PBXGroup;
 			children = (
-				05C8849925BB452B0058DBDB /* WorkspaceManager.swift */,
 				0522B0FD25C9715300CA0028 /* WorkspaceFile.swift */,
+				05C8849925BB452B0058DBDB /* WorkspaceManager.swift */,
 			);
 			path = WorkspaceManager;
-			sourceTree = "<group>";
-		};
-		0589B58A24DCF8FF006E0C6F /* Editor */ = {
-			isa = PBXGroup;
-			children = (
-				056B5C2724E30E6C00797D95 /* EditorLayoutManager.swift */,
-				056B5C2524E30E2900797D95 /* EditorTextStorage.swift */,
-				053F624B25BEC70900A4A0B1 /* EditorUndoManager.swift */,
-				056B5C2324E30DFB00797D95 /* EditorView.swift */,
-				056B5C2A24E30EEC00797D95 /* EditorViewController.swift */,
-				0589B58F24DD4EDD006E0C6F /* LineTable.swift */,
-			);
-			path = Editor;
 			sourceTree = "<group>";
 		};
 		0589B58D24DD4C9C006E0C6F /* Common */ = {
@@ -451,34 +428,6 @@
 				0540194724936B4E00287026 /* Structures */,
 			);
 			path = Protocol;
-			sourceTree = "<group>";
-		};
-		058E1DDF253545E8000A948E /* EditorArea */ = {
-			isa = PBXGroup;
-			children = (
-				05601E7825A29725007B91C1 /* MutableTabController.swift */,
-				05601E8025A2974D007B91C1 /* TabItem.swift */,
-				05601E7C25A2973C007B91C1 /* TabView.swift */,
-				0589B58A24DCF8FF006E0C6F /* Editor */,
-			);
-			path = EditorArea;
-			sourceTree = "<group>";
-		};
-		058E1DE025354622000A948E /* WorkspaceArea */ = {
-			isa = PBXGroup;
-			children = (
-				051C973725C90B710031C036 /* WorkspaceViewController.swift */,
-				051C973D25C90B7E0031C036 /* WorkspaceView.swift */,
-				051C974125C90B880031C036 /* WorkspaceViewCell.swift */,
-			);
-			path = WorkspaceArea;
-			sourceTree = "<group>";
-		};
-		058E1DE125354637000A948E /* ConsoleArea */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ConsoleArea;
 			sourceTree = "<group>";
 		};
 		058F7EC82511BFC20063D9AF /* Extension */ = {
@@ -570,10 +519,10 @@
 			children = (
 				05CA5CF6248C5F1700582319 /* AppDelegate.swift */,
 				0589B58D24DD4C9C006E0C6F /* Common */,
-				0589B58924DCF87E006E0C6F /* WorkspaceManager */,
 				058B6A11248C683A0099B32F /* LanguageServer */,
 				056706AB251525FC00F9D7E7 /* Syntaxes */,
 				0589B58824DCF869006E0C6F /* View */,
+				0589B58924DCF87E006E0C6F /* WorkspaceManager */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -606,6 +555,57 @@
 				05D4D4AA24D6AA7400A76239 /* PropertiesType.swift */,
 			);
 			path = Properties;
+			sourceTree = "<group>";
+		};
+		05F45C0E25CA3AF500C96ADB /* TabView */ = {
+			isa = PBXGroup;
+			children = (
+				05601E7825A29725007B91C1 /* MutableTabController.swift */,
+				05601E8025A2974D007B91C1 /* TabItem.swift */,
+				05601E7C25A2973C007B91C1 /* TabView.swift */,
+			);
+			path = TabView;
+			sourceTree = "<group>";
+		};
+		05F45C0F25CA3B0200C96ADB /* EditorView */ = {
+			isa = PBXGroup;
+			children = (
+				056B5C2724E30E6C00797D95 /* EditorLayoutManager.swift */,
+				056B5C2524E30E2900797D95 /* EditorTextStorage.swift */,
+				053F624B25BEC70900A4A0B1 /* EditorUndoManager.swift */,
+				056B5C2324E30DFB00797D95 /* EditorView.swift */,
+				056B5C2A24E30EEC00797D95 /* EditorViewController.swift */,
+				0589B58F24DD4EDD006E0C6F /* LineTable.swift */,
+			);
+			path = EditorView;
+			sourceTree = "<group>";
+		};
+		05F45C1025CA3B1300C96ADB /* MenuView */ = {
+			isa = PBXGroup;
+			children = (
+				0586CD5D25A2D78F0047C7BB /* MainMenuView.swift */,
+				0586CD6325A2D7B90047C7BB /* MainMenuViewController.swift */,
+			);
+			path = MenuView;
+			sourceTree = "<group>";
+		};
+		05F45C1125CA3B2200C96ADB /* WorkspaceView */ = {
+			isa = PBXGroup;
+			children = (
+				051C973D25C90B7E0031C036 /* WorkspaceView.swift */,
+				051C974125C90B880031C036 /* WorkspaceViewCell.swift */,
+				051C973725C90B710031C036 /* WorkspaceViewController.swift */,
+			);
+			path = WorkspaceView;
+			sourceTree = "<group>";
+		};
+		05F45C1225CA3B6200C96ADB /* RootView */ = {
+			isa = PBXGroup;
+			children = (
+				051F887325AB3F3B0041BE4E /* RootView.swift */,
+				0586CD5825A2C40A0047C7BB /* RootViewController.swift */,
+			);
+			path = RootView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
