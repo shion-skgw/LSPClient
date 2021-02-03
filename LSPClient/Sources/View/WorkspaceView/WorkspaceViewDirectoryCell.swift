@@ -9,7 +9,7 @@
 import UIKit
 
 private let INDENT_WIDTH = CGFloat(16.0)
-private let FOLD_WIDTH = CGFloat(11.0)
+private let FOLD_WIDTH = CGFloat(10.0)
 private let ICON_WIDTH = CGFloat(22.0)
 
 final class WorkspaceViewDirectoryCell: UITableViewCell {
@@ -67,12 +67,13 @@ final class WorkspaceViewDirectoryCell: UITableViewCell {
 
         // Icon area frame
         var imageViewFrame = imageView?.frame ?? .zero
-        imageViewFrame.origin.x = foldIconFrame.maxX + 4.0 + (ICON_WIDTH - imageViewFrame.width) / 2.0
+        imageViewFrame.origin.x = foldIconFrame.maxX + 5.0 + (ICON_WIDTH - imageViewFrame.width) / 2.0
+        imageViewFrame.origin.y = (frame.height - imageViewFrame.height) / 2.0
         imageView?.frame = imageViewFrame
 
         // File area name frame
         var textLabelFrame = textLabel?.frame ?? .zero
-        textLabelFrame.origin.x = foldIconFrame.maxX + 4.0 + ICON_WIDTH + 3.0
+        textLabelFrame.origin.x = foldIconFrame.maxX + 5.0 + ICON_WIDTH + 4.0
         textLabelFrame.size.width = frame.width - textLabelFrame.origin.x - layoutMargins.left - layoutMargins.right
         textLabel?.frame = textLabelFrame
     }

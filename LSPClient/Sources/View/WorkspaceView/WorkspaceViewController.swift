@@ -13,9 +13,7 @@ final class WorkspaceViewController: UIViewController {
     private weak var tableView: UITableView!
     private var workspaceRootFile: HierarchicalFile!
     private var rowFiles: [File] = []
-    private var foldingDirectories: [URL] = [
-//        URL(string: "file:///Users/shion/Documents/Eclipse/")!
-    ]
+    private var foldingDirectories: [URL] = []
 
     override func loadView() {
         let tableView = UITableView()
