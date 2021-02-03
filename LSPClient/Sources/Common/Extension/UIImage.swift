@@ -12,4 +12,5 @@ extension UIImage {
     static var gitIcon: UIImage {
         UIImage(named: "GitIcon")!
     }
+
 }

@@ -130,7 +130,7 @@ final class WorkspaceManager {
 
             let level = targetComponents.count - workspaceRootUri.pathComponents.count
             let isDirectory = properties.isDirectory ?? false
-            let isLink = properties.isSymbolicLink ?? properties.isAliasFile ?? false
+            let isLink = properties.isSymbolicLink == true || properties.isAliasFile == true
             let isHidden = properties.isHidden ?? false
             let childFile = HierarchicalFile(uri: target, level: level, isDirectory: isDirectory, isLink: isLink, isHidden: isHidden)
             current.children.append(childFile)

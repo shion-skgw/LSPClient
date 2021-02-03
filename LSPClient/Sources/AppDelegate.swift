@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        a.font.uiFont = UIFont.monospacedSystemFont(ofSize: 14.0, weight: .regular)
 //        a.save()
 
-        WorkspaceManager.shared.initialize(workspaceName: "w", rootUri: URL(string: "file:///Users/shion/Documents/Eclipse/")!, host: "host", port: 1)
+        WorkspaceManager.shared.initialize(workspaceName: "w", rootUri: URL(string: "file:///Users/shion/Desktop/")!, host: "host", port: 1)
 //        WorkspaceManager.shared.copy(documentUri: URL(string: "file:///Users/shion/Desktop/z/cc/1.jpg")!, source: .remote, destination: .original)
 
 //        let rootViewController = RootViewController()
