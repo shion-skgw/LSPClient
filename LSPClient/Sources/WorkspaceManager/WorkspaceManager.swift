@@ -8,17 +8,20 @@
 
 import Foundation
 
+private let INCLUDING_KEYS: [URLResourceKey] = [ .isDirectoryKey, .isSymbolicLinkKey, .isAliasFileKey, .isHiddenKey, .fileSizeKey, ]
+
 final class WorkspaceManager {
 
     static let shared: WorkspaceManager = WorkspaceManager()
 
     private(set) var workspaceName: String
+    private(set) var workspaceRootUri: DocumentUri
+    private(set) var remoteRootUrl: URL
 
-    private(set) var workspaceUrl: URL
-
-    private(set) var remoteWorkspaceUrl: URL
-
-    var localWorkspaceUrl: URL {
+    ///
+    /// Local workspace root URL
+    ///
+    var localRootUrl: URL {
         guard let applicationSupport = NSSearchPathForDirectoriesInDomains(.applicationSupportDirectory, .userDomainMask, true).first,
                 let bundleIdentifier = Bundle.main.bundleIdentifier else {
             fatalError()
@@ -29,128 +32,118 @@ final class WorkspaceManager {
         return url
     }
 
-    var originalWorkspaceUrl: URL {
-        localWorkspaceUrl.appendingPathComponent("orig", isDirectory: true)
+    ///
+    /// Local original workspace root URL
+    ///
+    var originalRootUrl: URL {
+        localRootUrl.appendingPathComponent("orig", isDirectory: true)
     }
 
-    var editWorkspaceUrl: URL {
-        localWorkspaceUrl.appendingPathComponent("edit", isDirectory: true)
+    ///
+    /// Local edit workspace root URL
+    ///
+    var editRootUrl: URL {
+        localRootUrl.appendingPathComponent("edit", isDirectory: true)
     }
 
-    private(set) var files: [DocumentUri: Property]
-
-    var fileList: [FileProperty] {
-        return files.map({ FileProperty(documentUri: $0.key, property: $0.value) })
-            .sorted(by: { $0.documentUri.absoluteString.localizedStandardCompare($1.documentUri.absoluteString) == .orderedAscending })
-    }
-
+    ///
+    /// Initialize
+    ///
     private init() {
         self.workspaceName = ""
-        self.workspaceUrl = URL(string: "file:///")!
-        self.remoteWorkspaceUrl = URL(string: "file:///")!
-        self.files = [:]
+        self.workspaceRootUri = URL(string: "file:///")!
+        self.remoteRootUrl = URL(string: "file:///")!
     }
 
-    func initialize(workspaceName: String, workspaceUrl: URL, host: String, port: Int) {
-        guard let remoteWorkspaceUrl = URL(string: "file://\(host):\(port)\(workspaceUrl.path)/") else {
+    ///
+    /// Initialize
+    ///
+    /// - Parameter workspaceName   : Workspace name
+    /// - Parameter rootUri         : Language server workspace root URI
+    /// - Parameter host            : Language server host
+    /// - Parameter port            : Language server port
+    ///
+    func initialize(workspaceName: String, rootUri: DocumentUri, host: String, port: Int) {
+        guard let remoteWorkspaceUrl = URL(string: "file://\(host):\(port)\(rootUri.path)/") else {
             fatalError()
         }
         self.workspaceName = workspaceName
-        self.workspaceUrl = workspaceUrl
-        self.remoteWorkspaceUrl = remoteWorkspaceUrl
-        self.files.removeAll()
-        self.refreshSourceList()
+        self.workspaceRootUri = rootUri
+        self.remoteRootUrl = remoteWorkspaceUrl
     }
 
-    func refreshSourceList() {
-        let includingKeys: [URLResourceKey] = [
-            .isDirectoryKey,
-            .isSymbolicLinkKey,
-            .isAliasFileKey,
-            .isHiddenKey,
-            .fileSizeKey
-        ]
-        guard let enumerator = FileManager.default.enumerator(at: remoteWorkspaceUrl, includingPropertiesForKeys: includingKeys) else {
+    ///
+    /// Fetch workspace files
+    ///
+    /// - Returns                   : Workspace files
+    ///
+    func fetchWorkspaceFiles() -> [WorkspaceFile] {
+        guard let enumerator = FileManager.default.enumerator(at: remoteRootUrl, includingPropertiesForKeys: INCLUDING_KEYS) else {
             fatalError()
         }
+
+        var files: [WorkspaceFile] = []
         for element in enumerator {
             guard let url = element as? NSURL,
                     let documentUri = documentUri(url),
-                    let properties = try? url.resourceValues(forKeys: includingKeys),
-                    let isDirectory = (properties[.isDirectoryKey] as? NSNumber)?.boolValue,
-                    let isSymbolicLink = (properties[.isSymbolicLinkKey] as? NSNumber)?.boolValue,
-                    let isAliasFile = (properties[.isAliasFileKey] as? NSNumber)?.boolValue,
-                    let isHidden = (properties[.isHiddenKey] as? NSNumber)?.boolValue else {
+                    let properties = try? url.resourceValues(forKeys: INCLUDING_KEYS) else {
                 continue
             }
-            let relativeLevel = documentUri.pathComponents.count - workspaceUrl.pathComponents.count
-            let fileSize = (properties[.fileSizeKey] as? NSNumber)?.intValue ?? 0
-            let source = Property(url as URL, relativeLevel, isDirectory, isSymbolicLink || isAliasFile, isHidden, fileSize)
-            files[documentUri] = source
+            let isDirectory = properties[.isDirectoryKey] as? NSNumber == NSNumber(true)
+            let isLink = properties[.isSymbolicLinkKey] as? NSNumber == NSNumber(true)
+            let isAlias = properties[.isAliasFileKey] as? NSNumber == NSNumber(true)
+            let fileType: WorkspaceFile.FileType = isDirectory ? .directory : isLink || isAlias ? .link : .file
+
+            let pathLevel = documentUri.pathComponents.count - workspaceRootUri.pathComponents.count
+            let isHidden = properties[.isHiddenKey] as? NSNumber == NSNumber(true)
+
+            let file = WorkspaceFile(uri: documentUri, level: pathLevel, type: fileType, isHidden: isHidden)
+            files.append(file)
         }
+
+        return files.sorted(by: { $0.uri.path.localizedStandardCompare($1.uri.path) == .orderedAscending })
     }
 
+
+    private func documentUri(_ remoteUrl: NSURL) -> DocumentUri? {
+        if let host = remoteUrl.host, let absoluteString = remoteUrl.absoluteString {
+            return DocumentUri(string: absoluteString.replacingOccurrences(of: host, with: ""))
+        }
+        return remoteUrl as DocumentUri
+    }
+
+
     func copy(documentUri: DocumentUri, source: Source, destination: Source) {
-        guard source != destination, files[documentUri]?.isDirectory == false else {
+        guard source != destination else {
             fatalError()
         }
 
         // Source file URL
         var sourceUrl: URL
         switch source {
-        case .remote:   sourceUrl = remoteWorkspaceUrl
-        case .original: sourceUrl = originalWorkspaceUrl
-        case .edit:     sourceUrl = editWorkspaceUrl
+        case .remote:   sourceUrl = remoteRootUrl
+        case .original: sourceUrl = originalRootUrl
+        case .edit:     sourceUrl = editRootUrl
         }
         sourceUrl.appendPathComponent(relativePath(documentUri), isDirectory: false)
 
         // Destination file URL
         var destinationUrl: URL
         switch destination {
-        case .remote:   destinationUrl = remoteWorkspaceUrl
-        case .original: destinationUrl = originalWorkspaceUrl
-        case .edit:     destinationUrl = editWorkspaceUrl
+        case .remote:   destinationUrl = remoteRootUrl
+        case .original: destinationUrl = originalRootUrl
+        case .edit:     destinationUrl = editRootUrl
         }
         destinationUrl.appendPathComponent(relativePath(documentUri), isDirectory: false)
     }
 
-    private func documentUri(_ url: NSURL) -> DocumentUri? {
-        if let host = url.host, let absoluteString = url.absoluteString {
-            return DocumentUri(string: absoluteString.replacingOccurrences(of: host, with: ""))
-        }
-        return url as DocumentUri
-    }
-
     private func relativePath(_ documentUri: DocumentUri) -> String {
-        return documentUri.absoluteString.replacingOccurrences(of: workspaceUrl.absoluteString, with: "")
+        return documentUri.absoluteString.replacingOccurrences(of: workspaceRootUri.absoluteString, with: "")
     }
 
 }
 
 extension WorkspaceManager {
-
-    struct FileProperty {
-        let documentUri: DocumentUri
-        let property: Property
-    }
-
-    struct Property {
-        let remoteUrl: URL
-        let relativeLevel: Int
-        let isDirectory: Bool
-        let isSymbolicLink: Bool
-        let isHidden: Bool
-        let fileSize: Int
-
-        fileprivate init(_ remoteUrl: URL, _ relativeLevel: Int, _ isDirectory: Bool, _ isSymbolicLink: Bool, _ isHidden: Bool, _ fileSize: Int) {
-            self.remoteUrl = remoteUrl
-            self.relativeLevel = relativeLevel
-            self.isDirectory = isDirectory
-            self.isSymbolicLink = isSymbolicLink
-            self.isHidden = isHidden
-            self.fileSize = fileSize
-        }
-    }
 
     enum Source {
         case remote
@@ -159,3 +152,4 @@ extension WorkspaceManager {
     }
 
 }
+

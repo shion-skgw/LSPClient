@@ -110,4 +110,16 @@ extension SyntaxLoader {
         case comment
     }
 
+
+
+
+    struct A {
+        let string: [String]
+        let multiLineString: [String]
+        let comment: [String]
+        let multiLineComment: [String]
+        let indentTrigger: [String]
+        let deindentTrigger: [String]
+    }
+
 }

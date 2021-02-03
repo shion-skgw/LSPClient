@@ -14,11 +14,11 @@ extension String {
     static let lineFeed = "\u{000A}"
 
     @inlinable var range: NSRange {
-        NSMakeRange(0, utf16.count)
+        NSMakeRange(0, length)
     }
 
     @inlinable var length: Int {
-        utf16.count
+        (self as NSString).length
     }
 
     @inlinable var monospaceCount: Int {
@@ -27,7 +27,7 @@ extension String {
         return single + double * 2
     }
 
-    @inlinable func enumerateLines(regex: NSRegularExpression, invoking body: @escaping (String) -> Void) {
+    @inlinable func enumerateLines(regex: NSRegularExpression, invoking body: (String) -> Void) {
         var matches = regex.matches(in: self, options: [], range: range).compactMap({ $0.range })
         if matches.isEmpty {
             body(self)
@@ -44,10 +44,6 @@ extension String {
                 location = range.upperBound
             }
         }
-    }
-
-    @inlinable func addIndent(with str: String) -> String {
-        return str.appending(self)
     }
 
     @inlinable func removeIndent(with str: String) -> Substring? {

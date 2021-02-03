@@ -109,6 +109,7 @@ extension EditorViewController: UITextViewDelegate {
         var useHardTab: Bool = false
         var tabSize: Int = 4
         var indent: String = "    "
+        var commentOut: String = "//"
     }
 
     struct EditStatus {
@@ -190,7 +191,7 @@ extension EditorViewController: UITextViewDelegate {
             let beforeText = fullText.substring(with: lineRange)
             var afterText = ""
             beforeText.enumerateLines(regex: Self.newLine) {
-                afterText.append($0.addIndent(with: self.rule.indent))
+                afterText.append(self.rule.indent.appending($0))
             }
             editorTextStorage.replaceCharacters(in: lineRange, with: afterText)
             editorView.selectedRange = NSMakeRange(lineRange.location, afterText.length)
@@ -329,7 +330,8 @@ extension EditorViewController: UITextViewDelegate {
 extension EditorViewController {
 
     func undo() {
-        guard let editHistory = editorUndoManager.editHistory else {
+        guard let editHistory = editorUndoManager.editHistory,
+                editHistory.location + editHistory.after.length <= editorTextStorage.string.length else {
             return
         }
         editorUndoManager.registerRedo()
@@ -343,7 +345,8 @@ extension EditorViewController {
     }
 
     func redo() {
-        guard let editHistory = editorUndoManager.editHistory else {
+        guard let editHistory = editorUndoManager.editHistory,
+                editHistory.location + editHistory.before.length <= editorTextStorage.string.length else {
             return
         }
         editorUndoManager.registerUndo()
