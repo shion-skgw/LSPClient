@@ -10,6 +10,7 @@ import UIKit
 
 final class WorkspaceViewController: UIViewController {
 
+    private weak var tableView: UITableView!
     private var workspaceRootFile: HierarchicalFile!
     private var rowFiles: [File] = []
     private var foldingDirectories: [URL] = [
@@ -22,6 +23,7 @@ final class WorkspaceViewController: UIViewController {
         tableView.rowHeight = UIFont.systemFontSize * 2.5
         tableView.dataSource = self
         tableView.delegate = self
+        self.tableView = tableView
         self.view = tableView
 
         fetchWorkspaceFiles()
@@ -65,7 +67,8 @@ extension WorkspaceViewController: UITableViewDataSource {
         let file = rowFiles[indexPath.row]
         if file.isDirectory {
             let dirCell = WorkspaceViewDirectoryCell(uri: file.uri, isHidden: file.isHidden, level: file.level)
-            dirCell.isFold = foldingDirectories.contains(dirCell.uri)
+            dirCell.foldIcon.isFold = foldingDirectories.contains(file.uri)
+            dirCell.foldIcon.addTapAction(self, action: #selector(toggleFold(_:)))
             return dirCell
         } else {
             return WorkspaceViewFileCell(uri: file.uri, isLink: file.isLink, isHidden: file.isHidden, level: file.level)
@@ -94,42 +97,52 @@ extension WorkspaceViewController: UITableViewDelegate {
             print("open: \(fileCell.uri)")
 
         } else if let dirCell = tableView.cellForRow(at: indexPath) as? WorkspaceViewDirectoryCell {
-            // Toggle fold flag
-            dirCell.isFold.toggle()
-
-            if dirCell.isFold {
-                // Get target IndexPath
-                let paths = indexPaths(dirCell.uri)
-
-                // Remove data source
-                foldingDirectories.append(dirCell.uri)
-                foldingDirectories.sort(by: localizedStandardOrder)
-                rowFiles.removeAll(where: { $0.uri != dirCell.uri && $0.uri.hasPrefix(dirCell.uri) })
-
-                // Delete table row
-                tableView.beginUpdates()
-                tableView.deleteRows(at: paths, with: .automatic)
-                tableView.endUpdates()
-
-            } else {
-                // Refresh data source
-                foldingDirectories.removeAll(where: { $0 == dirCell.uri })
-                rowFiles.removeAll()
-                shouldShowFiles(workspaceRootFile)
-
-                // Get target IndexPath
-                let paths = indexPaths(dirCell.uri)
-
-                // Insert table row
-                tableView.beginUpdates()
-                tableView.insertRows(at: paths, with: .automatic)
-                tableView.endUpdates()
-            }
+            print("select dir: \(dirCell.uri)")
 
         } else {
             fatalError()
         }
     }
+
+    @objc func toggleFold(_ sender: UIGestureRecognizer) {
+        guard let foldIcon = sender.view as? WorkspaceFoldIcon,
+                let targetUri = (foldIcon.superview?.superview as? WorkspaceViewDirectoryCell)?.uri else {
+            fatalError()
+        }
+
+        // Toggle fold flag
+        foldIcon.isFold.toggle()
+
+        if foldIcon.isFold {
+            // Get target IndexPath
+            let paths = indexPaths(targetUri)
+
+            // Remove data source
+            foldingDirectories.append(targetUri)
+            foldingDirectories.sort(by: localizedStandardOrder)
+            rowFiles.removeAll(where: { $0.uri != targetUri && $0.uri.hasPrefix(targetUri) })
+
+            // Delete table row
+            tableView.beginUpdates()
+            tableView.deleteRows(at: paths, with: .automatic)
+            tableView.endUpdates()
+
+        } else {
+            // Refresh data source
+            foldingDirectories.removeAll(where: { $0 == targetUri })
+            rowFiles.removeAll()
+            shouldShowFiles(workspaceRootFile)
+
+            // Get target IndexPath
+            let paths = indexPaths(targetUri)
+
+            // Insert table row
+            tableView.beginUpdates()
+            tableView.insertRows(at: paths, with: .automatic)
+            tableView.endUpdates()
+        }
+    }
+
 
     private func indexPaths(_ uri: DocumentUri) -> [IndexPath] {
         var startIndex = 0

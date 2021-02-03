@@ -66,6 +66,7 @@
 		056B5C2B24E30EEC00797D95 /* EditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056B5C2A24E30EEC00797D95 /* EditorViewController.swift */; };
 		05828D7B249B6C7F008D2DA0 /* CodingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05828D7A249B6C7F008D2DA0 /* CodingError.swift */; };
 		0585E77825CB18FB009BA2C3 /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0585E77725CB18FB009BA2C3 /* URL.swift */; };
+		0585E78425CB4F96009BA2C3 /* WorkspaceFoldIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0585E78325CB4F96009BA2C3 /* WorkspaceFoldIcon.swift */; };
 		0586CD5925A2C40A0047C7BB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586CD5825A2C40A0047C7BB /* RootViewController.swift */; };
 		0586CD5E25A2D78F0047C7BB /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586CD5D25A2D78F0047C7BB /* MainMenuView.swift */; };
 		0586CD6425A2D7B90047C7BB /* MainMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586CD6325A2D7B90047C7BB /* MainMenuViewController.swift */; };
@@ -183,6 +184,7 @@
 		056B5C2A24E30EEC00797D95 /* EditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorViewController.swift; sourceTree = "<group>"; };
 		05828D7A249B6C7F008D2DA0 /* CodingError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodingError.swift; sourceTree = "<group>"; };
 		0585E77725CB18FB009BA2C3 /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
+		0585E78325CB4F96009BA2C3 /* WorkspaceFoldIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceFoldIcon.swift; sourceTree = "<group>"; };
 		0586CD5825A2C40A0047C7BB /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		0586CD5D25A2D78F0047C7BB /* MainMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
 		0586CD6325A2D7B90047C7BB /* MainMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuViewController.swift; sourceTree = "<group>"; };
@@ -589,6 +591,7 @@
 		05F45C1125CA3B2200C96ADB /* WorkspaceView */ = {
 			isa = PBXGroup;
 			children = (
+				0585E78325CB4F96009BA2C3 /* WorkspaceFoldIcon.swift */,
 				051C973D25C90B7E0031C036 /* WorkspaceView.swift */,
 				051C973725C90B710031C036 /* WorkspaceViewController.swift */,
 				0567AD8525CA81100055F3AF /* WorkspaceViewDirectoryCell.swift */,
@@ -770,6 +773,7 @@
 				05BAAB1C24A3530500A3EADC /* Common.swift in Sources */,
 				056732D42496433E00E7650B /* MarkupContent.swift in Sources */,
 				0541881D2490C71900C6D9A2 /* ParameterType.swift in Sources */,
+				0585E78425CB4F96009BA2C3 /* WorkspaceFoldIcon.swift in Sources */,
 				05BAAB3624A3538400A3EADC /* Highlight.swift in Sources */,
 				0540194F24936C2300287026 /* Location.swift in Sources */,
 				054019592493718200287026 /* TextDocumentEdit.swift in Sources */,

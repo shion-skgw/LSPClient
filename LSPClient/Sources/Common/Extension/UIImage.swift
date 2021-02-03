@@ -14,4 +14,12 @@ extension UIImage {
         UIImage(named: "GitIcon")!
     }
 
+    @inlinable static var triangleRight: UIImage {
+        UIImage(named: "TriangleRight")!
+    }
+
+    @inlinable static var triangleDown: UIImage {
+        UIImage(named: "TriangleDown")!
+    }
+
 }

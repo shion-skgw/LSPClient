@@ -9,48 +9,39 @@
 import UIKit
 
 private let INDENT_WIDTH = CGFloat(16.0)
+private let FOLD_WIDTH = CGFloat(11.0)
 private let ICON_WIDTH = CGFloat(22.0)
-private let FOLD = "▶︎"
-private let UNFOLD = "▼"
 
 final class WorkspaceViewDirectoryCell: UITableViewCell {
 
     let uri: DocumentUri
     let level: Int
-    private(set) weak var foldLabel: UILabel?
-
-    var isFold: Bool {
-        didSet {
-            self.foldLabel?.text = isFold ? FOLD : UNFOLD
-        }
-    }
+    private(set) weak var foldIcon: WorkspaceFoldIcon!
 
     init(uri: DocumentUri, isHidden: Bool, level: Int) {
         // Initialize
         self.uri = uri
         self.level = level
-        self.isFold = false
         super.init(style: .default, reuseIdentifier: "WorkspaceViewDirectoryCell")
+
+        // Fold icon view
+        let foldIcon = WorkspaceFoldIcon()
+        foldIcon.tintColor = .label
+        self.contentView.addSubview(foldIcon)
+        self.foldIcon = foldIcon
+
+        // Image view
+        self.imageView?.image = image(isHidden)
+        self.imageView?.tintColor = .label
+
+        // Text label
+        self.textLabel?.text = uri.lastPathComponent
+        self.textLabel?.font = UIFont.systemFont
 
         // Margin setting
         self.preservesSuperviewLayoutMargins = false
         self.layoutMargins.left = 6
         self.layoutMargins.right = 6
-
-        // Fold label
-        let foldLabel = UILabel()
-        foldLabel.text = UNFOLD
-        foldLabel.font = UIFont.systemFont
-        foldLabel.textAlignment = .center
-        self.contentView.addSubview(foldLabel)
-        self.foldLabel = foldLabel
-
-        // Image view
-        self.imageView?.image = image(isHidden)
-
-        // Text label
-        self.textLabel?.text = uri.lastPathComponent
-        self.textLabel?.font = UIFont.systemFont
     }
 
     required init?(coder: NSCoder) {
@@ -60,28 +51,28 @@ final class WorkspaceViewDirectoryCell: UITableViewCell {
     private func image(_ isHidden: Bool) -> UIImage {
         let config = UIImage.SymbolConfiguration(pointSize: 16.0, weight: .light)
         let name = isHidden ? "folder" : "folder.fill"
-        let image = UIImage(systemName: name, withConfiguration: config)!
-        return image
+        return UIImage(systemName: name, withConfiguration: config)!
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
 
         // Fold icon area frame
-        var foldLabelFrame = CGRect.zero
-        foldLabelFrame.origin.x = layoutMargins.left + INDENT_WIDTH * CGFloat(level)
-        foldLabelFrame.size.width = UIFont.systemFont.pointSize
-        foldLabelFrame.size.height = frame.height
-        foldLabel?.frame = foldLabelFrame
+        var foldIconFrame = CGRect.zero
+        foldIconFrame.origin.x = layoutMargins.left + INDENT_WIDTH * CGFloat(level)
+        foldIconFrame.origin.y = (frame.height - FOLD_WIDTH) / 2.0
+        foldIconFrame.size.width = FOLD_WIDTH
+        foldIconFrame.size.height = FOLD_WIDTH
+        foldIcon.frame = foldIconFrame
 
         // Icon area frame
         var imageViewFrame = imageView?.frame ?? .zero
-        imageViewFrame.origin.x = foldLabelFrame.maxX + 3.0 + (ICON_WIDTH - imageViewFrame.width) / 2.0
+        imageViewFrame.origin.x = foldIconFrame.maxX + 4.0 + (ICON_WIDTH - imageViewFrame.width) / 2.0
         imageView?.frame = imageViewFrame
 
         // File area name frame
         var textLabelFrame = textLabel?.frame ?? .zero
-        textLabelFrame.origin.x = foldLabelFrame.maxX + 3.0 + ICON_WIDTH + 4.0
+        textLabelFrame.origin.x = foldIconFrame.maxX + 4.0 + ICON_WIDTH + 3.0
         textLabelFrame.size.width = frame.width - textLabelFrame.origin.x - layoutMargins.left - layoutMargins.right
         textLabel?.frame = textLabelFrame
     }
