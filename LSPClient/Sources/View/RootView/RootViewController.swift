@@ -12,7 +12,7 @@ final class RootViewController: UIViewController {
 
     weak var viewContainer: UIView!
     weak var mainMenu: MainMenuViewController!
-    weak var editor: MutableTabController!
+    weak var editor: EditorTabViewController!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,7 +22,7 @@ final class RootViewController: UIViewController {
         add(child: mainMenu)
         self.mainMenu = mainMenu
 
-        let editor = MutableTabController()
+        let editor = EditorTabViewController()
         add(child: editor)
         self.editor = editor
 

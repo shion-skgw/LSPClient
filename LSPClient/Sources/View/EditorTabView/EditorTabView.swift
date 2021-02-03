@@ -1,5 +1,5 @@
 //
-//  TabView.swift
+//  EditorTabView.swift
 //  LSPClient
 //
 //  Created by Shion on 2021/01/04.
@@ -8,12 +8,12 @@
 
 import UIKit
 
-final class TabView: UIScrollView {
+final class EditorTabView: UIScrollView {
 
     private(set) weak var container: UIStackView!
 
-    var tabItems: [TabItem] {
-        container.subviews.compactMap({ $0 as? TabItem })
+    var tabItems: [EditorTabItem] {
+        container.subviews.compactMap({ $0 as? EditorTabItem })
     }
 
     override init(frame: CGRect) {
@@ -45,11 +45,11 @@ final class TabView: UIScrollView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func add(item: TabItem) {
+    func add(item: EditorTabItem) {
         container.addArrangedSubview(item)
     }
 
-    func remove(item: TabItem) {
+    func remove(item: EditorTabItem) {
         container.removeArrangedSubview(item)
         item.removeFromSuperview()
     }

@@ -1,5 +1,5 @@
 //
-//  MutableTabController.swift
+//  EditorTabViewController.swift
 //  LSPClient
 //
 //  Created by Shion on 2021/01/04.
@@ -9,9 +9,9 @@
 import UIKit
 import OSLog
 
-final class MutableTabController: UIViewController {
+final class EditorTabViewController: UIViewController {
 
-    private(set) weak var tabContainer: TabView!
+    private(set) weak var tabContainer: EditorTabView!
     private(set) weak var viewContainer: UIView!
 
     private(set) var tabHeight: CGFloat = UIFont.systemFontSize * 2
@@ -27,7 +27,7 @@ final class MutableTabController: UIViewController {
 
         let codeStyle = CodeStyle.load()
 
-        let tabContainer = TabView()
+        let tabContainer = EditorTabView()
         tabContainer.backgroundColor = codeStyle.tabAreaColor.uiColor
         view.addSubview(tabContainer)
         self.tabContainer = tabContainer
@@ -57,7 +57,7 @@ final class MutableTabController: UIViewController {
         viewContainer.subviews.forEach({ $0.frame = editorViewFrame })
     }
 
-    @objc func selectTab(sender: TabItem) {
+    @objc func selectTab(sender: EditorTabItem) {
         tabContainer.tabItems.forEach({ $0.isActive = $0.tag == sender.tag })
         viewContainer.subviews.forEach() {
             if $0.tag == sender.tag {
@@ -99,7 +99,7 @@ final class MutableTabController: UIViewController {
 
         // Add tab
         let a = CGRect(origin: .zero, size: CGSize(width: 100, height: 27))
-        let tabItem = TabItem(frame: a)
+        let tabItem = EditorTabItem(frame: a)
         tabItem.set(title: title)
         tabItem.set(codeStyle: CodeStyle.load())
         tabItem.set(tagNumber: tagNumber)

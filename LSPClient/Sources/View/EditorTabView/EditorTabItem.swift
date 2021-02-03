@@ -1,5 +1,5 @@
 //
-//  TabItem.swift
+//  EditorTabItem.swift
 //  LSPClient
 //
 //  Created by Shion on 2021/01/04.
@@ -8,7 +8,7 @@
 
 import UIKit.UIButton
 
-final class TabItem: UIButton {
+final class EditorTabItem: UIButton {
 
     private var activeColor: UIColor = .white
     private var inactiveColor: UIColor = .white
