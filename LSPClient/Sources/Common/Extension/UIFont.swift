@@ -10,16 +10,8 @@ import UIKit.UIFont
 
 extension UIFont {
 
-    static var systemFont: UIFont {
+    @inlinable static var systemFont: UIFont {
         UIFont.systemFont(ofSize: UIFont.systemFontSize)
-    }
-
-    static var smallSystemFont: UIFont {
-        UIFont.systemFont(ofSize: UIFont.smallSystemFontSize)
-    }
-
-    static var monospacedSystemFont: UIFont {
-        UIFont.monospacedSystemFont(ofSize: UIFont.systemFontSize, weight: .regular)
     }
 
 }

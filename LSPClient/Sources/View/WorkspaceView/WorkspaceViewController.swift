@@ -103,8 +103,8 @@ extension WorkspaceViewController: UITableViewDelegate {
 
                 // Remove data source
                 foldingDirectories.append(dirCell.uri)
-                foldingDirectories.sort(by: { $0.path.localizedStandardCompare($1.path) == .orderedAscending })
-                rowFiles.removeAll(where: { $0.uri != dirCell.uri && $0.uri.absoluteString.hasPrefix(dirCell.uri.absoluteString) })
+                foldingDirectories.sort(by: localizedStandardOrder)
+                rowFiles.removeAll(where: { $0.uri != dirCell.uri && $0.uri.hasPrefix(dirCell.uri) })
 
                 // Delete table row
                 tableView.beginUpdates()
@@ -139,7 +139,7 @@ extension WorkspaceViewController: UITableViewDelegate {
             if rowFiles[index].uri == uri {
                 startIndex = index + 1
                 endIndex = startIndex
-            } else if rowFiles[index].uri.absoluteString.hasPrefix(uri.absoluteString) {
+            } else if rowFiles[index].uri.hasPrefix(uri) {
                 endIndex = index
             }
         }

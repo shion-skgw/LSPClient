@@ -26,7 +26,7 @@ extension UIColor {
         return Hue(hue: hue, saturation: saturation, brightness: brightness, alpha: alpha)
     }
 
-    var isBright: Bool {
+    @inlinable var isBright: Bool {
         // algorithm from: http://www.w3.org/WAI/ER/WD-AERT/#color-contrast
         var red = CGFloat.zero
         var green = CGFloat.zero

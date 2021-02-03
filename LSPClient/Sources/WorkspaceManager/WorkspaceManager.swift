@@ -91,7 +91,7 @@ final class WorkspaceManager {
 
         enumerator.compactMap({ $0 as! URL })
             .compactMap({ documentUri($0) })
-            .sorted(by: { $0.path.localizedStandardCompare($1.path) == .orderedAscending })
+            .sorted(by: localizedStandardOrder)
             .forEach({ parseFileHierarchy($0, &hierarchicalFile) })
 
         return hierarchicalFile

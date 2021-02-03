@@ -9,7 +9,8 @@
 import UIKit
 
 extension UIImage {
-    static var gitIcon: UIImage {
+
+    @inlinable static var gitIcon: UIImage {
         UIImage(named: "GitIcon")!
     }
 

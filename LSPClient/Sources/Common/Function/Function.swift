@@ -8,3 +8,7 @@
 
 import Foundation
 
+@inlinable func localizedStandardOrder(_ url1: URL, _ url2: URL) -> Bool {
+    return url1.path.localizedStandardCompare(url2.path) == .orderedAscending
+}
+
