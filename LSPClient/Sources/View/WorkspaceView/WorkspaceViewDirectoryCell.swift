@@ -18,11 +18,11 @@ final class WorkspaceViewDirectoryCell: UITableViewCell {
     let level: Int
     private(set) weak var foldIcon: WorkspaceFoldIcon!
 
-    init(uri: DocumentUri, isHidden: Bool, level: Int) {
+    init(file: WorkspaceFile) {
         // Initialize
-        self.uri = uri
-        self.level = level
-        super.init(style: .default, reuseIdentifier: uri.absoluteString)
+        self.uri = file.uri
+        self.level = file.level
+        super.init(style: .default, reuseIdentifier: file.uri.absoluteString)
 
         // Fold icon view
         let foldIcon = WorkspaceFoldIcon()
@@ -31,7 +31,7 @@ final class WorkspaceViewDirectoryCell: UITableViewCell {
         self.foldIcon = foldIcon
 
         // Image view
-        self.imageView?.image = image(isHidden)
+        self.imageView?.image = image(file.isHidden)
         self.imageView?.tintColor = .label
 
         // Text label

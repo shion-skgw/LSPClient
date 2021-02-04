@@ -18,15 +18,15 @@ final class WorkspaceViewFileCell: UITableViewCell {
     let level: Int
     let isFile: Bool
 
-    init(uri: DocumentUri, isLink: Bool, isHidden: Bool, level: Int) {
+    init(file: WorkspaceFile) {
         // Initialize
-        self.uri = uri
-        self.level = level
-        self.isFile = !isLink
+        self.uri = file.uri
+        self.level = file.level
+        self.isFile = !file.isLink
         super.init(style: .default, reuseIdentifier: uri.absoluteString)
 
         // Image view
-        self.imageView?.image = image(isLink, isHidden)
+        self.imageView?.image = image(file.isLink, file.isHidden)
         self.imageView?.tintColor = .label
 
         // Text label

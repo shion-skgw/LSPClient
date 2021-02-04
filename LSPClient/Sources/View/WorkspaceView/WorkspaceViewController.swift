@@ -12,7 +12,7 @@ final class WorkspaceViewController: UIViewController {
 
     private weak var tableView: UITableView!
     private var workspaceRootFile: HierarchicalFile!
-    private var rowFiles: [File] = []
+    private var rowFiles: [WorkspaceFile] = []
     private var foldingDirectories: [URL] = []
 
     override func loadView() {
@@ -32,23 +32,6 @@ final class WorkspaceViewController: UIViewController {
 
 extension WorkspaceViewController: UITableViewDataSource {
 
-    private struct File {
-        let uri: DocumentUri
-        let level: Int
-        let isDirectory: Bool
-        let isLink: Bool
-        let isHidden: Bool
-
-        init(_ file: HierarchicalFile) {
-            self.uri = file.uri
-            self.level = file.level
-            self.isDirectory = file.isDirectory
-            self.isLink = file.isLink
-            self.isHidden = file.isHidden
-        }
-    }
-
-
     func fetchWorkspaceFiles() {
         workspaceRootFile = WorkspaceManager.shared.fetchFileHierarchy()
         rowFiles.removeAll()
@@ -56,7 +39,7 @@ extension WorkspaceViewController: UITableViewDataSource {
     }
 
     private func shouldShowFiles(_ target: HierarchicalFile) {
-        rowFiles.append(File(target))
+        rowFiles.append(WorkspaceFile(target))
 
         if !foldingDirectories.contains(target.uri) {
             target.children.forEach({ shouldShowFiles($0) })
@@ -75,12 +58,12 @@ extension WorkspaceViewController: UITableViewDataSource {
     }
 
 
-    private func workspaceViewDirectoryCell(_ file: File) -> WorkspaceViewDirectoryCell {
+    private func workspaceViewDirectoryCell(_ file: WorkspaceFile) -> WorkspaceViewDirectoryCell {
         if let dirCell = tableView.dequeueReusableCell(withIdentifier: file.uri.absoluteString) as? WorkspaceViewDirectoryCell {
             dirCell.foldIcon.isFold = foldingDirectories.contains(file.uri)
             return dirCell
         } else {
-            let dirCell = WorkspaceViewDirectoryCell(uri: file.uri, isHidden: file.isHidden, level: file.level)
+            let dirCell = WorkspaceViewDirectoryCell(file: file)
             dirCell.foldIcon.isFold = foldingDirectories.contains(file.uri)
             dirCell.foldIcon.addTapAction(self, action: #selector(toggleFold(_:)))
             return dirCell
@@ -88,11 +71,11 @@ extension WorkspaceViewController: UITableViewDataSource {
     }
 
 
-    private func workspaceViewFileCell(_ file: File) -> WorkspaceViewFileCell {
+    private func workspaceViewFileCell(_ file: WorkspaceFile) -> WorkspaceViewFileCell {
         if let fileCell = tableView.dequeueReusableCell(withIdentifier: file.uri.absoluteString) as? WorkspaceViewFileCell {
             return fileCell
         } else {
-            return WorkspaceViewFileCell(uri: file.uri, isLink: file.isLink, isHidden: file.isHidden, level: file.level)
+            return WorkspaceViewFileCell(file: file)
         }
     }
 
