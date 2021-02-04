@@ -55,6 +55,14 @@ extension WorkspaceViewController: UITableViewDataSource {
         shouldShowFiles(workspaceRootFile)
     }
 
+    private func shouldShowFiles(_ target: HierarchicalFile) {
+        rowFiles.append(File(target))
+
+        if !foldingDirectories.contains(target.uri) {
+            target.children.forEach({ shouldShowFiles($0) })
+        }
+    }
+
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return rowFiles.count
@@ -63,22 +71,28 @@ extension WorkspaceViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let file = rowFiles[indexPath.row]
-        if file.isDirectory {
+        return file.isDirectory ? workspaceViewDirectoryCell(file) : workspaceViewFileCell(file)
+    }
+
+
+    private func workspaceViewDirectoryCell(_ file: File) -> WorkspaceViewDirectoryCell {
+        if let dirCell = tableView.dequeueReusableCell(withIdentifier: file.uri.absoluteString) as? WorkspaceViewDirectoryCell {
+            dirCell.foldIcon.isFold = foldingDirectories.contains(file.uri)
+            return dirCell
+        } else {
             let dirCell = WorkspaceViewDirectoryCell(uri: file.uri, isHidden: file.isHidden, level: file.level)
             dirCell.foldIcon.isFold = foldingDirectories.contains(file.uri)
             dirCell.foldIcon.addTapAction(self, action: #selector(toggleFold(_:)))
             return dirCell
-        } else {
-            return WorkspaceViewFileCell(uri: file.uri, isLink: file.isLink, isHidden: file.isHidden, level: file.level)
         }
     }
 
 
-    private func shouldShowFiles(_ target: HierarchicalFile) {
-        rowFiles.append(File(target))
-
-        if !foldingDirectories.contains(target.uri) {
-            target.children.forEach({ shouldShowFiles($0) })
+    private func workspaceViewFileCell(_ file: File) -> WorkspaceViewFileCell {
+        if let fileCell = tableView.dequeueReusableCell(withIdentifier: file.uri.absoluteString) as? WorkspaceViewFileCell {
+            return fileCell
+        } else {
+            return WorkspaceViewFileCell(uri: file.uri, isLink: file.isLink, isHidden: file.isHidden, level: file.level)
         }
     }
 

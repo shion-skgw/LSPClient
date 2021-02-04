@@ -23,7 +23,7 @@ final class WorkspaceViewFileCell: UITableViewCell {
         self.uri = uri
         self.level = level
         self.isFile = !isLink
-        super.init(style: .default, reuseIdentifier: "WorkspaceViewFileCell")
+        super.init(style: .default, reuseIdentifier: uri.absoluteString)
 
         // Image view
         self.imageView?.image = image(isLink, isHidden)

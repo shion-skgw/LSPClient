@@ -22,7 +22,7 @@ final class WorkspaceViewDirectoryCell: UITableViewCell {
         // Initialize
         self.uri = uri
         self.level = level
-        super.init(style: .default, reuseIdentifier: "WorkspaceViewDirectoryCell")
+        super.init(style: .default, reuseIdentifier: uri.absoluteString)
 
         // Fold icon view
         let foldIcon = WorkspaceFoldIcon()
