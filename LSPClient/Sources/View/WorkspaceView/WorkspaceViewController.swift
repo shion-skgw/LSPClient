@@ -8,21 +8,20 @@
 
 import UIKit
 
-final class WorkspaceViewController: UIViewController {
+final class WorkspaceViewController: UITableViewController {
 
-    private weak var tableView: UITableView!
     private var workspaceRootFile: HierarchicalFile!
     private var rowFiles: [WorkspaceFile] = []
-    private var foldingDirectories: [URL] = []
+    private var foldDirectories: [URL] = []
 
     override func loadView() {
         let tableView = UITableView()
-        tableView.separatorStyle = .none
         tableView.rowHeight = UIFont.systemFontSize * 2.5
+        tableView.estimatedRowHeight = 0
+        tableView.separatorStyle = .none
         tableView.dataSource = self
         tableView.delegate = self
         self.tableView = tableView
-        self.view = tableView
 
         fetchWorkspaceFiles()
     }
@@ -30,91 +29,79 @@ final class WorkspaceViewController: UIViewController {
 }
 
 
-extension WorkspaceViewController: UITableViewDataSource {
+// MARK: - UITableViewDataSource
+
+extension WorkspaceViewController {
 
     func fetchWorkspaceFiles() {
-        workspaceRootFile = WorkspaceManager.shared.fetchFileHierarchy()
-        rowFiles.removeAll()
-        shouldShowFiles(workspaceRootFile)
-    }
+        self.workspaceRootFile = WorkspaceManager.shared.fetchFileHierarchy()
 
-    private func shouldShowFiles(_ target: HierarchicalFile) {
-        rowFiles.append(WorkspaceFile(target))
+        let files = workspaceFiles(self.workspaceRootFile)
 
-        if !foldingDirectories.contains(target.uri) {
-            target.children.forEach({ shouldShowFiles($0) })
+        self.rowFiles = files.filter(shouldShowFile)
+
+        for file in files {
+            tableView.register(WorkspaceViewCell.self, forCellReuseIdentifier: file.cellReuseIdentifier)
         }
     }
 
+    private func workspaceFiles(_ target: HierarchicalFile) -> [WorkspaceFile] {
+        var files: [WorkspaceFile] = [WorkspaceFile(file: target)]
+        target.children.forEach({ files.append(contentsOf: workspaceFiles($0)) })
+        return files
+    }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    private func shouldShowFile(_ file: WorkspaceFile) -> Bool {
+        return !foldDirectories.contains(where: { file.uri != $0 && file.uri.hasPrefix($0) })
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return rowFiles.count
     }
 
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let file = rowFiles[indexPath.row]
-        return file.isDirectory ? workspaceViewDirectoryCell(file) : workspaceViewFileCell(file)
-    }
+        let identifier = file.cellReuseIdentifier
 
-
-    private func workspaceViewDirectoryCell(_ file: WorkspaceFile) -> WorkspaceViewDirectoryCell {
-        if let dirCell = tableView.dequeueReusableCell(withIdentifier: file.uri.absoluteString) as? WorkspaceViewDirectoryCell {
-            dirCell.foldIcon.isFold = foldingDirectories.contains(file.uri)
-            return dirCell
-        } else {
-            let dirCell = WorkspaceViewDirectoryCell(file: file)
-            dirCell.foldIcon.isFold = foldingDirectories.contains(file.uri)
-            dirCell.foldIcon.addTapAction(self, action: #selector(toggleFold(_:)))
-            return dirCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as? WorkspaceViewCell else {
+            fatalError()
         }
-    }
 
-
-    private func workspaceViewFileCell(_ file: WorkspaceFile) -> WorkspaceViewFileCell {
-        if let fileCell = tableView.dequeueReusableCell(withIdentifier: file.uri.absoluteString) as? WorkspaceViewFileCell {
-            return fileCell
-        } else {
-            return WorkspaceViewFileCell(file: file)
-        }
+        cell.uri = file.uri
+        cell.nameLabel.text = file.uri.lastPathComponent
+        cell.foldButton?.isFold = foldDirectories.contains(file.uri)
+        cell.foldButton?.addTarget(self, action: #selector(toggleFold(_:)), for: .touchUpInside)
+        return cell
     }
 
 }
 
 
-extension WorkspaceViewController: UITableViewDelegate {
+// MARK: - UITableViewDelegate
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let fileCell = tableView.cellForRow(at: indexPath) as? WorkspaceViewFileCell {
-            if !fileCell.isFile {
-                return
-            }
-            print("open: \(fileCell.uri)")
+extension WorkspaceViewController {
 
-        } else if let dirCell = tableView.cellForRow(at: indexPath) as? WorkspaceViewDirectoryCell {
-            print("select dir: \(dirCell.uri)")
-
-        } else {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let cell = tableView.cellForRow(at: indexPath) as? WorkspaceViewCell else {
             fatalError()
         }
     }
 
-    @objc func toggleFold(_ sender: UIGestureRecognizer) {
-        guard let foldIcon = sender.view as? WorkspaceFoldIcon,
-                let targetUri = (foldIcon.superview?.superview as? WorkspaceViewDirectoryCell)?.uri else {
+    @objc func toggleFold(_ sender: WorkspaceFoldButton) {
+        guard let targetUri = (sender.superview?.superview as? WorkspaceViewCell)?.uri else {
             fatalError()
         }
 
         // Toggle fold flag
-        foldIcon.isFold.toggle()
+        sender.isFold.toggle()
 
-        if foldIcon.isFold {
+        if sender.isFold {
             // Get target IndexPath
             let paths = indexPaths(targetUri)
 
             // Remove data source
-            foldingDirectories.append(targetUri)
-            foldingDirectories.sort(by: localizedStandardOrder)
+            foldDirectories.append(targetUri)
+            foldDirectories.sort(by: localizedStandardOrder)
             rowFiles.removeAll(where: { $0.uri != targetUri && $0.uri.hasPrefix(targetUri) })
 
             // Delete table row
@@ -124,9 +111,8 @@ extension WorkspaceViewController: UITableViewDelegate {
 
         } else {
             // Refresh data source
-            foldingDirectories.removeAll(where: { $0 == targetUri })
-            rowFiles.removeAll()
-            shouldShowFiles(workspaceRootFile)
+            foldDirectories.removeAll(where: { $0 == targetUri })
+            rowFiles = workspaceFiles(self.workspaceRootFile).filter(shouldShowFile)
 
             // Get target IndexPath
             let paths = indexPaths(targetUri)
@@ -137,7 +123,6 @@ extension WorkspaceViewController: UITableViewDelegate {
             tableView.endUpdates()
         }
     }
-
 
     private func indexPaths(_ uri: DocumentUri) -> [IndexPath] {
         var startIndex = 0
