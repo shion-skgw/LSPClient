@@ -21,7 +21,6 @@
 		05182B2824DA0E03007E8832 /* Workspaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05182B2724DA0E03007E8832 /* Workspaces.swift */; };
 		051C973825C90B710031C036 /* WorkspaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051C973725C90B710031C036 /* WorkspaceViewController.swift */; };
 		051C973E25C90B7E0031C036 /* WorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051C973D25C90B7E0031C036 /* WorkspaceView.swift */; };
-		051C974225C90B880031C036 /* WorkspaceViewFileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051C974125C90B880031C036 /* WorkspaceViewFileCell.swift */; };
 		051F886F25AB3F230041BE4E /* NotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051F886D25AB3F230041BE4E /* NotificationCenter.swift */; };
 		051F887025AB3F230041BE4E /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051F886E25AB3F230041BE4E /* UIImage.swift */; };
 		051F887425AB3F3B0041BE4E /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051F887325AB3F3B0041BE4E /* RootView.swift */; };
@@ -58,7 +57,6 @@
 		056732D024960CE700E7650B /* TextDocumentPositionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056732CF24960CE700E7650B /* TextDocumentPositionParams.swift */; };
 		056732D224960D4600E7650B /* DocumentFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056732D124960D4600E7650B /* DocumentFilter.swift */; };
 		056732D42496433E00E7650B /* MarkupContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056732D32496433E00E7650B /* MarkupContent.swift */; };
-		0567AD8625CA81100055F3AF /* WorkspaceViewDirectoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0567AD8525CA81100055F3AF /* WorkspaceViewDirectoryCell.swift */; };
 		0567AD9425CA9BCC0055F3AF /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0567AD9325CA9BCB0055F3AF /* UIFont.swift */; };
 		056B5C2424E30DFB00797D95 /* EditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056B5C2324E30DFB00797D95 /* EditorView.swift */; };
 		056B5C2624E30E2900797D95 /* EditorTextStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056B5C2524E30E2900797D95 /* EditorTextStorage.swift */; };
@@ -66,7 +64,6 @@
 		056B5C2B24E30EEC00797D95 /* EditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056B5C2A24E30EEC00797D95 /* EditorViewController.swift */; };
 		05828D7B249B6C7F008D2DA0 /* CodingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05828D7A249B6C7F008D2DA0 /* CodingError.swift */; };
 		0585E77825CB18FB009BA2C3 /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0585E77725CB18FB009BA2C3 /* URL.swift */; };
-		0585E78425CB4F96009BA2C3 /* WorkspaceFoldIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0585E78325CB4F96009BA2C3 /* WorkspaceFoldIcon.swift */; };
 		0585E78C25CB769E009BA2C3 /* WorkspaceFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0585E78B25CB769E009BA2C3 /* WorkspaceFile.swift */; };
 		0586CD5925A2C40A0047C7BB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586CD5825A2C40A0047C7BB /* RootViewController.swift */; };
 		0586CD5E25A2D78F0047C7BB /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586CD5D25A2D78F0047C7BB /* MainMenuView.swift */; };
@@ -111,6 +108,8 @@
 		05D4D4AD24D6AB8600A76239 /* ClientCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D4D4AC24D6AB8600A76239 /* ClientCapabilities.swift */; };
 		05D4D4AF24D6B13500A76239 /* ClientCapabilities_test.plist in Resources */ = {isa = PBXBuildFile; fileRef = 05D4D4AE24D6B13500A76239 /* ClientCapabilities_test.plist */; };
 		05E6E6FD24F07E3600364E89 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E6E6FC24F07E3600364E89 /* Token.swift */; };
+		05EE6F8425CD6A4200F94B24 /* WorkspaceFoldButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EE6F8325CD6A4200F94B24 /* WorkspaceFoldButton.swift */; };
+		05EE6F8825CD6B7400F94B24 /* WorkspaceViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EE6F8725CD6B7400F94B24 /* WorkspaceViewCell.swift */; };
 		05F0264725168C0E003CCEA4 /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F0264625168C0E003CCEA4 /* UIViewController.swift */; };
 		05F45C1625CA40BA00C96ADB /* HierarchicalFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F45C1525CA40BA00C96ADB /* HierarchicalFile.swift */; };
 /* End PBXBuildFile section */
@@ -140,7 +139,6 @@
 		05182B2724DA0E03007E8832 /* Workspaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workspaces.swift; sourceTree = "<group>"; };
 		051C973725C90B710031C036 /* WorkspaceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceViewController.swift; sourceTree = "<group>"; };
 		051C973D25C90B7E0031C036 /* WorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceView.swift; sourceTree = "<group>"; };
-		051C974125C90B880031C036 /* WorkspaceViewFileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceViewFileCell.swift; sourceTree = "<group>"; };
 		051F886D25AB3F230041BE4E /* NotificationCenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationCenter.swift; sourceTree = "<group>"; };
 		051F886E25AB3F230041BE4E /* UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		051F887325AB3F3B0041BE4E /* RootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -177,7 +175,6 @@
 		056732CF24960CE700E7650B /* TextDocumentPositionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDocumentPositionParams.swift; sourceTree = "<group>"; };
 		056732D124960D4600E7650B /* DocumentFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentFilter.swift; sourceTree = "<group>"; };
 		056732D32496433E00E7650B /* MarkupContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkupContent.swift; sourceTree = "<group>"; };
-		0567AD8525CA81100055F3AF /* WorkspaceViewDirectoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceViewDirectoryCell.swift; sourceTree = "<group>"; };
 		0567AD9325CA9BCB0055F3AF /* UIFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
 		056B5C2324E30DFB00797D95 /* EditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorView.swift; sourceTree = "<group>"; };
 		056B5C2524E30E2900797D95 /* EditorTextStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTextStorage.swift; sourceTree = "<group>"; };
@@ -185,7 +182,6 @@
 		056B5C2A24E30EEC00797D95 /* EditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorViewController.swift; sourceTree = "<group>"; };
 		05828D7A249B6C7F008D2DA0 /* CodingError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodingError.swift; sourceTree = "<group>"; };
 		0585E77725CB18FB009BA2C3 /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
-		0585E78325CB4F96009BA2C3 /* WorkspaceFoldIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceFoldIcon.swift; sourceTree = "<group>"; };
 		0585E78B25CB769E009BA2C3 /* WorkspaceFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceFile.swift; sourceTree = "<group>"; };
 		0586CD5825A2C40A0047C7BB /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		0586CD5D25A2D78F0047C7BB /* MainMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
@@ -234,6 +230,8 @@
 		05D4D4AC24D6AB8600A76239 /* ClientCapabilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientCapabilities.swift; sourceTree = "<group>"; };
 		05D4D4AE24D6B13500A76239 /* ClientCapabilities_test.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ClientCapabilities_test.plist; sourceTree = "<group>"; };
 		05E6E6FC24F07E3600364E89 /* Token.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
+		05EE6F8325CD6A4200F94B24 /* WorkspaceFoldButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceFoldButton.swift; sourceTree = "<group>"; };
+		05EE6F8725CD6B7400F94B24 /* WorkspaceViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceViewCell.swift; sourceTree = "<group>"; };
 		05F0264625168C0E003CCEA4 /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		05F45C1525CA40BA00C96ADB /* HierarchicalFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HierarchicalFile.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -593,12 +591,11 @@
 		05F45C1125CA3B2200C96ADB /* WorkspaceView */ = {
 			isa = PBXGroup;
 			children = (
-				0585E78325CB4F96009BA2C3 /* WorkspaceFoldIcon.swift */,
-				051C973D25C90B7E0031C036 /* WorkspaceView.swift */,
-				051C973725C90B710031C036 /* WorkspaceViewController.swift */,
-				0567AD8525CA81100055F3AF /* WorkspaceViewDirectoryCell.swift */,
-				051C974125C90B880031C036 /* WorkspaceViewFileCell.swift */,
 				0585E78B25CB769E009BA2C3 /* WorkspaceFile.swift */,
+				05EE6F8325CD6A4200F94B24 /* WorkspaceFoldButton.swift */,
+				051C973D25C90B7E0031C036 /* WorkspaceView.swift */,
+				05EE6F8725CD6B7400F94B24 /* WorkspaceViewCell.swift */,
+				051C973725C90B710031C036 /* WorkspaceViewController.swift */,
 			);
 			path = WorkspaceView;
 			sourceTree = "<group>";
@@ -720,7 +717,6 @@
 				0540195B249373E700287026 /* FileResourceChanges.swift in Sources */,
 				05601E8125A2974D007B91C1 /* EditorTabItem.swift in Sources */,
 				058B6A1D248D79C00099B32F /* AnyValue.swift in Sources */,
-				051C974225C90B880031C036 /* WorkspaceViewFileCell.swift in Sources */,
 				05E6E6FD24F07E3600364E89 /* Token.swift in Sources */,
 				05BAAB2624A3533A00A3EADC /* FileEvent.swift in Sources */,
 				05BA10AF24D2D922009A3669 /* LSPConnection.swift in Sources */,
@@ -777,8 +773,9 @@
 				05BAAB1C24A3530500A3EADC /* Common.swift in Sources */,
 				056732D42496433E00E7650B /* MarkupContent.swift in Sources */,
 				0541881D2490C71900C6D9A2 /* ParameterType.swift in Sources */,
-				0585E78425CB4F96009BA2C3 /* WorkspaceFoldIcon.swift in Sources */,
+				05EE6F8825CD6B7400F94B24 /* WorkspaceViewCell.swift in Sources */,
 				05BAAB3624A3538400A3EADC /* Highlight.swift in Sources */,
+				05EE6F8425CD6A4200F94B24 /* WorkspaceFoldButton.swift in Sources */,
 				0540194F24936C2300287026 /* Location.swift in Sources */,
 				054019592493718200287026 /* TextDocumentEdit.swift in Sources */,
 				0540194B24936BA900287026 /* TextPosition.swift in Sources */,
@@ -807,7 +804,6 @@
 				05D4D4AD24D6AB8600A76239 /* ClientCapabilities.swift in Sources */,
 				056732CE24960A8800E7650B /* VersionedTextDocumentIdentifier.swift in Sources */,
 				0540194D24936BE700287026 /* TextRange.swift in Sources */,
-				0567AD8625CA81100055F3AF /* WorkspaceViewDirectoryCell.swift in Sources */,
 				05BAAB2824A3534300A3EADC /* WorkspaceSymbol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,18 +1,18 @@
 //
-//  WorkspaceFoldIcon.swift
+//  WorkspaceFoldButton.swift
 //  LSPClient
 //
-//  Created by Shion on 2021/02/04.
+//  Created by Shion on 2021/02/05.
 //  Copyright © 2021 Shion. All rights reserved.
 //
 
 import UIKit
 
-final class WorkspaceFoldIcon: UIImageView {
+final class WorkspaceFoldButton: UIButton {
 
     var isFold: Bool = false {
         didSet {
-            self.image = isFold ? .triangleRight : .triangleDown
+            self.setImage(isFold ? .triangleRight : .triangleDown, for: .normal)
         }
     }
 
@@ -26,13 +26,6 @@ final class WorkspaceFoldIcon: UIImageView {
         target.size.height = superviewHeight
         target.size.width = superviewHeight
         return target.contains(point)
-    }
-
-    func addTapAction(_ target: Any?, action: Selector) {
-        let gestureRecognizer = UITapGestureRecognizer(target: target, action: action)
-        gestureRecognizer.cancelsTouchesInView = false
-        self.isUserInteractionEnabled = true
-        self.addGestureRecognizer(gestureRecognizer)
     }
 
 }
