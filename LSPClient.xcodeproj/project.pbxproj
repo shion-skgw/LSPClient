@@ -20,7 +20,6 @@
 		05182B2624DA0D52007E8832 /* LanguageServers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05182B2524DA0D52007E8832 /* LanguageServers.swift */; };
 		05182B2824DA0E03007E8832 /* Workspaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05182B2724DA0E03007E8832 /* Workspaces.swift */; };
 		051C973825C90B710031C036 /* WorkspaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051C973725C90B710031C036 /* WorkspaceViewController.swift */; };
-		051C973E25C90B7E0031C036 /* WorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051C973D25C90B7E0031C036 /* WorkspaceView.swift */; };
 		051F886F25AB3F230041BE4E /* NotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051F886D25AB3F230041BE4E /* NotificationCenter.swift */; };
 		051F887025AB3F230041BE4E /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051F886E25AB3F230041BE4E /* UIImage.swift */; };
 		051F887425AB3F3B0041BE4E /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051F887325AB3F3B0041BE4E /* RootView.swift */; };
@@ -138,7 +137,6 @@
 		05182B2524DA0D52007E8832 /* LanguageServers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageServers.swift; sourceTree = "<group>"; };
 		05182B2724DA0E03007E8832 /* Workspaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workspaces.swift; sourceTree = "<group>"; };
 		051C973725C90B710031C036 /* WorkspaceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceViewController.swift; sourceTree = "<group>"; };
-		051C973D25C90B7E0031C036 /* WorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceView.swift; sourceTree = "<group>"; };
 		051F886D25AB3F230041BE4E /* NotificationCenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationCenter.swift; sourceTree = "<group>"; };
 		051F886E25AB3F230041BE4E /* UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		051F887325AB3F3B0041BE4E /* RootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -593,7 +591,6 @@
 			children = (
 				0585E78B25CB769E009BA2C3 /* WorkspaceFile.swift */,
 				05EE6F8325CD6A4200F94B24 /* WorkspaceFoldButton.swift */,
-				051C973D25C90B7E0031C036 /* WorkspaceView.swift */,
 				05EE6F8725CD6B7400F94B24 /* WorkspaceViewCell.swift */,
 				051C973725C90B710031C036 /* WorkspaceViewController.swift */,
 			);
@@ -730,7 +727,6 @@
 				05F45C1625CA40BA00C96ADB /* HierarchicalFile.swift in Sources */,
 				058B6A1B248D3D7C0099B32F /* ErrorResponse.swift in Sources */,
 				05BAAB3424A3537B00A3EADC /* FindLocation.swift in Sources */,
-				051C973E25C90B7E0031C036 /* WorkspaceView.swift in Sources */,
 				051F887425AB3F3B0041BE4E /* RootView.swift in Sources */,
 				05BAAB1E24A3530E00A3EADC /* Initialize.swift in Sources */,
 				05BAAB2224A3532300A3EADC /* Configuration.swift in Sources */,

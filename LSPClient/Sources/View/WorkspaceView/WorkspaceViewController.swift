@@ -12,13 +12,13 @@ final class WorkspaceViewController: UITableViewController {
 
     private var workspaceRootFile: HierarchicalFile!
     private var rowFiles: [WorkspaceFile] = []
-    private var foldingDirectories: [URL] = []
+    private var foldDirectories: [URL] = []
 
     override func loadView() {
         let tableView = UITableView()
-        tableView.separatorStyle = .none
         tableView.rowHeight = UIFont.systemFontSize * 2.5
         tableView.estimatedRowHeight = 0
+        tableView.separatorStyle = .none
         tableView.dataSource = self
         tableView.delegate = self
         self.tableView = tableView
@@ -52,13 +52,12 @@ extension WorkspaceViewController {
     }
 
     private func shouldShowFile(_ file: WorkspaceFile) -> Bool {
-        return !foldingDirectories.contains(where: { file.uri != $0 && file.uri.hasPrefix($0) })
+        return !foldDirectories.contains(where: { file.uri != $0 && file.uri.hasPrefix($0) })
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return rowFiles.count
     }
-
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let file = rowFiles[indexPath.row]
@@ -69,12 +68,11 @@ extension WorkspaceViewController {
         }
 
         cell.uri = file.uri
-        cell.textLabel?.text = file.uri.lastPathComponent
-        cell.foldButton?.isFold = foldingDirectories.contains(file.uri)
+        cell.nameLabel.text = file.uri.lastPathComponent
+        cell.foldButton?.isFold = foldDirectories.contains(file.uri)
         cell.foldButton?.addTarget(self, action: #selector(toggleFold(_:)), for: .touchUpInside)
         return cell
     }
-
 
 }
 
@@ -102,8 +100,8 @@ extension WorkspaceViewController {
             let paths = indexPaths(targetUri)
 
             // Remove data source
-            foldingDirectories.append(targetUri)
-            foldingDirectories.sort(by: localizedStandardOrder)
+            foldDirectories.append(targetUri)
+            foldDirectories.sort(by: localizedStandardOrder)
             rowFiles.removeAll(where: { $0.uri != targetUri && $0.uri.hasPrefix(targetUri) })
 
             // Delete table row
@@ -113,7 +111,7 @@ extension WorkspaceViewController {
 
         } else {
             // Refresh data source
-            foldingDirectories.removeAll(where: { $0 == targetUri })
+            foldDirectories.removeAll(where: { $0 == targetUri })
             rowFiles = workspaceFiles(self.workspaceRootFile).filter(shouldShowFile)
 
             // Get target IndexPath
@@ -125,7 +123,6 @@ extension WorkspaceViewController {
             tableView.endUpdates()
         }
     }
-
 
     private func indexPaths(_ uri: DocumentUri) -> [IndexPath] {
         var startIndex = 0
