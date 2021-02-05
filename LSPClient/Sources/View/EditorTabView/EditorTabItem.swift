@@ -13,6 +13,7 @@ final class EditorTabItem: UIButton {
     private var activeColor: UIColor = .white
     private var inactiveColor: UIColor = .white
     private(set) weak var closeButton: UIButton!
+    private(set) weak var nameLabel: UILabel!
 
     var isActive: Bool = true {
         didSet {
@@ -29,18 +30,19 @@ final class EditorTabItem: UIButton {
 
         // Initialize close button
         let closeButton = UIButton(type: .close)
-        closeButton.frame.origin.x = (frame.height - closeButton.frame.width) / 2
-        closeButton.frame.origin.y = (frame.height - closeButton.frame.height) / 2
+        closeButton.frame.origin.x = (frame.height - closeButton.frame.width) / 2.0
+        closeButton.frame.origin.y = (frame.height - closeButton.frame.height) / 2.0
         self.addSubview(closeButton)
         self.closeButton = closeButton
 
         // Layout title label
-        var titleLabelFrame = CGRect.zero
-        titleLabelFrame.size.height = frame.height
-        titleLabelFrame.size.width = frame.width - frame.height
-        titleLabelFrame.origin.x = frame.height
-        self.titleLabel?.frame = titleLabelFrame
-        self.titleLabel?.textAlignment = .center
+        let nameLabel = UILabel(frame: .zero)
+        nameLabel.frame.origin.x = frame.height + 4.0
+        nameLabel.frame.size.height = frame.height
+        nameLabel.frame.size.width = frame.width - nameLabel.frame.minX - 1.0
+        nameLabel.textAlignment = .left
+        self.addSubview(nameLabel)
+        self.nameLabel = nameLabel
 
         // Design setting
         self.layer.cornerRadius = 3.0
@@ -52,17 +54,17 @@ final class EditorTabItem: UIButton {
     }
 
     func set(title: String) {
-        self.setTitle(title, for: .normal) // TODO: フォントが反映させるか確認
+        self.nameLabel.text = title // TODO: フォントが反映させるか確認
     }
 
     func set(codeStyle: CodeStyle) {
         // Set title
         let attributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: UIFont.smallSystemFontSize),
+            .font: UIFont.systemFont,
             .foregroundColor: codeStyle.fontColor.text.uiColor
         ]
-        let title = NSAttributedString(string: self.titleLabel?.text ?? "Untitled", attributes: attributes)
-        self.setAttributedTitle(title, for: .normal)
+        let title = NSAttributedString(string: self.nameLabel.text ?? "Untitled", attributes: attributes)
+        self.nameLabel.attributedText = title
 
         // Set background color
         self.activeColor = codeStyle.activeTabColor.uiColor

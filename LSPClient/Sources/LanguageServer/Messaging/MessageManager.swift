@@ -61,9 +61,11 @@ final class MessageManager: LSPConnectionDelegate {
     /// Connect to language server
     ///
     /// - Parameter server      : Language server
+    /// - Parameter method      : Connection method
     ///
-    func connection(server: LanguageServer) {
-        connection.close()
+    func connection(server: LanguageServer, method: LSPConnection) {
+        connection = method
+        connection.delegate = self
         lastRequestId = 0
         sendRequest.removeAll()
         connection.connection(host: server.host, port: server.port)

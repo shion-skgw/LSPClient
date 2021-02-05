@@ -24,7 +24,7 @@ final class EditorTabView: UIScrollView {
         container.distribution = .fill
         container.axis = .horizontal
         container.alignment = .bottom
-        container.spacing = 1.0
+        container.spacing = 2.0
         container.translatesAutoresizingMaskIntoConstraints = false
         addSubview(container)
         self.container = container

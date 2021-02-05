@@ -64,7 +64,7 @@ final class MainMenuViewController: UIViewController {
         let aaa = parent as! RootViewController
         let a = EditorViewController()
         a.view.frame = CGRect(origin: .zero, size: aaa.editor.viewContainer.bounds.size)
-        aaa.editor.addTab(title: "aaaaaaaaa", viewController: a)
+        aaa.editor.addTab(title: "ADEnkjargalnkergaSDF", viewController: a)
     }
 
     @objc func changeColor() {

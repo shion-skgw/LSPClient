@@ -131,10 +131,7 @@ final class WorkspaceViewCell: UITableViewCell {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-
-        if nameLabel.frame.size.width == .zero {
-            nameLabel.frame.size.width = frame.width - nameLabel.frame.minX - widthMargin
-        }
+        nameLabel.frame.size.width = frame.width - nameLabel.frame.minX - widthMargin
     }
 
 }

@@ -98,7 +98,7 @@ final class EditorTabViewController: UIViewController {
         viewController.didMove(toParent: self)
 
         // Add tab
-        let a = CGRect(origin: .zero, size: CGSize(width: 100, height: 27))
+        let a = CGRect(origin: .zero, size: CGSize(width: 140, height: 26))
         let tabItem = EditorTabItem(frame: a)
         tabItem.set(title: title)
         tabItem.set(codeStyle: CodeStyle.load())
