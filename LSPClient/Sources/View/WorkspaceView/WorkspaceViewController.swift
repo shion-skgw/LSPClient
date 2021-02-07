@@ -148,7 +148,7 @@ extension WorkspaceViewController: UITableViewDelegate {
 
             // Remove data source
             foldDirectories.append(targetUri)
-            foldDirectories.sort(by: localizedStandardOrder)
+            foldDirectories.sort(by: { $0.path.localizedStandardCompare($1.path) == .orderedAscending })
             displayFiles.removeAll(where: { $0.uri != targetUri && $0.uri.hasPrefix(targetUri) })
 
             // Delete table row
