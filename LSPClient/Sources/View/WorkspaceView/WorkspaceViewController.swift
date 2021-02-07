@@ -65,19 +65,14 @@ extension WorkspaceViewController {
 extension WorkspaceViewController: UITableViewDataSource {
 
     func fetchWorkspaceFiles() {
-        self.workspaceFiles = workspaceFiles(WorkspaceManager.shared.fetchFileHierarchy())
+        self.workspaceFiles = WorkspaceManager.shared.fetchWorkspaceFiles(skipsHidden: false)
 
         self.displayFiles = workspaceFiles.filter(shouldShowFile)
 
         for file in workspaceFiles {
-            workspaceView.register(WorkspaceViewCell.self, forCellReuseIdentifier: file.cellReuseIdentifier)
+            let identifier = WorkspaceViewCellIdentifier(file).string
+            workspaceView.register(WorkspaceViewCell.self, forCellReuseIdentifier: identifier)
         }
-    }
-
-    private func workspaceFiles(_ target: HierarchicalFile) -> [WorkspaceFile] {
-        var files: [WorkspaceFile] = [WorkspaceFile(file: target)]
-        target.children.forEach({ files.append(contentsOf: workspaceFiles($0)) })
-        return files
     }
 
     private func shouldShowFile(_ file: WorkspaceFile) -> Bool {
@@ -90,7 +85,7 @@ extension WorkspaceViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let file = displayFiles[indexPath.row]
-        let identifier = file.cellReuseIdentifier
+        let identifier = WorkspaceViewCellIdentifier(file).string
 
         guard let tableCell = workspaceView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as? WorkspaceViewCell else {
             fatalError()
@@ -183,7 +178,6 @@ extension WorkspaceViewController: UITableViewDelegate {
         for index in displayFiles.startIndex ..< displayFiles.endIndex {
             if displayFiles[index].uri == uri {
                 startIndex = index + 1
-                endIndex = startIndex
 
             } else if displayFiles[index].uri.hasPrefix(uri) {
                 endIndex = index
@@ -193,7 +187,11 @@ extension WorkspaceViewController: UITableViewDelegate {
             }
         }
 
-        return (startIndex...endIndex).compactMap({ IndexPath(row: $0, section: 0) })
+        if endIndex == .zero {
+            return []
+        } else {
+            return (startIndex...endIndex).compactMap({ IndexPath(row: $0, section: 0) })
+        }
     }
 
 }

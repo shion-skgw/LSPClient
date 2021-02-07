@@ -62,7 +62,6 @@
 		056B5C2B24E30EEC00797D95 /* EditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056B5C2A24E30EEC00797D95 /* EditorViewController.swift */; };
 		05828D7B249B6C7F008D2DA0 /* CodingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05828D7A249B6C7F008D2DA0 /* CodingError.swift */; };
 		0585E77825CB18FB009BA2C3 /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0585E77725CB18FB009BA2C3 /* URL.swift */; };
-		0585E78C25CB769E009BA2C3 /* WorkspaceFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0585E78B25CB769E009BA2C3 /* WorkspaceFile.swift */; };
 		0586CD5925A2C40A0047C7BB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586CD5825A2C40A0047C7BB /* RootViewController.swift */; };
 		0586CD5E25A2D78F0047C7BB /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586CD5D25A2D78F0047C7BB /* MainMenuView.swift */; };
 		0586CD6425A2D7B90047C7BB /* MainMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586CD6325A2D7B90047C7BB /* MainMenuViewController.swift */; };
@@ -82,6 +81,9 @@
 		059150A525CF15B6009EB71B /* CGFloat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059150A425CF15B6009EB71B /* CGFloat.swift */; };
 		059150AD25CF1F1E009EB71B /* WorkspaceMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059150AC25CF1F1E009EB71B /* WorkspaceMenuView.swift */; };
 		059150BC25CFBA5E009EB71B /* NotificationUserInfoKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059150BB25CFBA5E009EB71B /* NotificationUserInfoKey.swift */; };
+		059150C425D04E6F009EB71B /* WorkspaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059150C325D04E6F009EB71B /* WorkspaceManager.swift */; };
+		059150C825D04FBB009EB71B /* WorkspaceFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059150C725D04FBB009EB71B /* WorkspaceFile.swift */; };
+		059150CC25D05A63009EB71B /* WorkspaceViewCellIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059150CB25D05A63009EB71B /* WorkspaceViewCellIdentifier.swift */; };
 		05BA10AF24D2D922009A3669 /* LSPConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BA10AE24D2D922009A3669 /* LSPConnection.swift */; };
 		05BAAB1C24A3530500A3EADC /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BAAB1B24A3530500A3EADC /* Common.swift */; };
 		05BAAB1E24A3530E00A3EADC /* Initialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BAAB1D24A3530E00A3EADC /* Initialize.swift */; };
@@ -100,7 +102,6 @@
 		05BAAB3A24A3539600A3EADC /* CodeAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BAAB3924A3539600A3EADC /* CodeAction.swift */; };
 		05BAAB3C24A3539F00A3EADC /* CodeFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BAAB3B24A3539F00A3EADC /* CodeFormat.swift */; };
 		05BAAB3E24A353A800A3EADC /* Rename.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BAAB3D24A353A800A3EADC /* Rename.swift */; };
-		05C8849A25BB452B0058DBDB /* WorkspaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05C8849925BB452B0058DBDB /* WorkspaceManager.swift */; };
 		05CA5CF7248C5F1700582319 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05CA5CF6248C5F1700582319 /* AppDelegate.swift */; };
 		05CA5D00248C5F1900582319 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 05CA5CFF248C5F1900582319 /* Assets.xcassets */; };
 		05CA5D03248C5F1900582319 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 05CA5D01248C5F1900582319 /* LaunchScreen.storyboard */; };
@@ -114,7 +115,6 @@
 		05EE6F8425CD6A4200F94B24 /* WorkspaceFoldButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EE6F8325CD6A4200F94B24 /* WorkspaceFoldButton.swift */; };
 		05EE6F8825CD6B7400F94B24 /* WorkspaceViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EE6F8725CD6B7400F94B24 /* WorkspaceViewCell.swift */; };
 		05F0264725168C0E003CCEA4 /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F0264625168C0E003CCEA4 /* UIViewController.swift */; };
-		05F45C1625CA40BA00C96ADB /* HierarchicalFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F45C1525CA40BA00C96ADB /* HierarchicalFile.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -183,7 +183,6 @@
 		056B5C2A24E30EEC00797D95 /* EditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorViewController.swift; sourceTree = "<group>"; };
 		05828D7A249B6C7F008D2DA0 /* CodingError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodingError.swift; sourceTree = "<group>"; };
 		0585E77725CB18FB009BA2C3 /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
-		0585E78B25CB769E009BA2C3 /* WorkspaceFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceFile.swift; sourceTree = "<group>"; };
 		0586CD5825A2C40A0047C7BB /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		0586CD5D25A2D78F0047C7BB /* MainMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
 		0586CD6325A2D7B90047C7BB /* MainMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuViewController.swift; sourceTree = "<group>"; };
@@ -203,6 +202,9 @@
 		059150A425CF15B6009EB71B /* CGFloat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGFloat.swift; sourceTree = "<group>"; };
 		059150AC25CF1F1E009EB71B /* WorkspaceMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceMenuView.swift; sourceTree = "<group>"; };
 		059150BB25CFBA5E009EB71B /* NotificationUserInfoKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationUserInfoKey.swift; sourceTree = "<group>"; };
+		059150C325D04E6F009EB71B /* WorkspaceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceManager.swift; sourceTree = "<group>"; };
+		059150C725D04FBB009EB71B /* WorkspaceFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceFile.swift; sourceTree = "<group>"; };
+		059150CB25D05A63009EB71B /* WorkspaceViewCellIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceViewCellIdentifier.swift; sourceTree = "<group>"; };
 		05BA10AE24D2D922009A3669 /* LSPConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPConnection.swift; sourceTree = "<group>"; };
 		05BAAB1B24A3530500A3EADC /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		05BAAB1D24A3530E00A3EADC /* Initialize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Initialize.swift; sourceTree = "<group>"; };
@@ -221,7 +223,6 @@
 		05BAAB3924A3539600A3EADC /* CodeAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeAction.swift; sourceTree = "<group>"; };
 		05BAAB3B24A3539F00A3EADC /* CodeFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeFormat.swift; sourceTree = "<group>"; };
 		05BAAB3D24A353A800A3EADC /* Rename.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rename.swift; sourceTree = "<group>"; };
-		05C8849925BB452B0058DBDB /* WorkspaceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceManager.swift; sourceTree = "<group>"; };
 		05CA5CF3248C5F1700582319 /* LSPClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LSPClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		05CA5CF6248C5F1700582319 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		05CA5CFF248C5F1900582319 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -239,7 +240,6 @@
 		05EE6F8325CD6A4200F94B24 /* WorkspaceFoldButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceFoldButton.swift; sourceTree = "<group>"; };
 		05EE6F8725CD6B7400F94B24 /* WorkspaceViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceViewCell.swift; sourceTree = "<group>"; };
 		05F0264625168C0E003CCEA4 /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
-		05F45C1525CA40BA00C96ADB /* HierarchicalFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HierarchicalFile.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -392,8 +392,8 @@
 		0589B58924DCF87E006E0C6F /* WorkspaceManager */ = {
 			isa = PBXGroup;
 			children = (
-				05F45C1525CA40BA00C96ADB /* HierarchicalFile.swift */,
-				05C8849925BB452B0058DBDB /* WorkspaceManager.swift */,
+				059150C725D04FBB009EB71B /* WorkspaceFile.swift */,
+				059150C325D04E6F009EB71B /* WorkspaceManager.swift */,
 			);
 			path = WorkspaceManager;
 			sourceTree = "<group>";
@@ -609,10 +609,10 @@
 		05F45C1125CA3B2200C96ADB /* WorkspaceView */ = {
 			isa = PBXGroup;
 			children = (
-				0585E78B25CB769E009BA2C3 /* WorkspaceFile.swift */,
 				05EE6F8325CD6A4200F94B24 /* WorkspaceFoldButton.swift */,
 				059150AC25CF1F1E009EB71B /* WorkspaceMenuView.swift */,
 				05EE6F8725CD6B7400F94B24 /* WorkspaceViewCell.swift */,
+				059150CB25D05A63009EB71B /* WorkspaceViewCellIdentifier.swift */,
 				051C973725C90B710031C036 /* WorkspaceViewController.swift */,
 			);
 			path = WorkspaceView;
@@ -745,8 +745,8 @@
 				0586CD5925A2C40A0047C7BB /* RootViewController.swift in Sources */,
 				05CFFB69248EBEA10069A7EA /* TCPConnection.swift in Sources */,
 				051F886F25AB3F230041BE4E /* NotificationCenter.swift in Sources */,
+				059150C425D04E6F009EB71B /* WorkspaceManager.swift in Sources */,
 				05BAAB3E24A353A800A3EADC /* Rename.swift in Sources */,
-				05F45C1625CA40BA00C96ADB /* HierarchicalFile.swift in Sources */,
 				058B6A1B248D3D7C0099B32F /* ErrorResponse.swift in Sources */,
 				05BAAB3424A3537B00A3EADC /* FindLocation.swift in Sources */,
 				05BAAB1E24A3530E00A3EADC /* Initialize.swift in Sources */,
@@ -758,6 +758,7 @@
 				05114217250E77A1002A4056 /* MessageDelegate.swift in Sources */,
 				05BAAB2E24A3535F00A3EADC /* PublishDiagnostic.swift in Sources */,
 				056706AD2515261900F9D7E7 /* SyntaxLoader.swift in Sources */,
+				059150CC25D05A63009EB71B /* WorkspaceViewCellIdentifier.swift in Sources */,
 				05D4D4AB24D6AA7400A76239 /* PropertiesType.swift in Sources */,
 				05BAAB2A24A3534D00A3EADC /* ExecuteCommand.swift in Sources */,
 				0555B5D925B1727C0061CB41 /* UIApplication.swift in Sources */,
@@ -768,7 +769,6 @@
 				05CC821625A4363F00D6F4DB /* Function.swift in Sources */,
 				05114215250E7774002A4056 /* MessageManagerDelegate.swift in Sources */,
 				059150A525CF15B6009EB71B /* CGFloat.swift in Sources */,
-				0585E78C25CB769E009BA2C3 /* WorkspaceFile.swift in Sources */,
 				059150BC25CFBA5E009EB71B /* NotificationUserInfoKey.swift in Sources */,
 				059150AD25CF1F1E009EB71B /* WorkspaceMenuView.swift in Sources */,
 				05BAAB3C24A3539F00A3EADC /* CodeFormat.swift in Sources */,
@@ -777,7 +777,6 @@
 				0540195124936C8200287026 /* LocationLink.swift in Sources */,
 				05BAAB3024A3536900A3EADC /* Completion.swift in Sources */,
 				05BAAB3A24A3539600A3EADC /* CodeAction.swift in Sources */,
-				05C8849A25BB452B0058DBDB /* WorkspaceManager.swift in Sources */,
 				0508BF2B24C97798005488A9 /* WorkspaceMessageDelegate.swift in Sources */,
 				056B5C2624E30E2900797D95 /* EditorTextStorage.swift in Sources */,
 				0586CD6425A2D7B90047C7BB /* MainMenuViewController.swift in Sources */,
@@ -785,6 +784,7 @@
 				054019552493703600287026 /* Command.swift in Sources */,
 				051F887025AB3F230041BE4E /* UIImage.swift in Sources */,
 				0589B59024DD4EDD006E0C6F /* LineTable.swift in Sources */,
+				059150C825D04FBB009EB71B /* WorkspaceFile.swift in Sources */,
 				056732C8249606C300E7650B /* WorkspaceEdit.swift in Sources */,
 				056732CA249609FB00E7650B /* TextDocumentIdentifier.swift in Sources */,
 				054019572493708400287026 /* TextEdit.swift in Sources */,

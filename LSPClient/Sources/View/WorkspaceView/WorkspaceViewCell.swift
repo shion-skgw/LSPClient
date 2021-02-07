@@ -10,7 +10,7 @@ import UIKit
 
 final class WorkspaceViewCell: UITableViewCell {
     /// Document URI
-    var uri: DocumentUri! {
+    var uri: DocumentUri {
         didSet {
             self.nameLabel.text = uri.lastPathComponent
         }
@@ -34,22 +34,23 @@ final class WorkspaceViewCell: UITableViewCell {
     private let widthMargin: CGFloat = 8
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        guard let file = WorkspaceFile(cellReuseIdentifier: reuseIdentifier ?? "") else {
+        guard let identifier = WorkspaceViewCellIdentifier(reuseIdentifier ?? "") else {
             fatalError()
         }
 
         // Initialize
-        self.level = file.level
+        self.uri = .bluff
+        self.level = identifier.level
         super.init(style: .default, reuseIdentifier: reuseIdentifier)
 
         // Remove all subviews
         self.contentView.subviews.forEach({ $0.removeFromSuperview() })
 
         // Avoid recalculation of unnecessary frames
-        if file.isDirectory {
+        if identifier.isDirectory {
             addFoldButton()
         }
-        addIconView(file)
+        addIconView(identifier)
         addNameLabel()
     }
 
@@ -73,23 +74,23 @@ final class WorkspaceViewCell: UITableViewCell {
         self.foldButton = foldButton
     }
 
-    private func addIconView(_ file: WorkspaceFile) {
+    private func addIconView(_ identifier: WorkspaceViewCellIdentifier) {
         // Get icon image
         let icon: UIImage
         let config = UIImage.SymbolConfiguration(pointSize: iconPointSize, weight: .light)
-        switch (file.isDirectory, file.isLink, file.isHidden) {
-        case (true, false, false):
-            icon = UIImage(systemName: "folder.fill", withConfiguration: config)!
-        case (true, false, true):
-            icon = UIImage(systemName: "folder", withConfiguration: config)!
-        case (false, true, false):
-            icon = UIImage(systemName: "arrowshape.turn.up.right.circle.fill", withConfiguration: config)!
-        case (false, true, true):
-            icon = UIImage(systemName: "arrowshape.turn.up.right.circle", withConfiguration: config)!
-        case (false, false, false):
+        switch (identifier.isFile, identifier.isDirectory, identifier.isLink, identifier.isHidden) {
+        case (true, _, _, false):
             icon = UIImage(systemName: "doc.fill", withConfiguration: config)!
-        case (false, false, true):
+        case (true, _, _, true):
             icon = UIImage(systemName: "doc", withConfiguration: config)!
+        case (_, true, _, false):
+            icon = UIImage(systemName: "folder.fill", withConfiguration: config)!
+        case (_, true, _, true):
+            icon = UIImage(systemName: "folder", withConfiguration: config)!
+        case (_, _, true, false):
+            icon = UIImage(systemName: "arrowshape.turn.up.right.circle.fill", withConfiguration: config)!
+        case (_, _, true, true):
+            icon = UIImage(systemName: "arrowshape.turn.up.right.circle", withConfiguration: config)!
         default:
             icon = UIImage(systemName: "questionmark.circle", withConfiguration: config)!
         }

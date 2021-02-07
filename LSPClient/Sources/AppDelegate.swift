@@ -73,6 +73,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessageManagerDelegate, A
     weak var rootViewController: RootViewController!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+//        print(try! NSURL(string: "file:///Users/shion/Desktop/z/bb/8.jpg")!.resourceValues(forKeys: [.fileSizeKey]).first)
         CodeStyle.remove()
         var a = CodeStyle.load()
         a.backgroundColor.uiColor = UIColor.brown
@@ -82,7 +83,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessageManagerDelegate, A
 //        a.font.uiFont = UIFont.monospacedSystemFont(ofSize: 14.0, weight: .regular)
 //        a.save()
 
+
         WorkspaceManager.shared.initialize(workspaceName: "w", rootUri: URL(string: "file:///Users/shion/Desktop/")!, host: "host", port: 1)
+        WorkspaceManager.shared.fetchWorkspaceFiles(skipsHidden: false).forEach({ print($0.uri) })
+//        WorkspaceManager.shared.copy(documentUri: URL(string: "file:///Users/shion/Desktop/z/bb/8.jpg")!, source: .remote, destination: .original)
 //        WorkspaceManager.shared.copy(documentUri: URL(string: "file:///Users/shion/Desktop/z/cc/1.jpg")!, source: .remote, destination: .original)
 
 //        let rootViewController = RootViewController()
