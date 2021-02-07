@@ -401,8 +401,8 @@
 		0589B58D24DD4C9C006E0C6F /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				059150BA25CFBA48009EB71B /* Constant */,
 				05182B2224DA02E2007E8832 /* Config */,
+				059150BA25CFBA48009EB71B /* Constant */,
 				058F7EC82511BFC20063D9AF /* Extension */,
 				05CC821425A4362700D6F4DB /* Function */,
 				05D4D4A924D6AA0800A76239 /* Properties */,

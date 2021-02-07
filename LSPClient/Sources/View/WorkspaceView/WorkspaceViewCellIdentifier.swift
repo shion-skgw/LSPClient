@@ -17,12 +17,12 @@ struct WorkspaceViewCellIdentifier {
 
     var string: String {
         var identifier = String(self.level)
-        if self.isLink {
-            identifier.append(":link")
+        if self.isFile {
+            identifier.append(":file")
         } else if self.isDirectory {
             identifier.append(":directory")
-        } else if self.isFile {
-            identifier.append(":file")
+        } else if self.isLink {
+            identifier.append(":link")
         }
         return identifier.appending(self.isHidden ? ":hidden" : "")
     }

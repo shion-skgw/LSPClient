@@ -9,6 +9,8 @@
 import Foundation
 
 final class WorkspaceManager {
+    typealias ResourceIdentifier = (NSCopying & NSSecureCoding & NSObjectProtocol)
+
     /// WorkspaceManager shared instance
     static let shared: WorkspaceManager = WorkspaceManager()
 
