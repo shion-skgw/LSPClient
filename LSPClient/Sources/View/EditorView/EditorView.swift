@@ -125,7 +125,7 @@ extension EditorView {
         let number = NSAttributedString(string: "\(lineNumber)", attributes: lineNumberAttribute)
         let size = number.size()
         let x = textContainerInset.left - size.width - 4.0
-        let y = textContainerInset.top + usedRect.origin.y + (font!.lineHeight - size.height) / 2.0
+        let y = textContainerInset.top + usedRect.origin.y + font!.lineHeight.centeringPoint(size.height)
         number.draw(at: CGPoint(x: x, y: y))
     }
 

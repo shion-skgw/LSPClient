@@ -6,7 +6,7 @@
 //  Copyright © 2020 Shion. All rights reserved.
 //
 
-import UIKit
+import CoreGraphics
 
 struct EditorSetting: PropertiesType {
     static let resourceName = "EditorSetting"

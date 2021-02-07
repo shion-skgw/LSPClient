@@ -10,10 +10,10 @@ import UIKit
 
 final class EditorTabView: UIScrollView {
 
-    private(set) weak var container: UIStackView!
+    private(set) weak var contentView: UIStackView!
 
     var tabItems: [EditorTabItem] {
-        container.subviews.compactMap({ $0 as? EditorTabItem })
+        contentView.subviews.compactMap({ $0 as? EditorTabItem })
     }
 
     override init(frame: CGRect) {
@@ -21,13 +21,13 @@ final class EditorTabView: UIScrollView {
 
         // Initialize UIStackView
         let container = UIStackView(frame: .zero)
-        container.distribution = .fill
         container.axis = .horizontal
         container.alignment = .bottom
+        container.distribution = .fill
         container.spacing = 2.0
         container.translatesAutoresizingMaskIntoConstraints = false
         addSubview(container)
-        self.container = container
+        self.contentView = container
 
         // Layout anchor setting
         self.topAnchor.constraint(equalTo: container.topAnchor).isActive = true
@@ -46,11 +46,11 @@ final class EditorTabView: UIScrollView {
     }
 
     func add(item: EditorTabItem) {
-        container.addArrangedSubview(item)
+        contentView.addArrangedSubview(item)
     }
 
     func remove(item: EditorTabItem) {
-        container.removeArrangedSubview(item)
+        contentView.removeArrangedSubview(item)
         item.removeFromSuperview()
     }
 

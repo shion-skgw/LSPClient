@@ -10,7 +10,6 @@ import UIKit
 
 final class RootViewController: UIViewController {
 
-    weak var viewContainer: UIView!
     weak var mainMenu: MainMenuViewController!
     weak var editor: EditorTabViewController!
 

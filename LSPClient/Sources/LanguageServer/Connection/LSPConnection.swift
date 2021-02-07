@@ -14,7 +14,7 @@ import Foundation
 protocol LSPConnection: class {
 
     /// LSPConnection delegate
-    var delegate: LSPConnectionDelegate? { get set }
+    var delegate: LSPConnectionDelegate! { get set }
 
     ///
     /// Connect to language server

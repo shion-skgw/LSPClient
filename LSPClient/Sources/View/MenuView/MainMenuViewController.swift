@@ -63,7 +63,7 @@ final class MainMenuViewController: UIViewController {
     @objc func add(sender: UIButton) {
         let aaa = parent as! RootViewController
         let a = EditorViewController()
-        a.view.frame = CGRect(origin: .zero, size: aaa.editor.viewContainer.bounds.size)
+        a.view.frame = CGRect(origin: .zero, size: aaa.editor.editorContainer.bounds.size)
         aaa.editor.addTab(title: "ADEnkjargalnkergaSDF", viewController: a)
     }
 

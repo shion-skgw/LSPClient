@@ -12,13 +12,10 @@ struct WorkspaceFile {
     let isDirectory: Bool
     let isLink: Bool
     let isHidden: Bool
+    let size: Int
 
-    init(file: HierarchicalFile) {
-        self.uri = file.uri
-        self.level = file.level
-        self.isDirectory = file.isDirectory
-        self.isLink = file.isLink
-        self.isHidden = file.isHidden
+    var isFile: Bool {
+        !self.isDirectory && !self.isLink
     }
 
     var cellReuseIdentifier: String {
@@ -29,5 +26,24 @@ struct WorkspaceFile {
         return identifier
     }
 
-}
+    init(file: HierarchicalFile) {
+        self.uri = file.uri
+        self.level = file.level
+        self.isDirectory = file.isDirectory
+        self.isLink = file.isLink
+        self.isHidden = file.isHidden
+        self.size = file.size
+    }
 
+    init?(cellReuseIdentifier identifier: String) {
+        guard let level = Int(identifier.split(separator: ":").first ?? "") else {
+            return nil
+        }
+        self.uri = .bluff
+        self.level = level
+        self.isDirectory = identifier.contains("isDirectory")
+        self.isLink = identifier.contains("isLink")
+        self.isHidden = identifier.contains("isHidden")
+        self.size = .zero
+    }
+}

@@ -28,7 +28,7 @@ final class MainMenuView: UIView {
         for subview in subviews {
             var subviewFrame = subview.frame
             subviewFrame.origin.x = position
-            subviewFrame.origin.y = (frame.height - subviewFrame.height) / 2.0
+            subviewFrame.origin.y = frame.height.centeringPoint(subviewFrame.height)
             subview.frame = subviewFrame
             position += subviewFrame.width + spacing
         }

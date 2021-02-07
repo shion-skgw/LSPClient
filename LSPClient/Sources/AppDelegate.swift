@@ -85,21 +85,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessageManagerDelegate, A
         WorkspaceManager.shared.initialize(workspaceName: "w", rootUri: URL(string: "file:///Users/shion/Desktop/")!, host: "host", port: 1)
 //        WorkspaceManager.shared.copy(documentUri: URL(string: "file:///Users/shion/Desktop/z/cc/1.jpg")!, source: .remote, destination: .original)
 
-        let rootViewController = RootViewController()
-//        let rootViewController = WorkspaceViewController()
+//        let rootViewController = RootViewController()
+        let rootViewController = WorkspaceViewController()
         rootViewController.view.backgroundColor = UIColor.systemBackground
-        self.rootViewController = rootViewController
+//        self.rootViewController = rootViewController
 
         let window = UIWindow()
         window.rootViewController = rootViewController
         window.makeKeyAndVisible()
 
         self.window = window
+        NotificationCenter.default.addObserver(self, selector: #selector(aaa), name: .willOpenDocument, object: nil)
 
-        MessageManager.shared.delegate = self
-        MessageManager.shared.connection(server: LanguageServer(name: "a", host: "192.168.0.13", port: 12345, comment: ""), method: TCPConnection.shared)
-        print(initialize(params: InitializeParams(rootUri: URL(string: "file:////Users/shion/Documents/PyCharm/Test")!)))
+//        MessageManager.shared.delegate = self
+//        MessageManager.shared.connection(server: LanguageServer(name: "a", host: "192.168.0.13", port: 12345, comment: ""), method: TCPConnection.shared)
+//        print(initialize(params: InitializeParams(rootUri: URL(string: "file:////Users/shion/Documents/PyCharm/Test")!)))
         return true
+    }
+
+    @objc func aaa(_ notification: NSNotification) {
+        guard let qwe = notification.userInfo?[NotificationUserInfoKey.uri] as? DocumentUri else {
+            fatalError()
+        }
+        print(qwe)
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {

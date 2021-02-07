@@ -12,9 +12,10 @@ import OSLog
 final class EditorTabViewController: UIViewController {
 
     private(set) weak var tabContainer: EditorTabView!
-    private(set) weak var viewContainer: UIView!
+    private(set) weak var editorContainer: UIView!
 
-    private(set) var tabHeight: CGFloat = UIFont.systemFontSize * 2
+    let tabViewHeight: CGFloat = UIFont.systemFontSize * 2
+    let tabWidth: CGFloat = 140
 
     private var currentTagNumber = 0
     private var nextTagNumber: Int {
@@ -32,10 +33,10 @@ final class EditorTabViewController: UIViewController {
         view.addSubview(tabContainer)
         self.tabContainer = tabContainer
 
-        let viewContainer = UIView()
-        viewContainer.backgroundColor = codeStyle.backgroundColor.uiColor
-        view.addSubview(viewContainer)
-        self.viewContainer = viewContainer
+        let editorContainer = UIView()
+        editorContainer.backgroundColor = codeStyle.backgroundColor.uiColor
+        view.addSubview(editorContainer)
+        self.editorContainer = editorContainer
 
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(refreshCodeStyle), name: .didChangeCodeStyle, object: nil)
@@ -45,21 +46,20 @@ final class EditorTabViewController: UIViewController {
         super.viewDidLayoutSubviews()
 
         var tabContainerFrame = CGRect(origin: .zero, size: view.bounds.size)
-        tabContainerFrame.size.height = tabHeight
+        tabContainerFrame.size.height = tabViewHeight
         tabContainer.frame = tabContainerFrame
 
-        var viewContainerFrame = CGRect(origin: .zero, size: view.bounds.size)
-        viewContainerFrame.origin.y += tabHeight
-        viewContainerFrame.size.height -= tabHeight
-        viewContainer.frame = viewContainerFrame
+        var editorContainerFrame = CGRect(origin: .zero, size: view.bounds.size)
+        editorContainerFrame.origin.y += tabContainerFrame.height
+        editorContainerFrame.size.height -= tabContainerFrame.height
+        editorContainer.frame = editorContainerFrame
 
-        let editorViewFrame = CGRect(origin: .zero, size: viewContainer.bounds.size)
-        viewContainer.subviews.forEach({ $0.frame = editorViewFrame })
+        editorContainer.subviews.forEach({ $0.frame = editorContainerFrame })
     }
 
     @objc func selectTab(sender: EditorTabItem) {
         tabContainer.tabItems.forEach({ $0.isActive = $0.tag == sender.tag })
-        viewContainer.subviews.forEach() {
+        editorContainer.subviews.forEach() {
             if $0.tag == sender.tag {
                 $0.isHidden = false
                 $0.becomeFirstResponder()
@@ -92,14 +92,14 @@ final class EditorTabViewController: UIViewController {
 
         // Add child controller
         viewController.view.tag = tagNumber
-        viewController.view.frame = viewContainer.bounds
+        viewController.view.frame = editorContainer.bounds
         addChild(viewController)
-        viewContainer.addSubview(viewController.view)
+        editorContainer.addSubview(viewController.view)
         viewController.didMove(toParent: self)
 
         // Add tab
-        let a = CGRect(origin: .zero, size: CGSize(width: 140, height: 26))
-        let tabItem = EditorTabItem(frame: a)
+        let tabItemFrame = CGRect(x: .zero, y: .zero, width: tabWidth, height: tabViewHeight - 2)
+        let tabItem = EditorTabItem(frame: tabItemFrame)
         tabItem.set(title: title)
         tabItem.set(codeStyle: CodeStyle.load())
         tabItem.set(tagNumber: tagNumber)
@@ -115,7 +115,7 @@ final class EditorTabViewController: UIViewController {
         let codeStyle = CodeStyle.load()
         tabContainer.backgroundColor = .secondarySystemBackground
         tabContainer.tabItems.forEach({ $0.set(codeStyle: codeStyle) })
-        viewContainer.backgroundColor = codeStyle.backgroundColor.uiColor
+        editorContainer.backgroundColor = codeStyle.backgroundColor.uiColor
     }
 
 }

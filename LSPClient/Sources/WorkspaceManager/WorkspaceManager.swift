@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import UniformTypeIdentifiers
 
-private let INCLUDING_KEYS: [URLResourceKey] = [ .isDirectoryKey, .isSymbolicLinkKey, .isAliasFileKey, .isHiddenKey, ]
+private let INCLUDING_KEYS: [URLResourceKey] = [ .isDirectoryKey, .isSymbolicLinkKey, .isAliasFileKey, .isHiddenKey, .fileSizeKey ]
 
 final class WorkspaceManager {
     /// WorkspaceManager shared instance
@@ -56,8 +57,8 @@ final class WorkspaceManager {
     ///
     private init() {
         self.workspaceName = ""
-        self.workspaceRootUri = URL(string: "file:///")!
-        self.remoteRootUrl = URL(string: "file:///")!
+        self.workspaceRootUri = .bluff
+        self.remoteRootUrl = .bluff
     }
 
     ///
@@ -90,7 +91,7 @@ final class WorkspaceManager {
         var hierarchicalFile = HierarchicalFile(rootUri: workspaceRootUri)
 
         enumerator.compactMap({ $0 as! URL })
-            .compactMap({ documentUri($0) })
+            .compactMap({ documentUri($0)! })
             .sorted(by: localizedStandardOrder)
             .forEach({ parseFileHierarchy($0, &hierarchicalFile) })
 
@@ -116,7 +117,7 @@ final class WorkspaceManager {
 
             if current.children.last?.uri != childUri {
                 let level = childUri.pathComponents.count - workspaceRootUri.pathComponents.count
-                let childFile = HierarchicalFile(uri: childUri, level: level, isDirectory: true, isLink: false, isHidden: false)
+                let childFile = HierarchicalFile(uri: childUri, level: level, isDirectory: true, isLink: false, isHidden: false, size: .zero)
                 current.children.append(childFile)
             }
 
@@ -132,7 +133,8 @@ final class WorkspaceManager {
             let isDirectory = properties.isDirectory ?? false
             let isLink = properties.isSymbolicLink == true || properties.isAliasFile == true
             let isHidden = properties.isHidden ?? false
-            let childFile = HierarchicalFile(uri: target, level: level, isDirectory: isDirectory, isLink: isLink, isHidden: isHidden)
+            let size = properties.fileSize ?? .zero
+            let childFile = HierarchicalFile(uri: target, level: level, isDirectory: isDirectory, isLink: isLink, isHidden: isHidden, size: size)
             current.children.append(childFile)
         }
     }

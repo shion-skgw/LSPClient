@@ -13,7 +13,7 @@ final class EditorTabItem: UIButton {
     private var activeColor: UIColor = .white
     private var inactiveColor: UIColor = .white
     private(set) weak var closeButton: UIButton!
-    private(set) weak var nameLabel: UILabel!
+    private(set) weak var fileNameLabel: UILabel!
 
     var isActive: Bool = true {
         didSet {
@@ -22,27 +22,34 @@ final class EditorTabItem: UIButton {
     }
 
     override var intrinsicContentSize: CGSize {
-        self.frame.size
+        self.bounds.size
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        // Remove all subviews
+        self.subviews.forEach({ $0.removeFromSuperview() })
+
+        // Close button area size
+        let closeButtonAreaWidth = frame.height
+        let closeButtonAreaHeight = frame.height
+
         // Initialize close button
         let closeButton = UIButton(type: .close)
-        closeButton.frame.origin.x = (frame.height - closeButton.frame.width) / 2.0
-        closeButton.frame.origin.y = (frame.height - closeButton.frame.height) / 2.0
+        closeButton.frame.origin.x = closeButtonAreaWidth.centeringPoint(closeButton.frame.width)
+        closeButton.frame.origin.y = closeButtonAreaHeight.centeringPoint(closeButton.frame.height)
         self.addSubview(closeButton)
         self.closeButton = closeButton
 
-        // Layout title label
+        // Initialize Name label
         let nameLabel = UILabel(frame: .zero)
-        nameLabel.frame.origin.x = frame.height + 4.0
+        nameLabel.frame.origin.x = closeButtonAreaWidth + 4.0
         nameLabel.frame.size.height = frame.height
-        nameLabel.frame.size.width = frame.width - nameLabel.frame.minX - 1.0
+        nameLabel.frame.size.width = frame.width - nameLabel.frame.origin.x - 2.0
         nameLabel.textAlignment = .left
         self.addSubview(nameLabel)
-        self.nameLabel = nameLabel
+        self.fileNameLabel = nameLabel
 
         // Design setting
         self.layer.cornerRadius = 3.0
@@ -54,7 +61,7 @@ final class EditorTabItem: UIButton {
     }
 
     func set(title: String) {
-        self.nameLabel.text = title // TODO: フォントが反映させるか確認
+        self.fileNameLabel.text = title // TODO: フォントが反映させるか確認
     }
 
     func set(codeStyle: CodeStyle) {
@@ -63,8 +70,8 @@ final class EditorTabItem: UIButton {
             .font: UIFont.systemFont,
             .foregroundColor: codeStyle.fontColor.text.uiColor
         ]
-        let title = NSAttributedString(string: self.nameLabel.text ?? "Untitled", attributes: attributes)
-        self.nameLabel.attributedText = title
+        let title = NSAttributedString(string: self.fileNameLabel.text ?? "Untitled", attributes: attributes)
+        self.fileNameLabel.attributedText = title
 
         // Set background color
         self.activeColor = codeStyle.activeTabColor.uiColor

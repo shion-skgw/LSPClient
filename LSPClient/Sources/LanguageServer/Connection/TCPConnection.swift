@@ -16,7 +16,7 @@ final class TCPConnection: LSPConnection {
     /// TCPConnection shared instance
     static let shared = TCPConnection()
     /// LSPConnection delegate
-    weak var delegate: LSPConnectionDelegate?
+    weak var delegate: LSPConnectionDelegate!
     /// NWConnection
     private var connection: NWConnection!
     /// DispatchQueue
@@ -45,9 +45,9 @@ final class TCPConnection: LSPConnection {
             [unowned self] (state) in
             switch state {
             case .waiting(let error):
-                self.delegate?.connectionError(cause: error)
+                self.delegate.connectionError(cause: error)
             case .failed(let error):
-                self.delegate?.connectionError(cause: error)
+                self.delegate.connectionError(cause: error)
             default:
                 break
             }
@@ -72,13 +72,13 @@ final class TCPConnection: LSPConnection {
         connection.receive(minimumIncompleteLength: 1, maximumLength: Int(UInt32.max)) {
             [unowned self] (data, _, isComplete, error) in
             if let data = data, !data.isEmpty {
-                self.delegate?.didReceive(data: data)
+                self.delegate.didReceive(data: data)
             }
 
             if isComplete {
                 self.close()
             } else if let error = error {
-                self.delegate?.connectionError(cause: error)
+                self.delegate.connectionError(cause: error)
             } else {
                 self.receive()
             }
@@ -95,7 +95,7 @@ final class TCPConnection: LSPConnection {
         connection.send(content: data, completion: .contentProcessed {
             [unowned self, completion] (error) in
             if let error = error {
-                self.delegate?.connectionError(cause: error)
+                self.delegate.connectionError(cause: error)
             } else {
                 completion()
             }

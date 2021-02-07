@@ -11,7 +11,7 @@ import Foundation
 final class EditorUndoManager: UndoManager {
 
     weak var editorView: EditorView?
-    private(set) var currentVersion = 0
+    private(set) var currentVersion: Int = .zero
     private(set) var editHistories: [Int: EditHistory] = [:]
 
     var editHistory: EditHistory? {

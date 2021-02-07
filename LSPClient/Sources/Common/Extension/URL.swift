@@ -10,6 +10,8 @@ import Foundation
 
 extension URL {
 
+    static let bluff = URL(string: "!")!
+
     @inlinable func hasPrefix(_ prefix: URL) -> Bool {
         return self.absoluteString.hasPrefix(prefix.absoluteString)
     }

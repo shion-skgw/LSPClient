@@ -8,40 +8,69 @@
 
 import UIKit
 
-final class WorkspaceViewController: UITableViewController {
+final class WorkspaceViewController: UIViewController {
 
-    private var workspaceRootFile: HierarchicalFile!
-    private var rowFiles: [WorkspaceFile] = []
-    private var foldDirectories: [URL] = []
+    private var workspaceFiles: [WorkspaceFile] = []
+    private var displayFiles: [WorkspaceFile] = []
+    private var foldDirectories: [DocumentUri] = []
 
-    override func loadView() {
-        let tableView = UITableView()
-        tableView.rowHeight = UIFont.systemFontSize * 2.5
-        tableView.estimatedRowHeight = 0
-        tableView.separatorStyle = .none
-        tableView.dataSource = self
-        tableView.delegate = self
-        self.tableView = tableView
+    private(set) weak var menuView: WorkspaceMenuView!
+    private(set) weak var workspaceView: UITableView!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        let menuView = WorkspaceMenuView()
+        menuView.backgroundColor = .tertiarySystemBackground
+        view.addSubview(menuView)
+        self.menuView = menuView
+
+        let workspaceView = UITableView()
+        workspaceView.rowHeight = UIFont.systemFontSize * 2.5
+        workspaceView.estimatedRowHeight = 0
+        workspaceView.separatorStyle = .none
+        workspaceView.dataSource = self
+        workspaceView.delegate = self
+        view.addSubview(workspaceView)
+        self.workspaceView = workspaceView
 
         fetchWorkspaceFiles()
     }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        var menuViewFrame = CGRect(origin: .zero, size: view.bounds.size)
+        menuViewFrame.size.height = 30.0
+        menuView.frame = menuViewFrame
+
+        var workspaceViewFrame = CGRect(origin: .zero, size: view.bounds.size)
+        workspaceViewFrame.origin.y += menuViewFrame.height
+        workspaceViewFrame.size.height -= menuViewFrame.height
+        workspaceView.frame = workspaceViewFrame
+    }
+
+}
+
+
+// MARK: - Workspace menu
+
+extension WorkspaceViewController {
 
 }
 
 
 // MARK: - UITableViewDataSource
 
-extension WorkspaceViewController {
+extension WorkspaceViewController: UITableViewDataSource {
 
     func fetchWorkspaceFiles() {
-        self.workspaceRootFile = WorkspaceManager.shared.fetchFileHierarchy()
+        self.workspaceFiles = workspaceFiles(WorkspaceManager.shared.fetchFileHierarchy())
 
-        let files = workspaceFiles(self.workspaceRootFile)
+        self.displayFiles = workspaceFiles.filter(shouldShowFile)
 
-        self.rowFiles = files.filter(shouldShowFile)
-
-        for file in files {
-            tableView.register(WorkspaceViewCell.self, forCellReuseIdentifier: file.cellReuseIdentifier)
+        for file in workspaceFiles {
+            workspaceView.register(WorkspaceViewCell.self, forCellReuseIdentifier: file.cellReuseIdentifier)
         }
     }
 
@@ -55,23 +84,28 @@ extension WorkspaceViewController {
         return !foldDirectories.contains(where: { file.uri != $0 && file.uri.hasPrefix($0) })
     }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return rowFiles.count
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return displayFiles.count
     }
 
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let file = rowFiles[indexPath.row]
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let file = displayFiles[indexPath.row]
         let identifier = file.cellReuseIdentifier
 
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as? WorkspaceViewCell else {
+        guard let tableCell = workspaceView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as? WorkspaceViewCell else {
             fatalError()
         }
 
-        cell.uri = file.uri
-        cell.nameLabel.text = file.uri.lastPathComponent
-        cell.foldButton?.isFold = foldDirectories.contains(file.uri)
-        cell.foldButton?.addTarget(self, action: #selector(toggleFold(_:)), for: .touchUpInside)
-        return cell
+        tableCell.uri = file.uri
+
+        if let foldButton = tableCell.foldButton {
+            foldButton.isFold = foldDirectories.contains(file.uri)
+            if !foldButton.allTargets.contains(where: { $0 is WorkspaceViewController }) {
+                foldButton.addTarget(self, action: #selector(toggleFold(_:)), for: .touchUpInside)
+            }
+        }
+
+        return tableCell
     }
 
 }
@@ -79,13 +113,31 @@ extension WorkspaceViewController {
 
 // MARK: - UITableViewDelegate
 
-extension WorkspaceViewController {
+extension WorkspaceViewController: UITableViewDelegate {
 
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let cell = tableView.cellForRow(at: indexPath) as? WorkspaceViewCell else {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let tableCell = workspaceView.cellForRow(at: indexPath) as? WorkspaceViewCell,
+                let file = workspaceFiles.filter({ tableCell.uri == $0.uri }).first else {
             fatalError()
         }
+
+        if file.size < 1000 {
+            NotificationCenter.default.post(name: .willOpenDocument, object: nil, userInfo: [ "uri": file.uri ])
+
+        } else {
+            let alert = UIAlertController(title: "Huge file", message: "Open?", preferredStyle: .alert)
+            let open = UIAlertAction(title: "Open", style: .default) {
+                [file] action in
+                let userInfo = [ NotificationUserInfoKey.uri: file.uri ]
+                NotificationCenter.default.post(name: .willOpenDocument, object: nil, userInfo: userInfo)
+            }
+            let cancel = UIAlertAction(title: "Cancel", style: .cancel)
+            alert.addAction(open)
+            alert.addAction(cancel)
+            present(alert, animated: true)
+        }
     }
+
 
     @objc func toggleFold(_ sender: WorkspaceFoldButton) {
         guard let targetUri = (sender.superview?.superview as? WorkspaceViewCell)?.uri else {
@@ -102,38 +154,42 @@ extension WorkspaceViewController {
             // Remove data source
             foldDirectories.append(targetUri)
             foldDirectories.sort(by: localizedStandardOrder)
-            rowFiles.removeAll(where: { $0.uri != targetUri && $0.uri.hasPrefix(targetUri) })
+            displayFiles.removeAll(where: { $0.uri != targetUri && $0.uri.hasPrefix(targetUri) })
 
             // Delete table row
-            tableView.beginUpdates()
-            tableView.deleteRows(at: paths, with: .automatic)
-            tableView.endUpdates()
+            workspaceView.beginUpdates()
+            workspaceView.deleteRows(at: paths, with: .fade)
+            workspaceView.endUpdates()
 
         } else {
             // Refresh data source
             foldDirectories.removeAll(where: { $0 == targetUri })
-            rowFiles = workspaceFiles(self.workspaceRootFile).filter(shouldShowFile)
+            displayFiles = workspaceFiles.filter(shouldShowFile)
 
             // Get target IndexPath
             let paths = indexPaths(targetUri)
 
             // Insert table row
-            tableView.beginUpdates()
-            tableView.insertRows(at: paths, with: .automatic)
-            tableView.endUpdates()
+            workspaceView.beginUpdates()
+            workspaceView.insertRows(at: paths, with: .fade)
+            workspaceView.endUpdates()
         }
     }
 
     private func indexPaths(_ uri: DocumentUri) -> [IndexPath] {
-        var startIndex = 0
-        var endIndex = 0
+        var startIndex = Int.zero
+        var endIndex = Int.zero
 
-        for index in rowFiles.startIndex ..< rowFiles.endIndex {
-            if rowFiles[index].uri == uri {
+        for index in displayFiles.startIndex ..< displayFiles.endIndex {
+            if displayFiles[index].uri == uri {
                 startIndex = index + 1
                 endIndex = startIndex
-            } else if rowFiles[index].uri.hasPrefix(uri) {
+
+            } else if displayFiles[index].uri.hasPrefix(uri) {
                 endIndex = index
+
+            } else if startIndex != .zero {
+                break
             }
         }
 

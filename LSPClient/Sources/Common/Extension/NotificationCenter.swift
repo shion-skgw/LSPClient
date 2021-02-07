@@ -10,4 +10,6 @@ import Foundation
 
 extension Notification.Name {
     static let didChangeCodeStyle = Notification.Name(rawValue: "didChangeCodeStyle")
+    static let willOpenDocument = Notification.Name(rawValue: "willOpenDocument")
+    static let didOpenDocument = Notification.Name(rawValue: "didOpenDocument")
 }

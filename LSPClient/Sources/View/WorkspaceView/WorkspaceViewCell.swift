@@ -10,11 +10,13 @@ import UIKit
 
 final class WorkspaceViewCell: UITableViewCell {
     /// Document URI
-    var uri: DocumentUri!
+    var uri: DocumentUri! {
+        didSet {
+            self.nameLabel.text = uri.lastPathComponent
+        }
+    }
     /// Level of directory
     let level: Int
-    /// Whether to open with Editor
-    let isFile: Bool
 
     /// Folding button
     private(set) weak var foldButton: WorkspaceFoldButton?
@@ -27,36 +29,27 @@ final class WorkspaceViewCell: UITableViewCell {
     private let indentWidth: CGFloat = 14
     private let foldButtonWidth: CGFloat = 10
     private let foldButtonHeight: CGFloat = 10
+    private let iconPointSize: CGFloat = 15
     private let iconAreaWidth: CGFloat = 22
     private let widthMargin: CGFloat = 8
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        guard let identifier = reuseIdentifier,
-                let level = Int(identifier.split(separator: ":").first ?? "") else {
-            self.level = 0
-            self.isFile = false
-            super.init(style: style, reuseIdentifier: reuseIdentifier)
-            return
+        guard let file = WorkspaceFile(cellReuseIdentifier: reuseIdentifier ?? "") else {
+            fatalError()
         }
 
-        // Element type
-        let isDirectory = identifier.contains("isDirectory")
-        let isLink = identifier.contains("isLink")
-        let isHidden = identifier.contains("isHidden")
-
         // Initialize
-        self.level = level
-        self.isFile = !isDirectory && !isLink
+        self.level = file.level
         super.init(style: .default, reuseIdentifier: reuseIdentifier)
 
         // Remove all subviews
         self.contentView.subviews.forEach({ $0.removeFromSuperview() })
 
         // Avoid recalculation of unnecessary frames
-        if isDirectory {
+        if file.isDirectory {
             addFoldButton()
         }
-        addIconView(isDirectory, isLink, isHidden)
+        addIconView(file)
         addNameLabel()
     }
 
@@ -68,7 +61,7 @@ final class WorkspaceViewCell: UITableViewCell {
         // Calc fold button frame
         var foldButtonFrame = CGRect.zero
         foldButtonFrame.origin.x = widthMargin + indentWidth * CGFloat(level)
-        foldButtonFrame.origin.y = (cellHeight - foldButtonWidth) / 2.0
+        foldButtonFrame.origin.y = cellHeight.centeringPoint(foldButtonHeight)
         foldButtonFrame.size.width = foldButtonWidth
         foldButtonFrame.size.height = foldButtonHeight
 
@@ -80,11 +73,11 @@ final class WorkspaceViewCell: UITableViewCell {
         self.foldButton = foldButton
     }
 
-    private func addIconView(_ isDirectory: Bool, _ isLink: Bool, _ isHidden: Bool) {
+    private func addIconView(_ file: WorkspaceFile) {
         // Get icon image
         let icon: UIImage
-        let config = UIImage.SymbolConfiguration(pointSize: 15.0, weight: .light)
-        switch (isDirectory, isLink, isHidden) {
+        let config = UIImage.SymbolConfiguration(pointSize: iconPointSize, weight: .light)
+        switch (file.isDirectory, file.isLink, file.isHidden) {
         case (true, false, false):
             icon = UIImage(systemName: "folder.fill", withConfiguration: config)!
         case (true, false, true):
@@ -106,8 +99,8 @@ final class WorkspaceViewCell: UITableViewCell {
 
         // Calc icon image frame
         var iconViewFrame = CGRect(origin: .zero, size: icon.size)
-        iconViewFrame.origin.x = originX + 4.0 + (iconAreaWidth - icon.size.width) / 2.0
-        iconViewFrame.origin.y = (cellHeight - icon.size.height) / 2.0
+        iconViewFrame.origin.x = originX + 4.0 + iconAreaWidth.centeringPoint(icon.size.width)
+        iconViewFrame.origin.y = cellHeight.centeringPoint(icon.size.height)
 
         // Initialize icon image
         let iconView = UIImageView(frame: iconViewFrame)

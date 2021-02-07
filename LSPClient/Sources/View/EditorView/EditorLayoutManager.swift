@@ -18,10 +18,10 @@ final class EditorLayoutManager: NSLayoutManager {
     ]
 
     private var invisiblesAttribute: [NSAttributedString.Key: Any] = [:]
-    private var lineHeight: CGFloat = CGFloat.zero
+    private var lineHeight: CGFloat = .zero
     private var showInvisibles: Bool = false
-    private var gutterWidth: CGFloat = CGFloat.zero
-    private var verticalMargin: CGFloat = CGFloat.zero
+    private var gutterWidth: CGFloat = .zero
+    private var verticalMargin: CGFloat = .zero
 
     override init() {
         super.init()
@@ -53,7 +53,7 @@ final class EditorLayoutManager: NSLayoutManager {
                 let rect = lineFragmentRect(forGlyphAt: position, effectiveRange: nil)
                 var point = location(forGlyphAt: position)
                 point.x += rect.origin.x + self.gutterWidth
-                point.y = rect.origin.y + self.verticalMargin + (self.lineHeight - charSize.height) / 2.0
+                point.y = rect.origin.y + self.verticalMargin + self.lineHeight.centeringPoint(charSize.height)
                 char.draw(at: point, withAttributes: self.invisiblesAttribute)
             }
         }
