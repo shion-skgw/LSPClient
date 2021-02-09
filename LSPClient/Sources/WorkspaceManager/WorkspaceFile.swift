@@ -15,25 +15,17 @@ struct WorkspaceFile {
     let isHidden: Bool
     let size: Int
 
-    init(rootUri: DocumentUri) {
-        self.uri = rootUri
-        self.level = .zero
-        self.type = .directory
-        self.isHidden = false
-        self.size = .zero
-    }
-
-    init(remoteUrl: NSURL, level: Int) {
-        guard let documentUri = WorkspaceFile.documentUri(remoteUrl),
-                let resourceValues = try? remoteUrl.resourceValues(forKeys: WorkspaceFile.resourceValueKeys) else {
+    init(remoteUrl: URL, level: Int) {
+        guard let resourceValues = try? remoteUrl.resourceValues(forKeys: Set(WorkspaceFile.resourceValueKeys)) else {
             fatalError()
         }
-        self.uri = documentUri
+        self.uri = remoteUrl.standardizedFileURL
         self.level = level
         self.type = WorkspaceFile.fileType(resourceValues)
-        self.isHidden = WorkspaceFile.isHidden(resourceValues)
-        self.size = WorkspaceFile.fileSize(resourceValues)
+        self.isHidden = resourceValues.isHidden == true
+        self.size = resourceValues.fileSize ?? .zero
     }
+
 }
 
 extension WorkspaceFile {
@@ -54,39 +46,16 @@ extension WorkspaceFile {
         .fileSizeKey
     ]
 
-    static func naturalOrdering(_ file1: Self, _ file2: Self) -> Bool {
-        return file1.uri.path.localizedStandardCompare(file2.uri.path) == .orderedAscending
-    }
-
-    private static func documentUri(_ url: NSURL) -> DocumentUri? {
-        guard let host = url.host else {
-            return url as DocumentUri
-        }
-        return DocumentUri(string: url.absoluteString?.replacingOccurrences(of: host, with: "") ?? "")
-    }
-
-    private static func fileType(_ values: [URLResourceKey: Any]) -> FileType {
-        if (values[.isSymbolicLinkKey] as? NSNumber)?.boolValue == true || (values[.isAliasFileKey] as? NSNumber)?.boolValue == true {
+    private static func fileType(_ values: URLResourceValues) -> FileType {
+        if values.isSymbolicLink == true || values.isAliasFile == true {
             return .link
-
-        } else if (values[.isDirectoryKey] as? NSNumber)?.boolValue == true {
+        } else if values.isDirectory == true {
             return .directory
-
-        } else if (values[.isRegularFileKey] as? NSNumber)?.boolValue == true {
+        } else if values.isRegularFile == true {
             return .file
-
         } else {
             return .unknown
         }
     }
 
-    private static func isHidden(_ values: [URLResourceKey: Any]) -> Bool {
-        return (values[.isHiddenKey] as? NSNumber)?.boolValue == true
-    }
-
-    private static func fileSize(_ values: [URLResourceKey: Any]) -> Int {
-        return (values[.fileSizeKey] as? NSNumber)?.intValue ?? .zero
-    }
-
 }
-

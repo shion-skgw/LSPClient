@@ -17,14 +17,12 @@ final class WorkspaceFoldButton: UIButton {
     }
 
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        guard let superviewBounds = superview?.bounds else {
+        guard let targetHeight = superview?.bounds.height else {
             return bounds.contains(point)
         }
-        var target = bounds
-        target.origin.x -= superviewBounds.height.centeringPoint(bounds.height)
-        target.origin.y -= superviewBounds.height.centeringPoint(bounds.width)
-        target.size.height = superviewBounds.height
-        target.size.width = superviewBounds.height
+        var target = CGRect(x: .zero, y: .zero, width: targetHeight * 1.5, height: targetHeight)
+        target.origin.x -= target.width.centeringPoint(bounds.width)
+        target.origin.y -= target.height.centeringPoint(bounds.height)
         return target.contains(point)
     }
 

@@ -65,7 +65,7 @@ extension WorkspaceViewController {
 extension WorkspaceViewController: UITableViewDataSource {
 
     func fetchWorkspaceFiles() {
-        self.workspaceFiles = WorkspaceManager.shared.fetchWorkspaceFiles(skipsHidden: false)
+        self.workspaceFiles = WorkspaceManager.shared.fetchRemoteWorkspaceFiles(skipsHidden: false)
 
         self.displayFiles = workspaceFiles.filter(shouldShowFile)
 

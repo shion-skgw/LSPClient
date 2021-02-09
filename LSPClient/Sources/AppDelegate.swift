@@ -73,7 +73,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessageManagerDelegate, A
     weak var rootViewController: RootViewController!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-//        print(try! NSURL(string: "file:///Users/shion/Desktop/z/bb/8.jpg")!.resourceValues(forKeys: [.fileSizeKey]).first)
         CodeStyle.remove()
         var a = CodeStyle.load()
         a.backgroundColor.uiColor = UIColor.brown
@@ -84,10 +83,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessageManagerDelegate, A
 //        a.save()
 
 
-        WorkspaceManager.shared.initialize(workspaceName: "w", rootUri: URL(string: "file:///Users/shion/Desktop/")!, host: "host", port: 1)
-        WorkspaceManager.shared.fetchWorkspaceFiles(skipsHidden: false).forEach({ print($0.uri) })
-//        WorkspaceManager.shared.copy(documentUri: URL(string: "file:///Users/shion/Desktop/z/bb/8.jpg")!, source: .remote, destination: .original)
-//        WorkspaceManager.shared.copy(documentUri: URL(string: "file:///Users/shion/Desktop/z/cc/1.jpg")!, source: .remote, destination: .original)
+        print(URL(string: "file:///Users/shion/Desktop/z/bb/1.jpg")!.scheme)
+        WorkspaceManager.shared.initialize(workspaceName: "w", remoteRootUrl: URL(string: "file://asdfasdf:1234/Users/shion/Desktop/")!)
+        WorkspaceManager.shared.fetchRemoteWorkspaceFiles(skipsHidden: true).forEach({ print($0.uri) })
+//        print(WorkspaceManager.shared.copy(uri: URL(string: "file:///Users/shion/Desktop/z/bb/1.jpg")!, from: .remote, to: .local, isForced: true))
+        print(WorkspaceManager.shared.remove(uri: URL(string: "file:///Users/shion/Desktop/z/bb/1.jpg")!, source: .local))
+
+//        let q = try! URL(string: "file:///Users/shion/Desktop/z/bb/1.jpg")!.resourceValues(forKeys: [.fileResourceIdentifierKey]).fileResourceIdentifier!
+//        let w = try! URL(string: "file:///Users/shion/Library/Developer/CoreSimulator/Devices/C97299D8-06BF-432C-BF30-83BB8BCCED06/data/Containers/Data/Application/05EB504A-063C-4F44-B384-19CFD2EB7F7C/Library/Application%20Support/com.skgw.LSPClient/w/z/bb/1.jpg")!.resourceValues(forKeys: [.fileResourceIdentifierKey]).fileResourceIdentifier!
+//        print(q)
+//        print(w)
+//        print(q.isEqual(w))
 
 //        let rootViewController = RootViewController()
         let rootViewController = WorkspaceViewController()
