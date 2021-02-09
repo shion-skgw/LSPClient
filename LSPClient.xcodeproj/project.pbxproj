@@ -382,7 +382,7 @@
 			children = (
 				05F45C0E25CA3AF500C96ADB /* EditorTabView */,
 				05F45C0F25CA3B0200C96ADB /* EditorView */,
-				05F45C1025CA3B1300C96ADB /* MenuView */,
+				05F45C1025CA3B1300C96ADB /* MainMenuView */,
 				05F45C1225CA3B6200C96ADB /* RootView */,
 				05F45C1125CA3B2200C96ADB /* WorkspaceView */,
 			);
@@ -589,13 +589,13 @@
 			path = EditorView;
 			sourceTree = "<group>";
 		};
-		05F45C1025CA3B1300C96ADB /* MenuView */ = {
+		05F45C1025CA3B1300C96ADB /* MainMenuView */ = {
 			isa = PBXGroup;
 			children = (
 				0586CD5D25A2D78F0047C7BB /* MainMenuView.swift */,
 				0586CD6325A2D7B90047C7BB /* MainMenuViewController.swift */,
 			);
-			path = MenuView;
+			path = MainMenuView;
 			sourceTree = "<group>";
 		};
 		05F45C1125CA3B2200C96ADB /* WorkspaceView */ = {
