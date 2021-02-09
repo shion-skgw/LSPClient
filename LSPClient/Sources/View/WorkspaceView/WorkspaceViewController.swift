@@ -117,14 +117,13 @@ extension WorkspaceViewController: UITableViewDelegate {
         }
 
         if file.size < 1000 {
-            NotificationCenter.default.post(name: .willOpenDocument, object: nil, userInfo: [ "uri": file.uri ])
+            NotificationCenter.default.post(name: .willOpenDocument, object: nil, userInfoValue: file.uri)
 
         } else {
             let alert = UIAlertController(title: "Huge file", message: "Open?", preferredStyle: .alert)
             let open = UIAlertAction(title: "Open", style: .default) {
                 [file] action in
-                let userInfo = [ NotificationUserInfoKey.uri: file.uri ]
-                NotificationCenter.default.post(name: .willOpenDocument, object: nil, userInfo: userInfo)
+                NotificationCenter.default.post(name: .willOpenDocument, object: nil, userInfoValue: file.uri)
             }
             let cancel = UIAlertAction(title: "Cancel", style: .cancel)
             alert.addAction(open)

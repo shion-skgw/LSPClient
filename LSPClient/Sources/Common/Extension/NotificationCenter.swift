@@ -8,8 +8,15 @@
 
 import Foundation
 
-extension Notification.Name {
-    static let didChangeCodeStyle = Notification.Name(rawValue: "didChangeCodeStyle")
-    static let willOpenDocument = Notification.Name(rawValue: "willOpenDocument")
-    static let didOpenDocument = Notification.Name(rawValue: "didOpenDocument")
+extension NotificationCenter {
+
+    func post(name: NSNotification.Name, object: Any?, userInfoValue: Any? = nil) {
+        if let userInfoValue = userInfoValue {
+            let userInfo = [ name.rawValue + "_userInfoValue": userInfoValue ]
+            self.post(name: name, object: object, userInfo: userInfo)
+        } else {
+            self.post(name: name, object: object, userInfo: nil)
+        }
+    }
+
 }

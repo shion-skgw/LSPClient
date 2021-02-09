@@ -83,7 +83,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessageManagerDelegate, A
 //        a.save()
 
 
-        print(URL(string: "file:///Users/shion/Desktop/z/bb/1.jpg")!.scheme)
         WorkspaceManager.shared.initialize(workspaceName: "w", remoteRootUrl: URL(string: "file://asdfasdf:1234/Users/shion/Desktop/")!)
         WorkspaceManager.shared.fetchRemoteWorkspaceFiles(skipsHidden: true).forEach({ print($0.uri) })
 //        print(WorkspaceManager.shared.copy(uri: URL(string: "file:///Users/shion/Desktop/z/bb/1.jpg")!, from: .remote, to: .local, isForced: true))
@@ -113,8 +112,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessageManagerDelegate, A
         return true
     }
 
-    @objc func aaa(_ notification: NSNotification) {
-        guard let qwe = notification.userInfo?[NotificationUserInfoKey.uri] as? DocumentUri else {
+    @objc func aaa(_ notification: Notification) {
+        guard let qwe = notification.userInfoValue as? DocumentUri else {
             fatalError()
         }
         print(qwe)
