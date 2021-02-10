@@ -10,53 +10,100 @@ import UIKit
 
 final class RootViewController: UIViewController {
 
+    let appearance = Appearance.self
     weak var mainMenu: MainMenuViewController!
+    weak var sidebar: SidebarViewController!
     weak var editor: EditorTabViewController!
+    weak var workspace: WorkspaceViewController?
+
+    override func loadView() {
+        self.view = RootView()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Main menu
         let mainMenu = MainMenuViewController()
-        mainMenu.view.backgroundColor = .secondarySystemBackground
+        mainMenu.view.backgroundColor = appearance.mainMenuColor
         add(child: mainMenu)
         self.mainMenu = mainMenu
 
+        // Sidebar
+        let sidebar = SidebarViewController()
+        sidebar.view.backgroundColor = appearance.sidebarColor
+        sidebar.rootController = self
+        add(child: sidebar)
+        self.sidebar = sidebar
+
+        // Editor
         let editor = EditorTabViewController()
         add(child: editor)
         self.editor = editor
 
         let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(change), name: UIResponder.keyboardDidChangeFrameNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(layoutSubviews), name: .keyboardWillChange, object: nil)
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        layoutSubviews()
+    }
 
-        var mainMenuFrame = view.safeAreaLayoutGuide.layoutFrame
-        mainMenuFrame.size.height = 48.0
+    @objc private func layoutSubviews() {
+        var displayAreaFrame = view.safeAreaLayoutGuide.layoutFrame
+        displayAreaFrame.origin.x += appearance.viewMargin
+        displayAreaFrame.origin.y += appearance.viewMargin
+        displayAreaFrame.size.width -= appearance.viewMargin * 2
+        displayAreaFrame.size.height -= appearance.viewMargin * 2
+
+        if let keyboardFrame = UIApplication.shared.keyboardView?.frame {
+            displayAreaFrame.size.height -= view.bounds.height - keyboardFrame.minY
+        }
+
+        var mainMenuFrame = displayAreaFrame
+        mainMenuFrame.size.height = appearance.mainMenuHeight
         mainMenu.view.frame = mainMenuFrame
 
-        var editorFrame = view.safeAreaLayoutGuide.layoutFrame
-        editorFrame.size.height -= mainMenuFrame.height + 5
-        editorFrame.origin.y = mainMenuFrame.maxY + 5
+        var sideAreaFrame = displayAreaFrame
+        sideAreaFrame.origin.y = mainMenuFrame.maxY + appearance.viewMargin
+        sideAreaFrame.size.height -= mainMenuFrame.height + appearance.viewMargin
+
+        if let workspaceView = workspace?.view {
+            sideAreaFrame.size.width = 300
+            workspaceView.frame = sideAreaFrame
+        } else {
+            sideAreaFrame.size.width = appearance.sidebarWidth
+            sidebar.view.frame = sideAreaFrame
+        }
+
+        var editorFrame = displayAreaFrame
+        editorFrame.origin.x = sideAreaFrame.maxX + appearance.viewMargin
+        editorFrame.origin.y = sideAreaFrame.origin.y
+        editorFrame.size.width -= sideAreaFrame.width + appearance.viewMargin
+        editorFrame.size.height = sideAreaFrame.height
         editor.view.frame = editorFrame
     }
 
+}
 
 
+// MARK: - Main menu action
 
-    func didBecomeActive() {
-        
-    }
+extension RootViewController {
+}
 
-    func willResignActive() {
 
-    }
+// MARK: - Sidebar action
 
-    @objc private func change() {
-//        guard let keyboardView = UIApplication.shared.keyboardView else {
-//            return
-//        }
+extension RootViewController {
+
+    func showWorkspace() {
+        let workspace = WorkspaceViewController()
+        add(child: workspace)
+        print(workspace.view.frame)
+        self.workspace = workspace
+        self.sidebar.view.isHidden = true
     }
 
 }

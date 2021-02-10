@@ -14,6 +14,7 @@ final class WorkspaceViewController: UIViewController {
     private var displayFiles: [WorkspaceFile] = []
     private var foldDirectories: [DocumentUri] = []
 
+    private(set) weak var rootViewController: RootViewController!
     private(set) weak var menuView: WorkspaceMenuView!
     private(set) weak var workspaceView: UITableView!
 
@@ -34,7 +35,9 @@ final class WorkspaceViewController: UIViewController {
         view.addSubview(workspaceView)
         self.workspaceView = workspaceView
 
-        fetchWorkspaceFiles()
+        if workspaceFiles.isEmpty {
+            fetchWorkspaceFiles()
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -56,6 +59,13 @@ final class WorkspaceViewController: UIViewController {
 // MARK: - Workspace menu
 
 extension WorkspaceViewController {
+
+    @objc func closeView() {
+        self.willMove(toParent: nil)
+        self.view.removeFromSuperview()
+        self.removeFromParent()
+//        self.rootViewController.didCloseWorkspaceView()
+    }
 
 }
 

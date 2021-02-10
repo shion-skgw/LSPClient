@@ -50,11 +50,11 @@ final class EditorTabViewController: UIViewController {
         tabContainer.frame = tabContainerFrame
 
         var editorContainerFrame = CGRect(origin: .zero, size: view.bounds.size)
-        editorContainerFrame.origin.y += tabContainerFrame.height
-        editorContainerFrame.size.height -= tabContainerFrame.height
+        editorContainerFrame.origin.y = tabContainerFrame.maxY
+        editorContainerFrame.size.height -= tabContainerFrame.maxY
         editorContainer.frame = editorContainerFrame
 
-        editorContainer.subviews.forEach({ $0.frame = editorContainerFrame })
+        editorContainer.subviews.forEach({ $0.frame = CGRect(origin: .zero, size: editorContainerFrame.size) })
     }
 
     @objc func selectTab(sender: EditorTabItem) {

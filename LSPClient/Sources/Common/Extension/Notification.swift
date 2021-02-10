@@ -6,7 +6,7 @@
 //  Copyright © 2021 Shion. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 extension Notification {
 
@@ -17,6 +17,7 @@ extension Notification {
 }
 
 extension Notification.Name {
+    static let keyboardWillChange = UIResponder.keyboardWillChangeFrameNotification
     static let didChangeCodeStyle = Notification.Name(rawValue: "didChangeCodeStyle")
     static let willOpenDocument = Notification.Name(rawValue: "willOpenDocument")
     static let didOpenDocument = Notification.Name(rawValue: "didOpenDocument")

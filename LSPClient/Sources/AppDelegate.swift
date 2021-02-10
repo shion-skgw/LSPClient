@@ -17,10 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessageManagerDelegate, A
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         WorkspaceManager.shared.initialize(workspaceName: "w", remoteRootUrl: URL(string: "file://asdfasdf:1234/Users/shion/Desktop/")!)
 
-//        let rootViewController = RootViewController()
-        let rootViewController = WorkspaceViewController()
-        rootViewController.view.backgroundColor = UIColor.systemBackground
-//        self.rootViewController = rootViewController
+        let rootViewController = RootViewController()
+        self.rootViewController = rootViewController
 
         let window = UIWindow()
         window.rootViewController = rootViewController
