@@ -1,5 +1,5 @@
 //
-//  SidebarView.swift
+//  SidebarMenuView.swift
 //  LSPClient
 //
 //  Created by Shion on 2021/02/10.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-final class SidebarView: UIView {
+final class SidebarMenuView: UIView {
 
     private let appearance = Appearance.Sidebar.self
     private(set) weak var workspaceButton: UIButton!

@@ -12,7 +12,7 @@ final class RootViewController: UIViewController {
 
     let appearance = Appearance.self
     weak var mainMenu: MainMenuViewController!
-    weak var sidebar: SidebarViewController!
+    weak var sidebarMenu: SidebarMenuViewController!
     weak var editor: EditorTabViewController!
     weak var workspace: WorkspaceViewController?
 
@@ -29,12 +29,12 @@ final class RootViewController: UIViewController {
         add(child: mainMenu)
         self.mainMenu = mainMenu
 
-        // Sidebar
-        let sidebar = SidebarViewController()
-        sidebar.view.backgroundColor = appearance.sidebarColor
-        sidebar.rootController = self
-        add(child: sidebar)
-        self.sidebar = sidebar
+        // Sidebar menu
+        let sidebarMenu = SidebarMenuViewController()
+        sidebarMenu.view.backgroundColor = appearance.sidebarColor
+        sidebarMenu.rootController = self
+        add(child: sidebarMenu)
+        self.sidebarMenu = sidebarMenu
 
         // Editor
         let editor = EditorTabViewController()
@@ -74,7 +74,7 @@ final class RootViewController: UIViewController {
             workspaceView.frame = sideAreaFrame
         } else {
             sideAreaFrame.size.width = appearance.sidebarWidth
-            sidebar.view.frame = sideAreaFrame
+            sidebarMenu.view.frame = sideAreaFrame
         }
 
         var editorFrame = displayAreaFrame
@@ -103,7 +103,7 @@ extension RootViewController {
         add(child: workspace)
         print(workspace.view.frame)
         self.workspace = workspace
-        self.sidebar.view.isHidden = true
+        self.sidebarMenu.view.isHidden = true
     }
 
 }

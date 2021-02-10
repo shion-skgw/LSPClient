@@ -82,8 +82,8 @@
 		059150C825D04FBB009EB71B /* WorkspaceFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059150C725D04FBB009EB71B /* WorkspaceFile.swift */; };
 		059150CC25D05A63009EB71B /* WorkspaceViewCellIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059150CB25D05A63009EB71B /* WorkspaceViewCellIdentifier.swift */; };
 		059150EA25D2CE34009EB71B /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059150E925D2CE34009EB71B /* Notification.swift */; };
-		059150F525D2DDEC009EB71B /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059150F425D2DDEC009EB71B /* SidebarView.swift */; };
-		059150FB25D2DE04009EB71B /* SidebarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059150FA25D2DE04009EB71B /* SidebarViewController.swift */; };
+		059150F525D2DDEC009EB71B /* SidebarMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059150F425D2DDEC009EB71B /* SidebarMenuView.swift */; };
+		059150FB25D2DE04009EB71B /* SidebarMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059150FA25D2DE04009EB71B /* SidebarMenuViewController.swift */; };
 		0591510D25D3A187009EB71B /* Appearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0591510C25D3A187009EB71B /* Appearance.swift */; };
 		0591511B25D47239009EB71B /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0591511A25D47239009EB71B /* RootView.swift */; };
 		05BA10AF24D2D922009A3669 /* LSPConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BA10AE24D2D922009A3669 /* LSPConnection.swift */; };
@@ -205,8 +205,8 @@
 		059150C725D04FBB009EB71B /* WorkspaceFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceFile.swift; sourceTree = "<group>"; };
 		059150CB25D05A63009EB71B /* WorkspaceViewCellIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceViewCellIdentifier.swift; sourceTree = "<group>"; };
 		059150E925D2CE34009EB71B /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
-		059150F425D2DDEC009EB71B /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
-		059150FA25D2DE04009EB71B /* SidebarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarViewController.swift; sourceTree = "<group>"; };
+		059150F425D2DDEC009EB71B /* SidebarMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarMenuView.swift; sourceTree = "<group>"; };
+		059150FA25D2DE04009EB71B /* SidebarMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarMenuViewController.swift; sourceTree = "<group>"; };
 		0591510C25D3A187009EB71B /* Appearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Appearance.swift; sourceTree = "<group>"; };
 		0591511A25D47239009EB71B /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		05BA10AE24D2D922009A3669 /* LSPConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPConnection.swift; sourceTree = "<group>"; };
@@ -388,7 +388,7 @@
 				05F45C0F25CA3B0200C96ADB /* EditorView */,
 				05F45C1025CA3B1300C96ADB /* MainMenuView */,
 				05F45C1225CA3B6200C96ADB /* RootView */,
-				059150F325D2DDDA009EB71B /* SidebarView */,
+				059150F325D2DDDA009EB71B /* SidebarMenuView */,
 				05F45C1125CA3B2200C96ADB /* WorkspaceView */,
 			);
 			path = View;
@@ -464,13 +464,13 @@
 			path = Extension;
 			sourceTree = "<group>";
 		};
-		059150F325D2DDDA009EB71B /* SidebarView */ = {
+		059150F325D2DDDA009EB71B /* SidebarMenuView */ = {
 			isa = PBXGroup;
 			children = (
-				059150F425D2DDEC009EB71B /* SidebarView.swift */,
-				059150FA25D2DE04009EB71B /* SidebarViewController.swift */,
+				059150F425D2DDEC009EB71B /* SidebarMenuView.swift */,
+				059150FA25D2DE04009EB71B /* SidebarMenuViewController.swift */,
 			);
-			path = SidebarView;
+			path = SidebarMenuView;
 			sourceTree = "<group>";
 		};
 		05BA10AD24D2D905009A3669 /* Connection */ = {
@@ -817,13 +817,13 @@
 				058F7ECA2511BFD00063D9AF /* String.swift in Sources */,
 				05182B2624DA0D52007E8832 /* LanguageServers.swift in Sources */,
 				0586CD5E25A2D78F0047C7BB /* MainMenuView.swift in Sources */,
-				059150F525D2DDEC009EB71B /* SidebarView.swift in Sources */,
+				059150F525D2DDEC009EB71B /* SidebarMenuView.swift in Sources */,
 				05BAAB2024A3531900A3EADC /* UserMessage.swift in Sources */,
 				0514099A24B120920015BBDC /* VoidValue.swift in Sources */,
 				058F7ECC2511C0890063D9AF /* UIColor.swift in Sources */,
 				056732D224960D4600E7650B /* DocumentFilter.swift in Sources */,
 				0540191C24929D2100287026 /* RequiredValue.swift in Sources */,
-				059150FB25D2DE04009EB71B /* SidebarViewController.swift in Sources */,
+				059150FB25D2DE04009EB71B /* SidebarMenuViewController.swift in Sources */,
 				05828D7B249B6C7F008D2DA0 /* CodingError.swift in Sources */,
 				058F7EC72510B0F20063D9AF /* EditorSetting.swift in Sources */,
 				058F7EC3251084890063D9AF /* CodeStyle.swift in Sources */,
