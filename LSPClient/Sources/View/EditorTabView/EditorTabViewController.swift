@@ -11,8 +11,8 @@ import OSLog
 
 final class EditorTabViewController: UIViewController {
 
-    private(set) weak var tabContainer: EditorTabView!
-    private(set) weak var editorContainer: UIView!
+    private weak var tabContainer: EditorTabView!
+    private weak var editorContainer: UIView!
 
     let tabViewHeight: CGFloat = UIFont.systemFontSize * 2
     let tabWidth: CGFloat = 140

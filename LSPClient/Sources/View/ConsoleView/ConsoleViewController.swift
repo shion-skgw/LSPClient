@@ -9,5 +9,15 @@
 import UIKit
 
 final class ConsoleViewController: UIViewController {
-    
+
+    private func closeConsole(_: UIAction) {
+        guard let rootController = parent as? RootViewController else {
+            fatalError()
+        }
+        willMove(toParent: nil)
+        view.removeFromSuperview()
+        removeFromParent()
+        rootController.didCloseConsole()
+    }
+
 }

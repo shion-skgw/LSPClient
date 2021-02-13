@@ -10,7 +10,7 @@ import UIKit
 
 final class SidebarMenuViewController: UIViewController {
 
-    private(set) weak var sidebarMenuView: SidebarMenuView!
+    private weak var sidebarMenuView: SidebarMenuView!
 
     override func loadView() {
         let sidebarMenuView = SidebarMenuView()
@@ -29,8 +29,36 @@ final class SidebarMenuViewController: UIViewController {
         view.isHidden = true
     }
 
-    private func showConsole(_: UIAction) {}
+    private func showConsole(_: UIAction) {
+        guard let rootController = parent as? RootViewController else {
+            fatalError()
+        }
+        rootController.showConsole()
+        sidebarMenuView.consoleButton.isHidden = true
+        sidebarMenuView.diagnosticButton.isHidden = true
+    }
 
-    private func showDiagnostic(_: UIAction) {}
+    private func showDiagnostic(_: UIAction) {
+        guard let rootController = parent as? RootViewController else {
+            fatalError()
+        }
+        rootController.showDiagnostic()
+        sidebarMenuView.consoleButton.isHidden = true
+        sidebarMenuView.diagnosticButton.isHidden = true
+    }
+
+    func didCloseWorkspace() {
+        view.isHidden = false
+    }
+
+    func didCloseConsole() {
+        sidebarMenuView.consoleButton.isHidden = false
+        sidebarMenuView.diagnosticButton.isHidden = false
+    }
+
+    func didCloseDiagnostic() {
+        sidebarMenuView.consoleButton.isHidden = false
+        sidebarMenuView.diagnosticButton.isHidden = false
+    }
 
 }

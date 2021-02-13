@@ -10,14 +10,14 @@ import UIKit
 
 final class RootViewController: UIViewController {
 
-    let appearance = Appearance.self
+    private let appearance = Appearance.self
 
-    weak var mainMenu: MainMenuViewController!
-    weak var editor: EditorTabViewController!
-    weak var sidebarMenu: SidebarMenuViewController!
-    weak var workspace: WorkspaceViewController?
-    weak var console: ConsoleViewController?
-    weak var diagnostic: DiagnosticViewController?
+    private weak var mainMenu: MainMenuViewController!
+    private weak var editor: EditorTabViewController!
+    private weak var sidebarMenu: SidebarMenuViewController!
+    private weak var workspace: WorkspaceViewController?
+    private weak var console: ConsoleViewController?
+    private weak var diagnostic: DiagnosticViewController?
 
     override func loadView() {
         self.view = RootView()
@@ -83,24 +83,40 @@ final class RootViewController: UIViewController {
         mainMenuFrame.size.height = appearance.mainMenuHeight
         mainMenu.view.frame = mainMenuFrame
 
-        var sideAreaFrame = displayAreaFrame
-        sideAreaFrame.origin.y = mainMenuFrame.maxY + appearance.viewMargin
-        sideAreaFrame.size.height -= mainMenuFrame.height + appearance.viewMargin
+        var bottomAreaFrame = displayAreaFrame
+        bottomAreaFrame.origin.y += displayAreaFrame.height - 10
+        bottomAreaFrame.size.height = 10
+
+        if console?.view.isHidden == false {
+            console?.view.frame = bottomAreaFrame
+
+        } else if diagnostic?.view.isHidden == false {
+            diagnostic?.view.frame = bottomAreaFrame
+
+        } else {
+            bottomAreaFrame.origin.y = displayAreaFrame.maxY
+            bottomAreaFrame.size.height = .zero
+        }
+
+        var leftAreaFrame = displayAreaFrame
+        leftAreaFrame.origin.y = mainMenuFrame.maxY + appearance.viewMargin
+        leftAreaFrame.size.height -= mainMenuFrame.height + appearance.viewMargin
+        leftAreaFrame.size.height -= bottomAreaFrame.height == .zero ? .zero : bottomAreaFrame.height + appearance.viewMargin
 
         if !sidebarMenu.view.isHidden {
-            sideAreaFrame.size.width = appearance.sidebarWidth
-            sidebarMenu.view.frame = sideAreaFrame
+            leftAreaFrame.size.width = appearance.sidebarWidth
+            sidebarMenu.view.frame = leftAreaFrame
 
         } else if let workspaceView = workspace?.view {
-            sideAreaFrame.size.width = 300
-            workspaceView.frame = sideAreaFrame
+            leftAreaFrame.size.width = 300
+            workspaceView.frame = leftAreaFrame
         }
 
         var editorFrame = displayAreaFrame
-        editorFrame.origin.x = sideAreaFrame.maxX + appearance.viewMargin
-        editorFrame.origin.y = sideAreaFrame.origin.y
-        editorFrame.size.width -= sideAreaFrame.width + appearance.viewMargin
-        editorFrame.size.height = sideAreaFrame.height
+        editorFrame.origin.x = leftAreaFrame.maxX + appearance.viewMargin
+        editorFrame.origin.y = leftAreaFrame.origin.y
+        editorFrame.size.width -= leftAreaFrame.width + appearance.viewMargin
+        editorFrame.size.height = leftAreaFrame.height
         editor.view.frame = editorFrame
     }
 
@@ -128,8 +144,40 @@ extension RootViewController {
         }
     }
 
+    func showConsole() {
+        if let console = self.console {
+            add(child: console)
+
+        } else {
+            let console = ConsoleViewController()
+            console.view.backgroundColor = .brown
+            add(child: console)
+            self.console = console
+        }
+    }
+
+    func showDiagnostic() {
+        if let diagnostic = self.diagnostic {
+            add(child: diagnostic)
+
+        } else {
+            let diagnostic = DiagnosticViewController()
+            diagnostic.view.backgroundColor = .gray
+            add(child: diagnostic)
+            self.diagnostic = diagnostic
+        }
+    }
+
     func didCloseWorkspace() {
-        self.sidebarMenu.view.isHidden = false
+        sidebarMenu.didCloseWorkspace()
+    }
+
+    func didCloseConsole() {
+        sidebarMenu.didCloseConsole()
+    }
+
+    func didCloseDiagnostic() {
+        sidebarMenu.didCloseDiagnostic()
     }
 
 }

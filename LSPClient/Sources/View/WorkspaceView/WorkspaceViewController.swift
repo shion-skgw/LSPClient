@@ -14,8 +14,8 @@ final class WorkspaceViewController: UIViewController {
     private var displayFiles: [WorkspaceFile] = []
     private var foldDirectories: [DocumentUri] = []
 
-    private(set) weak var menuView: WorkspaceMenuView!
-    private(set) weak var workspaceView: UITableView!
+    private weak var menuView: WorkspaceMenuView!
+    private weak var workspaceView: UITableView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
