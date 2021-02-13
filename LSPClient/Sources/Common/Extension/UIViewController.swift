@@ -16,14 +16,4 @@ extension UIViewController {
         child.didMove(toParent: self)
     }
 
-    @inlinable func remove() {
-        guard parent != nil else {
-            return
-        }
-
-        willMove(toParent: nil)
-        view.removeFromSuperview()
-        removeFromParent()
-    }
-
 }

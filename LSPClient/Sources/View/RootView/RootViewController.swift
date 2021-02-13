@@ -11,10 +11,13 @@ import UIKit
 final class RootViewController: UIViewController {
 
     let appearance = Appearance.self
+
     weak var mainMenu: MainMenuViewController!
-    weak var sidebarMenu: SidebarMenuViewController!
     weak var editor: EditorTabViewController!
+    weak var sidebarMenu: SidebarMenuViewController!
     weak var workspace: WorkspaceViewController?
+    weak var console: ConsoleViewController?
+    weak var diagnostic: DiagnosticViewController?
 
     override func loadView() {
         self.view = RootView()
@@ -32,7 +35,6 @@ final class RootViewController: UIViewController {
         // Sidebar menu
         let sidebarMenu = SidebarMenuViewController()
         sidebarMenu.view.backgroundColor = appearance.sidebarColor
-        sidebarMenu.rootController = self
         add(child: sidebarMenu)
         self.sidebarMenu = sidebarMenu
 
@@ -49,6 +51,22 @@ final class RootViewController: UIViewController {
         super.viewDidLayoutSubviews()
         layoutSubviews()
     }
+
+//    @objc func a(_ no: Notification) {
+//        let b = no.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
+//        let a = no.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey]
+//        UIView.animate(withDuration: a as! TimeInterval, animations: {
+//            self.sidebarMenu.view.transform = CGAffineTransform(translationX: 0, y: -b.height)
+//        })
+//    }
+//
+//    @objc func q(_ no: Notification) {
+//        let b = no.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
+//        let a = no.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey]
+//        UIView.animate(withDuration: a as! TimeInterval, animations: {
+//            self.sidebarMenu.view.transform = CGAffineTransform.identity
+//        })
+//    }
 
     @objc private func layoutSubviews() {
         var displayAreaFrame = view.safeAreaLayoutGuide.layoutFrame
@@ -69,12 +87,13 @@ final class RootViewController: UIViewController {
         sideAreaFrame.origin.y = mainMenuFrame.maxY + appearance.viewMargin
         sideAreaFrame.size.height -= mainMenuFrame.height + appearance.viewMargin
 
-        if let workspaceView = workspace?.view {
-            sideAreaFrame.size.width = 300
-            workspaceView.frame = sideAreaFrame
-        } else {
+        if !sidebarMenu.view.isHidden {
             sideAreaFrame.size.width = appearance.sidebarWidth
             sidebarMenu.view.frame = sideAreaFrame
+
+        } else if let workspaceView = workspace?.view {
+            sideAreaFrame.size.width = 300
+            workspaceView.frame = sideAreaFrame
         }
 
         var editorFrame = displayAreaFrame
@@ -99,11 +118,18 @@ extension RootViewController {
 extension RootViewController {
 
     func showWorkspace() {
-        let workspace = WorkspaceViewController()
-        add(child: workspace)
-        print(workspace.view.frame)
-        self.workspace = workspace
-        self.sidebarMenu.view.isHidden = true
+        if let workspace = self.workspace {
+            add(child: workspace)
+
+        } else {
+            let workspace = WorkspaceViewController()
+            add(child: workspace)
+            self.workspace = workspace
+        }
+    }
+
+    func didCloseWorkspace() {
+        self.sidebarMenu.view.isHidden = false
     }
 
 }

@@ -10,36 +10,27 @@ import UIKit
 
 final class SidebarMenuViewController: UIViewController {
 
-    weak var rootController: RootViewController!
     private(set) weak var sidebarMenuView: SidebarMenuView!
 
     override func loadView() {
         let sidebarMenuView = SidebarMenuView()
-        let tapAction = UIAction(handler: menuTapAction(_:))
-        sidebarMenuView.workspaceButton.addAction(tapAction, for: .touchUpInside)
-        sidebarMenuView.consoleButton.addAction(tapAction, for: .touchUpInside)
-        sidebarMenuView.diagnosticsButton.addAction(tapAction, for: .touchUpInside)
+        sidebarMenuView.workspaceButton.addAction(showWorkspace, for: .touchUpInside)
+        sidebarMenuView.consoleButton.addAction(showConsole, for: .touchUpInside)
+        sidebarMenuView.diagnosticButton.addAction(showDiagnostic, for: .touchUpInside)
         self.sidebarMenuView = sidebarMenuView
         self.view = sidebarMenuView
     }
 
-    private func menuTapAction(_ action: UIAction) {
-        guard let sender = action.sender as? UIButton else {
+    private func showWorkspace(_: UIAction) {
+        guard let rootController = parent as? RootViewController else {
             fatalError()
         }
-
-        if sender == sidebarMenuView.workspaceButton {
-            rootController.showWorkspace()
-
-        } else if sender == sidebarMenuView.consoleButton {
-            rootController.showWorkspace()
-
-        } else if sender == sidebarMenuView.diagnosticsButton {
-            rootController.showWorkspace()
-
-        } else {
-            fatalError()
-        }
+        rootController.showWorkspace()
+        view.isHidden = true
     }
+
+    private func showConsole(_: UIAction) {}
+
+    private func showDiagnostic(_: UIAction) {}
 
 }

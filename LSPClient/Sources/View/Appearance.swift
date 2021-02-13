@@ -22,7 +22,7 @@ struct Appearance {
 
     struct MainMenu {
         static let buttonSize: CGSize = CGSize(width: 48, height: 48)
-        static let iconPointSize: CGFloat = 24
+        static let iconPointSize: CGFloat = 18
         static var iconColor: UIColor {
             .systemBlue
         }
@@ -43,13 +43,29 @@ struct Appearance {
 
     struct Sidebar {
         static let buttonSize: CGSize = CGSize(width: 48, height: 48)
-        static let iconPointSize: CGFloat = 24
+        static let iconPointSize: CGFloat = 22
         static var iconColor: UIColor {
             .systemBlue
         }
     }
 
     struct Workspace {
+        static let menuHeight: CGFloat = 30
+        static var menuColor: UIColor {
+            .secondarySystemBackground
+        }
+
+        struct Menu {
+            static let buttonSize: CGSize = CGSize(width: 30, height: 30)
+            static let iconPointSize: CGFloat = 18
+            static var iconColor: UIColor {
+                .systemBlue
+            }
+            static let separatorHeight: CGFloat = 1
+            static var separatorColor: UIColor {
+                .opaqueSeparator
+            }
+        }
     }
 
 }

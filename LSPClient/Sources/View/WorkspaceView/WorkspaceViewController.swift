@@ -14,7 +14,6 @@ final class WorkspaceViewController: UIViewController {
     private var displayFiles: [WorkspaceFile] = []
     private var foldDirectories: [DocumentUri] = []
 
-    private(set) weak var rootViewController: RootViewController!
     private(set) weak var menuView: WorkspaceMenuView!
     private(set) weak var workspaceView: UITableView!
 
@@ -22,7 +21,8 @@ final class WorkspaceViewController: UIViewController {
         super.viewDidLoad()
 
         let menuView = WorkspaceMenuView()
-        menuView.backgroundColor = .tertiarySystemBackground
+        menuView.closeButton.addAction(closeWorkspace, for: .touchUpInside)
+        menuView.backgroundColor = .secondarySystemBackground
         view.addSubview(menuView)
         self.menuView = menuView
 
@@ -60,11 +60,14 @@ final class WorkspaceViewController: UIViewController {
 
 extension WorkspaceViewController {
 
-    @objc func closeView() {
-        self.willMove(toParent: nil)
-        self.view.removeFromSuperview()
-        self.removeFromParent()
-//        self.rootViewController.didCloseWorkspaceView()
+    private func closeWorkspace(_: UIAction) {
+        guard let rootController = parent as? RootViewController else {
+            fatalError()
+        }
+        willMove(toParent: nil)
+        view.removeFromSuperview()
+        removeFromParent()
+        rootController.didCloseWorkspace()
     }
 
 }

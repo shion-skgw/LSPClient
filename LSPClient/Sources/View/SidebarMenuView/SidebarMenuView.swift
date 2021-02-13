@@ -13,7 +13,7 @@ final class SidebarMenuView: UIView {
     private let appearance = Appearance.Sidebar.self
     private(set) weak var workspaceButton: UIButton!
     private(set) weak var consoleButton: UIButton!
-    private(set) weak var diagnosticsButton: UIButton!
+    private(set) weak var diagnosticButton: UIButton!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -26,9 +26,9 @@ final class SidebarMenuView: UIView {
         self.addSubview(consoleButton)
         self.consoleButton = consoleButton
 
-        let diagnosticsButton = createButton("checkmark.shield.fill")
-        self.addSubview(diagnosticsButton)
-        self.diagnosticsButton = diagnosticsButton
+        let diagnosticButton = createButton("checkmark.shield.fill")
+        self.addSubview(diagnosticButton)
+        self.diagnosticButton = diagnosticButton
     }
 
     required init?(coder: NSCoder) {
@@ -64,9 +64,9 @@ final class SidebarMenuView: UIView {
         consoleButtonFrame.origin.y = viewSize.height - buttonAreaHeight + buttonAreaHeight.centeringPoint(consoleButtonFrame.height)
         consoleButton.frame = consoleButtonFrame
 
-        var diagnosticsButtonFrame = diagnosticsButton.frame
-        diagnosticsButtonFrame.origin.x = buttonAreaWidth.centeringPoint(diagnosticsButtonFrame.width)
-        diagnosticsButtonFrame.origin.y = viewSize.height - (buttonAreaHeight * 2.0) + buttonAreaHeight.centeringPoint(diagnosticsButtonFrame.height)
-        diagnosticsButton.frame = diagnosticsButtonFrame
+        var diagnosticButtonFrame = diagnosticButton.frame
+        diagnosticButtonFrame.origin.x = buttonAreaWidth.centeringPoint(diagnosticButtonFrame.width)
+        diagnosticButtonFrame.origin.y = viewSize.height - (buttonAreaHeight * 2.0) + buttonAreaHeight.centeringPoint(diagnosticButtonFrame.height)
+        diagnosticButton.frame = diagnosticButtonFrame
     }
 }

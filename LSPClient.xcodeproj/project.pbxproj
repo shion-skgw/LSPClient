@@ -60,6 +60,11 @@
 		056B5C2624E30E2900797D95 /* EditorTextStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056B5C2524E30E2900797D95 /* EditorTextStorage.swift */; };
 		056B5C2824E30E6C00797D95 /* EditorLayoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056B5C2724E30E6C00797D95 /* EditorLayoutManager.swift */; };
 		056B5C2B24E30EEC00797D95 /* EditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056B5C2A24E30EEC00797D95 /* EditorViewController.swift */; };
+		0578E6FB25D799700029F28D /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0578E6FA25D799700029F28D /* UIButton.swift */; };
+		0578E70125D7A2FC0029F28D /* ConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0578E70025D7A2FC0029F28D /* ConsoleView.swift */; };
+		0578E70725D7A3270029F28D /* ConsoleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0578E70625D7A3270029F28D /* ConsoleViewController.swift */; };
+		0578E70B25D7A3480029F28D /* DiagnosticView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0578E70A25D7A3480029F28D /* DiagnosticView.swift */; };
+		0578E70F25D7A36D0029F28D /* DiagnosticViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0578E70E25D7A36D0029F28D /* DiagnosticViewController.swift */; };
 		05828D7B249B6C7F008D2DA0 /* CodingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05828D7A249B6C7F008D2DA0 /* CodingError.swift */; };
 		0585E77825CB18FB009BA2C3 /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0585E77725CB18FB009BA2C3 /* URL.swift */; };
 		0586CD5925A2C40A0047C7BB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586CD5825A2C40A0047C7BB /* RootViewController.swift */; };
@@ -183,6 +188,11 @@
 		056B5C2524E30E2900797D95 /* EditorTextStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTextStorage.swift; sourceTree = "<group>"; };
 		056B5C2724E30E6C00797D95 /* EditorLayoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorLayoutManager.swift; sourceTree = "<group>"; };
 		056B5C2A24E30EEC00797D95 /* EditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorViewController.swift; sourceTree = "<group>"; };
+		0578E6FA25D799700029F28D /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
+		0578E70025D7A2FC0029F28D /* ConsoleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleView.swift; sourceTree = "<group>"; };
+		0578E70625D7A3270029F28D /* ConsoleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleViewController.swift; sourceTree = "<group>"; };
+		0578E70A25D7A3480029F28D /* DiagnosticView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticView.swift; sourceTree = "<group>"; };
+		0578E70E25D7A36D0029F28D /* DiagnosticViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticViewController.swift; sourceTree = "<group>"; };
 		05828D7A249B6C7F008D2DA0 /* CodingError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodingError.swift; sourceTree = "<group>"; };
 		0585E77725CB18FB009BA2C3 /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		0586CD5825A2C40A0047C7BB /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
@@ -380,10 +390,30 @@
 			path = Parameter;
 			sourceTree = "<group>";
 		};
+		0578E6FE25D7A2C40029F28D /* ConsoleView */ = {
+			isa = PBXGroup;
+			children = (
+				0578E70025D7A2FC0029F28D /* ConsoleView.swift */,
+				0578E70625D7A3270029F28D /* ConsoleViewController.swift */,
+			);
+			path = ConsoleView;
+			sourceTree = "<group>";
+		};
+		0578E6FF25D7A2E10029F28D /* DiagnosticView */ = {
+			isa = PBXGroup;
+			children = (
+				0578E70A25D7A3480029F28D /* DiagnosticView.swift */,
+				0578E70E25D7A36D0029F28D /* DiagnosticViewController.swift */,
+			);
+			path = DiagnosticView;
+			sourceTree = "<group>";
+		};
 		0589B58824DCF869006E0C6F /* View */ = {
 			isa = PBXGroup;
 			children = (
 				0591510C25D3A187009EB71B /* Appearance.swift */,
+				0578E6FE25D7A2C40029F28D /* ConsoleView */,
+				0578E6FF25D7A2E10029F28D /* DiagnosticView */,
 				05F45C0E25CA3AF500C96ADB /* EditorTabView */,
 				05F45C0F25CA3B0200C96ADB /* EditorView */,
 				05F45C1025CA3B1300C96ADB /* MainMenuView */,
@@ -455,6 +485,7 @@
 				051F886D25AB3F230041BE4E /* NotificationCenter.swift */,
 				058F7EC92511BFD00063D9AF /* String.swift */,
 				0555B5D825B1727C0061CB41 /* UIApplication.swift */,
+				0578E6FA25D799700029F28D /* UIButton.swift */,
 				058F7ECB2511C0890063D9AF /* UIColor.swift */,
 				0567AD9325CA9BCB0055F3AF /* UIFont.swift */,
 				051F886E25AB3F230041BE4E /* UIImage.swift */,
@@ -626,8 +657,8 @@
 		05F45C1225CA3B6200C96ADB /* RootView */ = {
 			isa = PBXGroup;
 			children = (
-				0586CD5825A2C40A0047C7BB /* RootViewController.swift */,
 				0591511A25D47239009EB71B /* RootView.swift */,
+				0586CD5825A2C40A0047C7BB /* RootViewController.swift */,
 			);
 			path = RootView;
 			sourceTree = "<group>";
@@ -741,6 +772,7 @@
 				05601E8125A2974D007B91C1 /* EditorTabItem.swift in Sources */,
 				058B6A1D248D79C00099B32F /* AnyValue.swift in Sources */,
 				05E6E6FD24F07E3600364E89 /* Token.swift in Sources */,
+				0578E70125D7A2FC0029F28D /* ConsoleView.swift in Sources */,
 				05BAAB2624A3533A00A3EADC /* FileEvent.swift in Sources */,
 				05BA10AF24D2D922009A3669 /* LSPConnection.swift in Sources */,
 				05BAAB3224A3537200A3EADC /* Hover.swift in Sources */,
@@ -759,6 +791,9 @@
 				058B6A19248CF9DD0099B32F /* RequestID.swift in Sources */,
 				05F0264725168C0E003CCEA4 /* UIViewController.swift in Sources */,
 				0508BF2D24C97905005488A9 /* TextDocumentMessageDelegate.swift in Sources */,
+				0578E6FB25D799700029F28D /* UIButton.swift in Sources */,
+				0578E70F25D7A36D0029F28D /* DiagnosticViewController.swift in Sources */,
+				0578E70725D7A3270029F28D /* ConsoleViewController.swift in Sources */,
 				05BAAB3824A3538D00A3EADC /* Symbol.swift in Sources */,
 				05114217250E77A1002A4056 /* MessageDelegate.swift in Sources */,
 				05BAAB2E24A3535F00A3EADC /* PublishDiagnostic.swift in Sources */,
@@ -821,6 +856,7 @@
 				05BAAB2024A3531900A3EADC /* UserMessage.swift in Sources */,
 				0514099A24B120920015BBDC /* VoidValue.swift in Sources */,
 				058F7ECC2511C0890063D9AF /* UIColor.swift in Sources */,
+				0578E70B25D7A3480029F28D /* DiagnosticView.swift in Sources */,
 				056732D224960D4600E7650B /* DocumentFilter.swift in Sources */,
 				0540191C24929D2100287026 /* RequiredValue.swift in Sources */,
 				059150FB25D2DE04009EB71B /* SidebarMenuViewController.swift in Sources */,
