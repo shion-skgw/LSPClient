@@ -8,64 +8,67 @@
 
 import UIKit
 
-struct Appearance {
+struct RootAppearance {
+    static let separatorWeight = CGFloat(1)
+    static let separatorColor = UIColor.opaqueSeparator
+    static let backgroundColor = UIColor.systemBackground
+}
 
-    static let mainMenuHeight: CGFloat = 48
-    static var mainMenuColor: UIColor {
-        .secondarySystemBackground
-    }
-    static let sidebarWidth: CGFloat = 48
-    static var sidebarColor: UIColor {
-        .secondarySystemBackground
-    }
-    static let viewMargin: CGFloat = 1
+struct MainMenuAppearance {
+    static let viewSize = CGSize(width: -1, height: 48)
+    static let viewColor = UIColor.secondarySystemBackground
+    static let buttonSize = CGSize(width: 48, height: 48)
+    static let iconPointSize = CGFloat(18)
+    static let iconWeight = UIImage.SymbolWeight.light
+    static let iconColor = UIColor.systemBlue
+}
 
-    struct MainMenu {
-        static let buttonSize: CGSize = CGSize(width: 48, height: 48)
-        static let iconPointSize: CGFloat = 18
-        static var iconColor: UIColor {
-            .systemBlue
-        }
-    }
+struct SidebarMenuAppearance {
+    static let viewSize = CGSize(width: 48, height: -1)
+    static let viewColor = UIColor.secondarySystemBackground
+    static let buttonSize = CGSize(width: 48, height: 48)
+    static let iconPointSize = CGFloat(18)
+    static let iconWeight = UIImage.SymbolWeight.light
+    static let iconColor = UIColor.systemBlue
+}
 
-    struct EditorTab {
-        static var viewHeight: CGFloat {
-            UIFont.systemFontSize * 1.4
-        }
-        static let tabMargin: CGFloat = 2
-        static var tabSize: CGSize {
-            CGSize(width: 160, height: viewHeight - tabMargin)
-        }
-    }
+struct WorkspaceAppearance {
+    static let menuViewSize = CGSize(width: -1, height: 31)
+    static let menuViewColor = UIColor.secondarySystemBackground
+    static let menuButtonSize = CGSize(width: 30, height: 30)
+    static let menuIconPointSize = CGFloat(18)
+    static let menuIconWeight = UIImage.SymbolWeight.light
+    static let menuIconColor = UIColor.systemBlue
 
-    struct Editor {
-    }
+    static let separatorWeight = CGFloat(1)
+    static let separatorColor = UIColor.opaqueSeparator
 
-    struct Sidebar {
-        static let buttonSize: CGSize = CGSize(width: 48, height: 48)
-        static let iconPointSize: CGFloat = 22
-        static var iconColor: UIColor {
-            .systemBlue
-        }
-    }
+    static let cellHeight = UIFont.systemFontSize * 2.5
 
-    struct Workspace {
-        static let menuHeight: CGFloat = 30
-        static var menuColor: UIColor {
-            .secondarySystemBackground
-        }
+    static let horizontalMargin = CGFloat(8)
+    static let indentWidth = CGFloat(14)
 
-        struct Menu {
-            static let buttonSize: CGSize = CGSize(width: 30, height: 30)
-            static let iconPointSize: CGFloat = 18
-            static var iconColor: UIColor {
-                .systemBlue
-            }
-            static let separatorHeight: CGFloat = 1
-            static var separatorColor: UIColor {
-                .opaqueSeparator
-            }
-        }
-    }
+    static let foldButtonSize = CGSize(width: UIFont.systemFontSize * 3, height: cellHeight)
+    static let foldMarkSize = CGSize(width: 10, height: 10)
+    static let foldMarkColor = UIColor.label
 
+    static let fileIconSize = CGSize(width: 22, height: cellHeight)
+    static let fileIconPointSize = CGFloat(15)
+    static let fileIconWeight = UIImage.SymbolWeight.light
+    static let fileIconColor = UIColor.label
+
+    static let fileNameFont = UIFont.systemFont
+    static let fileNameFontColor = UIColor.label
+}
+
+struct EditorTabAppearance {
+}
+
+struct EditorAppearance {
+}
+
+struct ConsoleAppearance {
+}
+
+struct DiagnosticAppearance {
 }

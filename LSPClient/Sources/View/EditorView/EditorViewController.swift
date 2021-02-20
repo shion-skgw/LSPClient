@@ -246,7 +246,6 @@ extension EditorViewController: UITextViewDelegate {
 
 
     func textViewDidChangeSelection(_ textView: UITextView) {
-        print(#function)
         guard editorView.markedTextRange == nil else {
             return
         }

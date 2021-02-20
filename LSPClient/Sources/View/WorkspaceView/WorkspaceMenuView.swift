@@ -9,7 +9,9 @@
 import UIKit
 
 final class WorkspaceMenuView: UIView {
-    private let appearance = Appearance.Workspace.Menu.self
+
+    private let appearance = WorkspaceAppearance.self
+
     private(set) weak var closeButton: UIButton!
     private(set) weak var addButton: UIButton!
     private(set) weak var removeButton: UIButton!
@@ -19,7 +21,7 @@ final class WorkspaceMenuView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        let closeButton = createButton("xmark.circle.fill")
+        let closeButton = UIButton.closeButton(frame: CGRect(origin: .zero, size: appearance.menuButtonSize), pointSize: appearance.menuIconPointSize, weight: appearance.menuIconWeight)
         self.addSubview(closeButton)
         self.closeButton = closeButton
 
@@ -45,12 +47,12 @@ final class WorkspaceMenuView: UIView {
     }
 
     private func createButton(_ iconName: String) -> UIButton {
-        let config = UIImage.SymbolConfiguration(pointSize: appearance.iconPointSize, weight: .regular)
+        let config = UIImage.SymbolConfiguration(pointSize: appearance.menuIconPointSize, weight: appearance.menuIconWeight)
         let icon = UIImage(systemName: iconName, withConfiguration: config)!
-        let buttonFrame = CGRect(origin: .zero, size: appearance.buttonSize)
+        let buttonFrame = CGRect(origin: .zero, size: appearance.menuButtonSize)
         let button = UIButton(frame: buttonFrame)
         button.setImage(icon, for: .normal)
-        button.tintColor = appearance.iconColor
+        button.tintColor = appearance.menuIconColor
         return button
     }
 
@@ -64,20 +66,20 @@ final class WorkspaceMenuView: UIView {
 
     private func leftAlignment(_ button: UIButton, _ position: CGFloat) {
         var buttonFrame = button.frame
-        buttonFrame.origin.x = appearance.buttonSize.width * position
+        buttonFrame.origin.x = appearance.menuButtonSize.width * position
         button.frame = buttonFrame
     }
 
     private func rightAlignment(_ button: UIButton, _ position: CGFloat) {
         var buttonFrame = button.frame
-        buttonFrame.origin.x = bounds.width - appearance.buttonSize.width * (position + 1)
+        buttonFrame.origin.x = bounds.width - appearance.menuButtonSize.width * (position + 1)
         button.frame = buttonFrame
     }
 
     override func draw(_ rect: CGRect) {
-        var separatorRect = frame
-        separatorRect.origin.y = separatorRect.height - appearance.separatorHeight
-        separatorRect.size.height = appearance.separatorHeight
+        var separatorRect = bounds
+        separatorRect.origin.y = separatorRect.height - appearance.separatorWeight
+        separatorRect.size.height = appearance.separatorWeight
 
         let cgContext = UIGraphicsGetCurrentContext()!
         cgContext.setFillColor(appearance.separatorColor.cgColor)

@@ -9,4 +9,11 @@
 import UIKit
 
 final class MainMenuViewController: UIViewController {
+
+    override func loadView() {
+        let mainMenuView = MainMenuView(frame: .zero)
+        mainMenuView.backgroundColor = MainMenuAppearance.viewColor
+        self.view = mainMenuView
+    }
+
 }

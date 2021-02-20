@@ -10,13 +10,19 @@ import UIKit
 
 final class SidebarMenuView: UIView {
 
-    private let appearance = Appearance.Sidebar.self
+    private let appearance = SidebarMenuAppearance.self
+
+    private(set) weak var settingButton: UIButton!
     private(set) weak var workspaceButton: UIButton!
     private(set) weak var consoleButton: UIButton!
     private(set) weak var diagnosticButton: UIButton!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        let settingButton = createButton("ellipsis.circle.fill")
+        self.addSubview(settingButton)
+        self.settingButton = settingButton
 
         let workspaceButton = createButton("folder.fill")
         self.addSubview(workspaceButton)
@@ -36,7 +42,7 @@ final class SidebarMenuView: UIView {
     }
 
     private func createButton(_ iconName: String) -> UIButton {
-        let config = UIImage.SymbolConfiguration(pointSize: appearance.iconPointSize, weight: .medium)
+        let config = UIImage.SymbolConfiguration(pointSize: appearance.iconPointSize, weight: appearance.iconWeight)
         let icon = UIImage(systemName: iconName, withConfiguration: config)!
         let buttonFrame = CGRect(origin: .zero, size: appearance.buttonSize)
         let button = UIButton(frame: buttonFrame)
@@ -46,27 +52,22 @@ final class SidebarMenuView: UIView {
     }
 
     override func layoutSubviews() {
-        let viewSize = bounds.size
-        let buttonAreaWidth = viewSize.width
-        let buttonAreaHeight = buttonAreaWidth
-
-        // Top alignment
-
-        var workspaceButtonFrame = workspaceButton.frame
-        workspaceButtonFrame.origin.x = buttonAreaWidth.centeringPoint(workspaceButtonFrame.width)
-        workspaceButtonFrame.origin.y = buttonAreaHeight.centeringPoint(workspaceButtonFrame.height)
-        workspaceButton.frame = workspaceButtonFrame
-
-        // Bottom alignment
-
-        var consoleButtonFrame = consoleButton.frame
-        consoleButtonFrame.origin.x = buttonAreaWidth.centeringPoint(consoleButtonFrame.width)
-        consoleButtonFrame.origin.y = viewSize.height - buttonAreaHeight + buttonAreaHeight.centeringPoint(consoleButtonFrame.height)
-        consoleButton.frame = consoleButtonFrame
-
-        var diagnosticButtonFrame = diagnosticButton.frame
-        diagnosticButtonFrame.origin.x = buttonAreaWidth.centeringPoint(diagnosticButtonFrame.width)
-        diagnosticButtonFrame.origin.y = viewSize.height - (buttonAreaHeight * 2.0) + buttonAreaHeight.centeringPoint(diagnosticButtonFrame.height)
-        diagnosticButton.frame = diagnosticButtonFrame
+        topAlignment(settingButton, 0)
+        topAlignment(workspaceButton, 1)
+        bottomAlignment(consoleButton, 1)
+        bottomAlignment(diagnosticButton, 0)
     }
+
+    private func topAlignment(_ button: UIButton, _ position: CGFloat) {
+        var buttonFrame = button.frame
+        buttonFrame.origin.y = buttonFrame.height * position
+        button.frame = buttonFrame
+    }
+
+    private func bottomAlignment(_ button: UIButton, _ position: CGFloat) {
+        var buttonFrame = button.frame
+        buttonFrame.origin.y = bounds.height - buttonFrame.height * (position + 1)
+        button.frame = buttonFrame
+    }
+
 }

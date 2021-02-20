@@ -8,6 +8,8 @@
 
 import UIKit
 
+// TODO: Scrollable content size is ambiguous for EditorTabView.
+
 final class EditorTabView: UIScrollView {
 
     private(set) weak var contentView: UIStackView!
@@ -20,21 +22,21 @@ final class EditorTabView: UIScrollView {
         super.init(frame: frame)
 
         // Initialize UIStackView
-        let container = UIStackView(frame: .zero)
-        container.axis = .horizontal
-        container.alignment = .bottom
-        container.distribution = .fill
-        container.spacing = 2.0
-        container.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(container)
-        self.contentView = container
+        let contentView = UIStackView(frame: .zero)
+        contentView.axis = .horizontal
+        contentView.alignment = .bottom
+        contentView.distribution = .fill
+        contentView.spacing = 2.0
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(contentView)
+        self.contentView = contentView
 
         // Layout anchor setting
-        self.topAnchor.constraint(equalTo: container.topAnchor).isActive = true
-        self.bottomAnchor.constraint(equalTo: container.bottomAnchor).isActive = true
-        self.leadingAnchor.constraint(equalTo: container.leadingAnchor).isActive = true
-        self.trailingAnchor.constraint(equalTo: container.trailingAnchor).isActive = true
-        self.heightAnchor.constraint(equalTo: container.heightAnchor).isActive = true
+        self.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
+        self.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+        self.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
+        self.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
+        self.heightAnchor.constraint(equalTo: contentView.heightAnchor).isActive = true
 
         // Scroll indicator setting
         self.showsVerticalScrollIndicator = false

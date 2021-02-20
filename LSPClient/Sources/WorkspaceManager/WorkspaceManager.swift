@@ -19,6 +19,7 @@ final class WorkspaceManager {
     private(set) var workspaceRootUri: DocumentUri
     /// Remote workspace root URL
     private(set) var remoteRootUrl: URL
+    private var remoteFileDigests: [DocumentUri: SHA256Digest]
 
     ///
     /// Local workspace root URL
@@ -42,6 +43,7 @@ final class WorkspaceManager {
         self.workspaceName = ""
         self.workspaceRootUri = .bluff
         self.remoteRootUrl = .bluff
+        self.remoteFileDigests = [:]
     }
 
     ///
@@ -54,6 +56,7 @@ final class WorkspaceManager {
         self.workspaceName = workspaceName
         self.workspaceRootUri = remoteRootUrl.standardizedFileURL
         self.remoteRootUrl = remoteRootUrl
+        self.remoteFileDigests.removeAll()
     }
 
 }
@@ -128,19 +131,13 @@ extension WorkspaceManager {
 
 extension WorkspaceManager {
 
-    enum WorkspaceError: Error {
-        case fileNotFound
-        case fileExists
-        case any(Error)
-    }
-
-    enum Source {
+    private enum Source {
         case remote
         case local
 
         func url(_ uri: DocumentUri, _ workspaceManager: WorkspaceManager) -> URL {
             let workspaceRootUri = workspaceManager.workspaceRootUri
-            let relativePath = uri.absoluteString.replacingOccurrences(of: workspaceRootUri.absoluteString, with: "")
+            let relativePath = String(uri.path.replacingOccurrences(of: workspaceRootUri.path, with: "").dropFirst())
             switch self {
             case .remote:
                 return workspaceManager.remoteRootUrl.appendingPathComponent(relativePath)
@@ -150,51 +147,108 @@ extension WorkspaceManager {
         }
     }
 
-    func copy(uri: DocumentUri, from source: Source, to destination: Source, isForced: Bool = false) -> Result<Data, WorkspaceError> {
+    func clone(uri: DocumentUri) throws {
         guard !uri.hasDirectoryPath, uri.hasPrefix(workspaceRootUri) else {
             fatalError()
         }
 
-        let sourceUrl = source.url(uri, self)
-        let destinationUrl = destination.url(uri, self)
+        let remoteUrl = Source.remote.url(uri, self)
+        let localUrl = Source.local.url(uri, self)
 
         do {
-            let sourceData = try Data(contentsOf: sourceUrl)
+            let remoteData = try Data(contentsOf: remoteUrl)
 
-            if !isForced, let destinationData = try? Data(contentsOf: destinationUrl) {
-                if SHA256.hash(data: sourceData) == SHA256.hash(data: destinationData) {
-                    return .success(destinationData)
-                } else {
-                    return .failure(.fileExists)
-                }
-            }
+            try FileManager.default.createDirectory(at: localUrl.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try remoteData.write(to: localUrl, options: .atomic)
 
-            try FileManager.default.createDirectory(at: destinationUrl.deletingLastPathComponent(), withIntermediateDirectories: true)
-            try sourceData.write(to: destinationUrl, options: .atomic)
-            return .success(sourceData)
+            remoteFileDigests[uri] = SHA256.hash(data: remoteData)
 
         } catch CocoaError.fileReadNoSuchFile {
-            return .failure(.fileNotFound)
-
-        } catch {
-            return .failure(.any(error))
+            throw WorkspaceError.fileNotFound
         }
     }
 
-    func remove(uri: DocumentUri, source: Source) -> Result<Void, WorkspaceError> {
+    func open(uri: DocumentUri) throws -> String {
+        guard !uri.hasDirectoryPath, uri.hasPrefix(workspaceRootUri) else {
+            fatalError()
+        }
+
+        let localUrl = Source.local.url(uri, self)
+
+        do {
+            return try String(contentsOf: localUrl, encoding: .utf8)
+
+        } catch CocoaError.fileReadNoSuchFile {
+            throw WorkspaceError.fileNotFound
+
+        } catch CocoaError.fileReadInapplicableStringEncoding {
+            throw WorkspaceError.encodingFailure
+        }
+    }
+
+    func save(uri: DocumentUri, text: String) throws {
+        guard !uri.hasDirectoryPath, uri.hasPrefix(workspaceRootUri) else {
+            fatalError()
+        }
+        guard let data = text.data(using: .utf8) else {
+            fatalError()
+        }
+
+        let localUrl = Source.local.url(uri, self)
+        try FileManager.default.createDirectory(at: localUrl.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try data.write(to: localUrl, options: .atomic)
+    }
+
+    func commit(uri: DocumentUri) throws {
+        guard !uri.hasDirectoryPath, uri.hasPrefix(workspaceRootUri) else {
+            fatalError()
+        }
+        guard let remoteDigest = remoteFileDigests[uri] else {
+            fatalError()
+        }
+
+        let localUrl = Source.local.url(uri, self)
+        let remoteUrl = Source.remote.url(uri, self)
+
+        if remoteDigest != SHA256.hash(data: try Data(contentsOf: remoteUrl)) {
+            throw WorkspaceError.unintendedChanges
+        }
+
+        do {
+            let localData = try Data(contentsOf: localUrl)
+            try FileManager.default.createDirectory(at: remoteUrl.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try localData.write(to: remoteUrl, options: .atomic)
+
+        } catch CocoaError.fileReadNoSuchFile {
+            throw WorkspaceError.fileNotFound
+        }
+    }
+
+    func exists(uri: DocumentUri) -> Bool {
         guard !uri.hasDirectoryPath, uri.hasPrefix(workspaceRootUri) else {
             fatalError()
         }
 
         do {
-            try FileManager.default.removeItem(at: source.url(uri, self))
-            return .success(())
-
-        } catch CocoaError.fileNoSuchFile {
-            return .failure(.fileNotFound)
-
+            _ = try Data(contentsOf: Source.local.url(uri, self))
+            return true
+        } catch CocoaError.fileReadNoSuchFile {
+            return false
         } catch {
-            return .failure(.any(error))
+            fatalError()
+        }
+    }
+
+    func remove(uri: DocumentUri) throws {
+        guard !uri.hasDirectoryPath, uri.hasPrefix(workspaceRootUri) else {
+            fatalError()
+        }
+
+        let localUrl = Source.local.url(uri, self)
+
+        do {
+            try FileManager.default.removeItem(at: localUrl)
+        } catch CocoaError.fileNoSuchFile {
         }
     }
 

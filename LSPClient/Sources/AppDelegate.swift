@@ -15,6 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessageManagerDelegate, A
     weak var rootViewController: RootViewController!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        CodeStyle.remove()
         WorkspaceManager.shared.initialize(workspaceName: "w", remoteRootUrl: URL(string: "file://asdfasdf:1234/Users/shion/Desktop/")!)
 
         let rootViewController = RootViewController()
@@ -81,7 +82,7 @@ extension AppDelegate {
     func messageParseError(cause: Error, message: Message?) {
         print(#function)
         print(cause)
-        print(message)
+        print(message ?? "")
     }
 
     func cancelRequest(params: CancelParams) {

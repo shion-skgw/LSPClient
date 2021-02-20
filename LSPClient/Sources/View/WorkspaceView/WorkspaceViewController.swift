@@ -17,17 +17,21 @@ final class WorkspaceViewController: UIViewController {
     private weak var menuView: WorkspaceMenuView!
     private weak var workspaceView: UITableView!
 
+    private let fileSizeAlertThreshold = 1024 * 512
+    private let fileSizeLimit = 1024 * 1024
+    private let appearance = WorkspaceAppearance.self
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         let menuView = WorkspaceMenuView()
-        menuView.closeButton.addAction(closeWorkspace, for: .touchUpInside)
-        menuView.backgroundColor = .secondarySystemBackground
+        menuView.backgroundColor = appearance.menuViewColor
+        menuView.closeButton.addAction(UIAction(handler: { _ in self.closeView() }), for: .touchUpInside)
         view.addSubview(menuView)
         self.menuView = menuView
 
         let workspaceView = UITableView()
-        workspaceView.rowHeight = UIFont.systemFontSize * 2.5
+        workspaceView.rowHeight = appearance.cellHeight
         workspaceView.estimatedRowHeight = 0
         workspaceView.separatorStyle = .none
         workspaceView.dataSource = self
@@ -44,7 +48,7 @@ final class WorkspaceViewController: UIViewController {
         super.viewDidLayoutSubviews()
 
         var menuViewFrame = CGRect(origin: .zero, size: view.bounds.size)
-        menuViewFrame.size.height = 30.0
+        menuViewFrame.size.height = appearance.menuViewSize.height
         menuView.frame = menuViewFrame
 
         var workspaceViewFrame = CGRect(origin: .zero, size: view.bounds.size)
@@ -53,14 +57,7 @@ final class WorkspaceViewController: UIViewController {
         workspaceView.frame = workspaceViewFrame
     }
 
-}
-
-
-// MARK: - Workspace menu
-
-extension WorkspaceViewController {
-
-    private func closeWorkspace(_: UIAction) {
+    func closeView() {
         guard let rootController = parent as? RootViewController else {
             fatalError()
         }
@@ -73,7 +70,14 @@ extension WorkspaceViewController {
 }
 
 
-// MARK: - UITableViewDataSource
+// MARK: - Workspace menu
+
+extension WorkspaceViewController {
+
+}
+
+
+// MARK: - Table data source
 
 extension WorkspaceViewController: UITableViewDataSource {
 
@@ -95,6 +99,13 @@ extension WorkspaceViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return displayFiles.count
     }
+
+}
+
+
+// MARK: - Create cell
+
+extension WorkspaceViewController {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let file = displayFiles[indexPath.row]
@@ -119,7 +130,7 @@ extension WorkspaceViewController: UITableViewDataSource {
 }
 
 
-// MARK: - UITableViewDelegate
+// MARK: - File open
 
 extension WorkspaceViewController: UITableViewDelegate {
 
@@ -129,22 +140,59 @@ extension WorkspaceViewController: UITableViewDelegate {
             fatalError()
         }
 
-        if file.size < 1000 {
-            NotificationCenter.default.post(name: .willOpenDocument, object: nil, userInfoValue: file.uri)
+        if WorkspaceManager.shared.exists(uri: file.uri) {
+            openDocument(file)
+
+        } else if file.size > fileSizeLimit {
+            let alert = UIAlertController.anyAlert(title: "aaa", message: "Huge")
+            present(alert, animated: true)
+
+        } else if file.size > fileSizeAlertThreshold {
+            let alert = UIAlertController.largeFile(size: file.size, limit: fileSizeAlertThreshold) {
+                [weak self, file] in
+                self?.openDocumentWithClone(file)
+            }
+            present(alert, animated: true)
 
         } else {
-            let alert = UIAlertController(title: "Huge file", message: "Open?", preferredStyle: .alert)
-            let open = UIAlertAction(title: "Open", style: .default) {
-                [file] action in
-                NotificationCenter.default.post(name: .willOpenDocument, object: nil, userInfoValue: file.uri)
-            }
-            let cancel = UIAlertAction(title: "Cancel", style: .cancel)
-            alert.addAction(open)
-            alert.addAction(cancel)
+            openDocumentWithClone(file)
+        }
+    }
+
+    private func openDocumentWithClone(_ file: WorkspaceFile) {
+        do {
+            try WorkspaceManager.shared.clone(uri: file.uri)
+            _ = try WorkspaceManager.shared.open(uri: file.uri)
+            openDocument(file)
+
+        } catch WorkspaceError.fileNotFound {
+            let alert = UIAlertController.fileNotFound(uri: file.uri)
+            present(alert, animated: true)
+
+        } catch WorkspaceError.encodingFailure {
+            try? WorkspaceManager.shared.remove(uri: file.uri)
+            let alert = UIAlertController.unsupportedFile(uri: file.uri)
+            present(alert, animated: true)
+
+        } catch {
+            let alert = UIAlertController.anyAlert(title: "aaa", message: error.localizedDescription)
             present(alert, animated: true)
         }
     }
 
+    private func openDocument(_ file: WorkspaceFile) {
+        guard let rootController = parent as? RootViewController else {
+            fatalError()
+        }
+        rootController.willOpenDocument(file.uri)
+    }
+
+}
+
+
+// MARK: - Directory fold
+
+extension WorkspaceViewController {
 
     @objc func toggleFold(_ sender: WorkspaceFoldButton) {
         guard let targetUri = (sender.superview?.superview as? WorkspaceViewCell)?.uri else {

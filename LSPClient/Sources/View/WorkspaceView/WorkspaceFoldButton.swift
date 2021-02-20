@@ -10,20 +10,32 @@ import UIKit
 
 final class WorkspaceFoldButton: UIButton {
 
-    var isFold: Bool = false {
+    private let appearance = WorkspaceAppearance.self
+
+    var isFold: Bool {
         didSet {
             self.setImage(isFold ? .triangleRight : .triangleDown, for: .normal)
         }
     }
 
-    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        guard let targetHeight = superview?.bounds.height else {
-            return bounds.contains(point)
-        }
-        var target = CGRect(x: .zero, y: .zero, width: targetHeight * 1.5, height: targetHeight)
-        target.origin.x -= target.width.centeringPoint(bounds.width)
-        target.origin.y -= target.height.centeringPoint(bounds.height)
-        return target.contains(point)
+    override init(frame: CGRect) {
+        self.isFold = false
+        super.init(frame: frame)
+
+        var insets = UIEdgeInsets.zero
+        insets.top = frame.height.centeringPoint(appearance.foldMarkSize.height)
+        insets.bottom = insets.top
+        insets.left = frame.width.centeringPoint(appearance.foldMarkSize.width)
+        insets.right = insets.left
+        self.contentEdgeInsets = insets
+
+        self.tintColor = appearance.foldMarkColor
+
+        self.setImage(.triangleDown, for: .normal)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
 }

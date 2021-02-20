@@ -14,6 +14,7 @@ final class SidebarMenuViewController: UIViewController {
 
     override func loadView() {
         let sidebarMenuView = SidebarMenuView()
+        sidebarMenuView.backgroundColor = SidebarMenuAppearance.viewColor
         sidebarMenuView.workspaceButton.addAction(showWorkspace, for: .touchUpInside)
         sidebarMenuView.consoleButton.addAction(showConsole, for: .touchUpInside)
         sidebarMenuView.diagnosticButton.addAction(showDiagnostic, for: .touchUpInside)
