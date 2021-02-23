@@ -22,4 +22,9 @@ extension UIImage {
         UIImage(named: "TriangleDown")!
     }
 
+    @inlinable static func closeIcon(pointSize: CGFloat, weight: UIImage.SymbolWeight) -> UIImage {
+        let config = UIImage.SymbolConfiguration(pointSize: pointSize, weight: weight)
+        return UIImage(systemName: "xmark.circle.fill", withConfiguration: config)!
+    }
+
 }

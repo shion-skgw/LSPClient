@@ -60,8 +60,8 @@ final class MessageManager: LSPConnectionDelegate {
     ///
     /// Connect to language server
     ///
-    /// - Parameter server      : Language server
-    /// - Parameter method      : Connection method
+    /// - Parameter server: Language server
+    /// - Parameter method: Connection method
     ///
     func connection(server: LanguageServer, method: LSPConnection) {
         connection = method
@@ -81,7 +81,7 @@ final class MessageManager: LSPConnectionDelegate {
     ///
     /// Connection error handler
     ///
-    /// - Parameter cause       : Error cause
+    /// - Parameter cause: Error cause
     ///
     func connectionError(cause: Error) {
         delegate?.connectionError(cause: cause)
@@ -93,7 +93,7 @@ final class MessageManager: LSPConnectionDelegate {
     ///
     /// Data receive handler
     ///
-    /// - Parameter data        : Received data
+    /// - Parameter data: Received data
     ///
     func didReceive(data: Data) {
         do {
@@ -121,10 +121,10 @@ final class MessageManager: LSPConnectionDelegate {
     ///
     /// Response receive handler
     ///
-    /// - Parameter id          : Request ID
-    /// - Parameter result      : Result
-    /// - Parameter error       : Error
-    /// - Throws                : Received an unknown request ID
+    /// - Parameter id    : Request ID
+    /// - Parameter result: Result
+    /// - Parameter error : Error
+    /// - Throws          : Received an unknown request ID
     ///
     private func receiveResponse(_ id: RequestID, _ result: ResultType?, _ error: ErrorResponse?) throws {
         guard let context = sendRequest[id] else {
@@ -138,9 +138,9 @@ final class MessageManager: LSPConnectionDelegate {
     ///
     /// Decode data
     ///
-    /// - Parameter data        : Received data
-    /// - Throws                : Decode failure
-    /// - Returns               : Message
+    /// - Parameter data: Received data
+    /// - Throws        : Decode failure
+    /// - Returns       : Message
     ///
     private func decode(_ data: Data) throws -> Message {
         guard let firstIndex = data.firstIndex(of: OPEN_CURLY_BRACKET) else {
@@ -155,8 +155,8 @@ final class MessageManager: LSPConnectionDelegate {
     ///
     /// Send message
     ///
-    /// - Parameter message     : Message
-    /// - Parameter context     : Request context
+    /// - Parameter message: Message
+    /// - Parameter context: Request context
     ///
     func send(message: Message, context: RequestContext! = nil) {
         do {
@@ -177,9 +177,9 @@ final class MessageManager: LSPConnectionDelegate {
     ///
     /// Encode data
     ///
-    /// - Parameter message     : Message
-    /// - Throws                : Encode failure
-    /// - Returns               : Data
+    /// - Parameter message: Message
+    /// - Throws           : Encode failure
+    /// - Returns          : Data
     ///
     private func encode(_ message: Message) throws -> Data {
         let message = try encoder.encode(message)

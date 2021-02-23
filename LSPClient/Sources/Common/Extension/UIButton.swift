@@ -14,13 +14,4 @@ extension UIButton {
         addAction(UIAction(handler: handler), for: controlEvents)
     }
 
-    static func closeButton(frame: CGRect, pointSize: CGFloat, weight: UIImage.SymbolWeight) -> UIButton {
-        let config = UIImage.SymbolConfiguration(pointSize: pointSize, weight: weight)
-        let icon = UIImage(systemName: "xmark.circle.fill", withConfiguration: config)!.withRenderingMode(.alwaysOriginal)
-        let closeButton = UIButton(frame: frame)
-        closeButton.setImage(icon.withTintColor(UIColor.label.withAlphaComponent(0.3)), for: .normal)
-        closeButton.setImage(icon.withTintColor(UIColor.label.withAlphaComponent(0.5)), for: .highlighted)
-        return closeButton
-    }
-
 }

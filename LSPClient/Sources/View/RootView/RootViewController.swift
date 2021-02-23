@@ -9,15 +9,19 @@
 import UIKit
 
 final class RootViewController: UIViewController {
+    /// SidebarMenuViewController
+    private(set) weak var sidebarMenu: SidebarMenuViewController!
+    /// WorkspaceViewController
+    private(set) weak var workspace: WorkspaceViewController?
+    /// SidebarMenuViewController
+    private(set) weak var editor: EditorTabViewController!
+    /// ConsoleViewController
+    private(set) weak var console: ConsoleViewController?
+    /// DiagnosticViewController
+    private(set) weak var diagnostic: DiagnosticViewController?
 
-    private let appearance = RootAppearance.self
-
-//    private weak var mainMenu: MainMenuViewController!
-    private weak var editor: EditorTabViewController!
-    private weak var sidebarMenu: SidebarMenuViewController!
-    private weak var workspace: WorkspaceViewController?
-    private weak var console: ConsoleViewController?
-    private weak var diagnostic: DiagnosticViewController?
+    private let separatorWeight: CGFloat = 0.5
+    private let sidebarMenuWidth: CGFloat = 40
 
     override func loadView() {
         self.view = RootView()
@@ -25,11 +29,6 @@ final class RootViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Main menu
-//        let mainMenu = MainMenuViewController()
-//        add(child: mainMenu)
-//        self.mainMenu = mainMenu
 
         // Sidebar menu
         let sidebarMenu = SidebarMenuViewController()
@@ -69,18 +68,14 @@ final class RootViewController: UIViewController {
 
     @objc private func layoutSubviews() {
         var displayAreaFrame = view.safeAreaLayoutGuide.layoutFrame
-        displayAreaFrame.origin.x += appearance.separatorWeight
-        displayAreaFrame.origin.y += appearance.separatorWeight
-        displayAreaFrame.size.width -= appearance.separatorWeight * 2
-        displayAreaFrame.size.height -= appearance.separatorWeight * 2
+        displayAreaFrame.origin.x += separatorWeight
+        displayAreaFrame.origin.y += separatorWeight
+        displayAreaFrame.size.width -= separatorWeight * 2
+        displayAreaFrame.size.height -= separatorWeight * 2
 
         if let keyboardFrame = UIApplication.shared.keyboardView?.frame {
             displayAreaFrame.size.height -= view.bounds.height - keyboardFrame.minY
         }
-
-//        var mainMenuFrame = displayAreaFrame
-//        mainMenuFrame.size.height = MainMenuAppearance.viewSize.height
-//        mainMenu.view.frame = mainMenuFrame
 
         var bottomAreaFrame = displayAreaFrame
         bottomAreaFrame.origin.y += displayAreaFrame.height - 10
@@ -98,12 +93,10 @@ final class RootViewController: UIViewController {
         }
 
         var leftAreaFrame = displayAreaFrame
-//        leftAreaFrame.origin.y = mainMenuFrame.maxY + appearance.separatorWeight
-//        leftAreaFrame.size.height -= mainMenuFrame.height + appearance.separatorWeight
-        leftAreaFrame.size.height -= bottomAreaFrame.height == .zero ? .zero : bottomAreaFrame.height + appearance.separatorWeight
+        leftAreaFrame.size.height -= bottomAreaFrame.height == .zero ? .zero : bottomAreaFrame.height + separatorWeight
 
         if !sidebarMenu.view.isHidden {
-            leftAreaFrame.size.width = SidebarMenuAppearance.viewSize.width
+            leftAreaFrame.size.width = sidebarMenuWidth
             sidebarMenu.view.frame = leftAreaFrame
 
         } else if let workspaceView = workspace?.view {
@@ -112,9 +105,9 @@ final class RootViewController: UIViewController {
         }
 
         var editorFrame = displayAreaFrame
-        editorFrame.origin.x = leftAreaFrame.maxX + appearance.separatorWeight
+        editorFrame.origin.x = leftAreaFrame.maxX + separatorWeight
         editorFrame.origin.y = leftAreaFrame.origin.y
-        editorFrame.size.width -= leftAreaFrame.width + appearance.separatorWeight
+        editorFrame.size.width -= leftAreaFrame.width + separatorWeight
         editorFrame.size.height = leftAreaFrame.height
         editor.view.frame = editorFrame
     }
@@ -148,7 +141,7 @@ extension RootViewController {
 //                _ in
 //                print("done")
 //            })
-            UIView.animate(withDuration: 0.25, delay: 1, options: .beginFromCurrentState, animations: {
+            UIView.animate(withDuration: 0.25, delay: 0.1, options: .beginFromCurrentState, animations: {
                 workspace.view.transform = CGAffineTransform(translationX: 300, y: 0)
             }, completion: {
                 _ in
@@ -199,9 +192,14 @@ extension RootViewController {
 extension RootViewController {
 
     func willOpenDocument(_ uri: DocumentUri) {
-        let editorViewController = EditorViewController()
-        editorViewController.uri = uri
-        editor.addTab(title: uri.lastPathComponent, viewController: editorViewController)
+        if let controller = editor.children.compactMap({ $0 as? EditorViewController }).filter({ $0.uri == uri }).first,
+           let tabItem = editor.tabContainer.tabItems.filter({ $0.tag == controller.view.tag }).first {
+            print()
+        } else {
+            let editorViewController = EditorViewController()
+            editorViewController.uri = uri
+            editor.add(editor: editorViewController)
+        }
     }
 
 }

@@ -14,12 +14,18 @@ final class SidebarMenuViewController: UIViewController {
 
     override func loadView() {
         let sidebarMenuView = SidebarMenuView()
-        sidebarMenuView.backgroundColor = SidebarMenuAppearance.viewColor
+        sidebarMenuView.backgroundColor = .secondarySystemBackground
+        sidebarMenuView.settingButton.addAction(showWorkspace, for: .touchUpInside)
         sidebarMenuView.workspaceButton.addAction(showWorkspace, for: .touchUpInside)
         sidebarMenuView.consoleButton.addAction(showConsole, for: .touchUpInside)
         sidebarMenuView.diagnosticButton.addAction(showDiagnostic, for: .touchUpInside)
         self.sidebarMenuView = sidebarMenuView
         self.view = sidebarMenuView
+    }
+
+    private func a(_: UIAction) {
+//        let aa = ServerViewController(presentedViewController: <#T##UIViewController#>, presenting: <#T##UIViewController?#>)
+//        add(child: aa)
     }
 
     private func showWorkspace(_: UIAction) {

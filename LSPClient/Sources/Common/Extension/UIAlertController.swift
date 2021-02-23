@@ -10,11 +10,11 @@ import UIKit
 
 extension UIAlertController {
 
-    static func largeFile(size: Int, limit: Int, acceptAction: @escaping (() -> ())) -> UIAlertController {
+    static func largeFile(size: Int, limit: Int, acceptAction: @escaping ((UIAlertAction) -> ())) -> UIAlertController {
         let title = "Large file"
         let message = "Size: \(size), Limit: \(limit)"
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in acceptAction() }))
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: acceptAction))
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         return alert
     }

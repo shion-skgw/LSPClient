@@ -9,36 +9,59 @@
 import UIKit
 
 final class WorkspaceViewController: UIViewController {
+    /// Workspace menu view
+    private(set) weak var menuView: WorkspaceMenuView!
+    /// Separator view
+    private(set) weak var separatorView: UIView!
+    /// Workspace view
+    private(set) weak var workspaceView: UITableView!
 
+    /// Table row height
+    static let rowHeight = UIFont.systemFontSize * 2.5
+    /// Workspace menu view height
+    private let menuViewHeight: CGFloat = 30
+    /// Separator weight
+    private let separatorWeight: CGFloat = 0.5
+
+    /// Large file size alert threshold
+    private let fileSizeThreshold: Int = 1024 * 512
+    /// Open file size limit
+    private let fileSizeLimit: Int = 1024 * 1024
+
+    /// All files in the workspace
     private var workspaceFiles: [WorkspaceFile] = []
+    /// Display files
     private var displayFiles: [WorkspaceFile] = []
+    /// Fold directories
     private var foldDirectories: [DocumentUri] = []
-
-    private weak var menuView: WorkspaceMenuView!
-    private weak var workspaceView: UITableView!
-
-    private let fileSizeAlertThreshold = 1024 * 512
-    private let fileSizeLimit = 1024 * 1024
-    private let appearance = WorkspaceAppearance.self
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Workspace menu view
         let menuView = WorkspaceMenuView()
-        menuView.backgroundColor = appearance.menuViewColor
+        menuView.backgroundColor = .secondarySystemBackground
         menuView.closeButton.addAction(UIAction(handler: { _ in self.closeView() }), for: .touchUpInside)
         view.addSubview(menuView)
         self.menuView = menuView
 
+        // Separator view
+        let separatorView = UIView()
+        separatorView.backgroundColor = .opaqueSeparator
+        view.addSubview(separatorView)
+        self.separatorView = separatorView
+
+        // Workspace view
         let workspaceView = UITableView()
-        workspaceView.rowHeight = appearance.cellHeight
-        workspaceView.estimatedRowHeight = 0
-        workspaceView.separatorStyle = .none
-        workspaceView.dataSource = self
         workspaceView.delegate = self
+        workspaceView.dataSource = self
+        workspaceView.separatorStyle = .none
+        workspaceView.estimatedRowHeight = 0
+        workspaceView.rowHeight = WorkspaceViewController.rowHeight
         view.addSubview(workspaceView)
         self.workspaceView = workspaceView
 
+        // Fetch workspace files
         if workspaceFiles.isEmpty {
             fetchWorkspaceFiles()
         }
@@ -47,13 +70,21 @@ final class WorkspaceViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
+        // Workspace menu view
         var menuViewFrame = CGRect(origin: .zero, size: view.bounds.size)
-        menuViewFrame.size.height = appearance.menuViewSize.height
+        menuViewFrame.size.height = menuViewHeight
         menuView.frame = menuViewFrame
 
+        // Separator view
+        var separatorViewFrame = CGRect(origin: .zero, size: view.bounds.size)
+        separatorViewFrame.origin.y = menuViewFrame.maxY
+        separatorViewFrame.size.height = separatorWeight
+        separatorView.frame = separatorViewFrame
+
+        // Workspace view
         var workspaceViewFrame = CGRect(origin: .zero, size: view.bounds.size)
-        workspaceViewFrame.origin.y += menuViewFrame.height
-        workspaceViewFrame.size.height -= menuViewFrame.height
+        workspaceViewFrame.origin.y = separatorViewFrame.maxY
+        workspaceViewFrame.size.height -= workspaceViewFrame.minY
         workspaceView.frame = workspaceViewFrame
     }
 
@@ -81,7 +112,11 @@ extension WorkspaceViewController {
 
 extension WorkspaceViewController: UITableViewDataSource {
 
-    func fetchWorkspaceFiles() {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return displayFiles.count
+    }
+
+    private func fetchWorkspaceFiles() {
         self.workspaceFiles = WorkspaceManager.shared.fetchRemoteWorkspaceFiles(skipsHidden: false)
 
         self.displayFiles = workspaceFiles.filter(shouldShowFile)
@@ -94,10 +129,6 @@ extension WorkspaceViewController: UITableViewDataSource {
 
     private func shouldShowFile(_ file: WorkspaceFile) -> Bool {
         return !foldDirectories.contains(where: { file.uri != $0 && file.uri.hasPrefix($0) })
-    }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return displayFiles.count
     }
 
 }
@@ -136,26 +167,29 @@ extension WorkspaceViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let tableCell = workspaceView.cellForRow(at: indexPath) as? WorkspaceViewCell,
-                let file = workspaceFiles.filter({ tableCell.uri == $0.uri }).first else {
+                let file = workspaceFiles.first(where: { tableCell.uri == $0.uri }) else {
             fatalError()
+        }
+
+        if file.type != .file {
+            return
         }
 
         if WorkspaceManager.shared.exists(uri: file.uri) {
             openDocument(file)
 
-        } else if file.size > fileSizeLimit {
-            let alert = UIAlertController.anyAlert(title: "aaa", message: "Huge")
-            present(alert, animated: true)
+        } else if file.size < fileSizeThreshold {
+            openDocumentWithClone(file)
 
-        } else if file.size > fileSizeAlertThreshold {
-            let alert = UIAlertController.largeFile(size: file.size, limit: fileSizeAlertThreshold) {
-                [weak self, file] in
+        } else if file.size < fileSizeLimit {
+            let alert = UIAlertController.largeFile(size: file.size, limit: fileSizeThreshold) {
+                [weak self, file] _ in
                 self?.openDocumentWithClone(file)
             }
             present(alert, animated: true)
 
         } else {
-            openDocumentWithClone(file)
+            present(UIAlertController.unsupportedFile(uri: file.uri), animated: true)
         }
     }
 
@@ -166,17 +200,16 @@ extension WorkspaceViewController: UITableViewDelegate {
             openDocument(file)
 
         } catch WorkspaceError.fileNotFound {
-            let alert = UIAlertController.fileNotFound(uri: file.uri)
-            present(alert, animated: true)
+            present(UIAlertController.fileNotFound(uri: file.uri), animated: true)
 
         } catch WorkspaceError.encodingFailure {
             try? WorkspaceManager.shared.remove(uri: file.uri)
-            let alert = UIAlertController.unsupportedFile(uri: file.uri)
-            present(alert, animated: true)
+            present(UIAlertController.unsupportedFile(uri: file.uri), animated: true)
 
         } catch {
-            let alert = UIAlertController.anyAlert(title: "aaa", message: error.localizedDescription)
-            present(alert, animated: true)
+            let title = "aaaa"
+            let message = error.localizedDescription
+            present(UIAlertController.anyAlert(title: title, message: message), animated: true)
         }
     }
 
@@ -184,6 +217,10 @@ extension WorkspaceViewController: UITableViewDelegate {
         guard let rootController = parent as? RootViewController else {
             fatalError()
         }
+        willMove(toParent: nil)
+        view.removeFromSuperview()
+        removeFromParent()
+        rootController.didCloseWorkspace()
         rootController.willOpenDocument(file.uri)
     }
 

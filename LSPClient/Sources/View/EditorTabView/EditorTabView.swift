@@ -11,9 +11,10 @@ import UIKit
 // TODO: Scrollable content size is ambiguous for EditorTabView.
 
 final class EditorTabView: UIScrollView {
-
+    /// Content view
     private(set) weak var contentView: UIStackView!
 
+    /// Get tab items
     var tabItems: [EditorTabItem] {
         contentView.subviews.compactMap({ $0 as? EditorTabItem })
     }
@@ -26,9 +27,9 @@ final class EditorTabView: UIScrollView {
         contentView.axis = .horizontal
         contentView.alignment = .bottom
         contentView.distribution = .fill
-        contentView.spacing = 2.0
+        contentView.spacing = 1
         contentView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(contentView)
+        self.addSubview(contentView)
         self.contentView = contentView
 
         // Layout anchor setting
@@ -47,14 +48,23 @@ final class EditorTabView: UIScrollView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    ///
+    /// Add tab item
+    ///
+    /// - Parameter item: Tab item
+    ///
     func add(item: EditorTabItem) {
         contentView.addArrangedSubview(item)
     }
 
+    ///
+    /// Remove tab item
+    ///
+    /// - Parameter item: Tab item
+    ///
     func remove(item: EditorTabItem) {
         contentView.removeArrangedSubview(item)
         item.removeFromSuperview()
     }
 
 }
-

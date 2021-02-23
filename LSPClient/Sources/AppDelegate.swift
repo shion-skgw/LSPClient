@@ -16,6 +16,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessageManagerDelegate, A
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         CodeStyle.remove()
+        var a = CodeStyle.load()
+        a.font.uiFont = UIFont.monospacedSystemFont(ofSize: 14, weight: .regular)
+        a.backgroundColor.uiColor = UIColor.brown
+        a.save()
+
         WorkspaceManager.shared.initialize(workspaceName: "w", remoteRootUrl: URL(string: "file://asdfasdf:1234/Users/shion/Desktop/")!)
 
         let rootViewController = RootViewController()

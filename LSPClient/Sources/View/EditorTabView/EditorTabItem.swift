@@ -9,50 +9,53 @@
 import UIKit.UIButton
 
 final class EditorTabItem: UIButton {
+    /// Close button
+    private(set) weak var closeButton: EditorTabCloseButton!
+    /// File name label
+    private(set) weak var fileName: UILabel!
 
-    private var activeColor: UIColor = .white
-    private var inactiveColor: UIColor = .white
-    private(set) weak var closeButton: UIButton!
-    private(set) weak var fileNameLabel: UILabel!
+    /// Active background color
+    private(set) var activeColor: UIColor
+    /// Inactive background color
+    private(set) var inactiveColor: UIColor
 
-    var isActive: Bool = true {
+    /// Document URI
+    var uri: DocumentUri
+    /// Active state
+    var isActive: Bool {
         didSet {
-            self.backgroundColor = isActive ? activeColor : inactiveColor
+            self.backgroundColor = self.isActive ? self.activeColor : self.inactiveColor
+            self.closeButton.tintColor = self.isActive ? self.inactiveColor : self.activeColor
         }
     }
-
+    /// Intrinsic content size
     override var intrinsicContentSize: CGSize {
         self.bounds.size
     }
 
     override init(frame: CGRect) {
+        // Initialize
+        self.activeColor = .white
+        self.inactiveColor = .white
+        self.uri = .bluff
+        self.isActive = true
         super.init(frame: frame)
 
         // Remove all subviews
         self.subviews.forEach({ $0.removeFromSuperview() })
 
-        // Close button area size
-        let closeButtonAreaWidth = frame.height
-        let closeButtonAreaHeight = frame.height
-
-        // Initialize close button
-        let closeButton = UIButton(type: .close)
-        closeButton.frame.origin.x = closeButtonAreaWidth.centeringPoint(closeButton.frame.width)
-        closeButton.frame.origin.y = closeButtonAreaHeight.centeringPoint(closeButton.frame.height)
+        // Close button
+        let closeButton = createCloseButton()
         self.addSubview(closeButton)
         self.closeButton = closeButton
 
-        // Initialize Name label
-        let nameLabel = UILabel(frame: .zero)
-        nameLabel.frame.origin.x = closeButtonAreaWidth + 4.0
-        nameLabel.frame.size.height = frame.height
-        nameLabel.frame.size.width = frame.width - nameLabel.frame.origin.x - 2.0
-        nameLabel.textAlignment = .left
-        self.addSubview(nameLabel)
-        self.fileNameLabel = nameLabel
+        // File name label
+        let fileName = createFileName(closeButton.frame)
+        self.addSubview(fileName)
+        self.fileName = fileName
 
         // Design setting
-        self.layer.cornerRadius = 3.0
+        self.layer.cornerRadius = 3
         self.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
     }
 
@@ -60,28 +63,51 @@ final class EditorTabItem: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func set(title: String) {
-        self.fileNameLabel.text = title // TODO: フォントが反映させるか確認
+    ///
+    /// Create close button
+    ///
+    /// - Returns: Close button
+    ///
+    private func createCloseButton() -> EditorTabCloseButton {
+        // Calc frame
+        var closeButtonFrame = CGRect(origin: .zero, size: frame.size)
+        closeButtonFrame.size.width = frame.height
+
+        // Create close button
+        return EditorTabCloseButton(frame: closeButtonFrame)
     }
 
+    ///
+    /// Create file name label
+    ///
+    /// - Returns: File name label
+    ///
+    private func createFileName(_ closeButtonFrame: CGRect) -> UILabel {
+        // Calc frame
+        var fileNameFrame = CGRect(origin: .zero, size: frame.size)
+        fileNameFrame.origin.x = closeButtonFrame.maxX + 2
+        fileNameFrame.size.width -= fileNameFrame.minX + 4
+
+        // Create file name label
+        let fileName = UILabel(frame: fileNameFrame)
+        fileName.font = UIFont.systemFont
+        return fileName
+    }
+
+    ///
+    /// Set code style
+    ///
+    /// - Parameter codeStyle: Code style
+    ///
     func set(codeStyle: CodeStyle) {
         // Set title
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont,
-            .foregroundColor: codeStyle.fontColor.text.uiColor
-        ]
-        let title = NSAttributedString(string: self.fileNameLabel.text ?? "Untitled", attributes: attributes)
-        self.fileNameLabel.attributedText = title
+        self.fileName.textColor = codeStyle.fontColor.text.uiColor
 
         // Set background color
         self.activeColor = codeStyle.activeTabColor.uiColor
         self.inactiveColor = codeStyle.inactiveTabColor.uiColor
         self.backgroundColor = self.isActive ? self.activeColor : self.inactiveColor
-    }
-
-    func set(tagNumber: Int) {
-        self.tag = tagNumber
-        self.closeButton.tag = tagNumber
+        self.closeButton.tintColor = self.isActive ? self.inactiveColor : self.activeColor
     }
 
 }

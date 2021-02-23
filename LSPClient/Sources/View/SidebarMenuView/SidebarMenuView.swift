@@ -9,29 +9,34 @@
 import UIKit
 
 final class SidebarMenuView: UIView {
-
-    private let appearance = SidebarMenuAppearance.self
-
+    /// Setting button
     private(set) weak var settingButton: UIButton!
+    /// Workspace button
     private(set) weak var workspaceButton: UIButton!
+    /// Console button
     private(set) weak var consoleButton: UIButton!
+    /// Diagnostic button
     private(set) weak var diagnosticButton: UIButton!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        // Setting button
         let settingButton = createButton("ellipsis.circle.fill")
         self.addSubview(settingButton)
         self.settingButton = settingButton
 
+        // Workspace button
         let workspaceButton = createButton("folder.fill")
         self.addSubview(workspaceButton)
         self.workspaceButton = workspaceButton
 
+        // Console button
         let consoleButton = createButton("terminal.fill")
         self.addSubview(consoleButton)
         self.consoleButton = consoleButton
 
+        // Diagnostic button
         let diagnosticButton = createButton("checkmark.shield.fill")
         self.addSubview(diagnosticButton)
         self.diagnosticButton = diagnosticButton
@@ -41,32 +46,56 @@ final class SidebarMenuView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    ///
+    /// Create button
+    ///
+    /// - Parameter iconName: SF Symbol name
+    /// - Returns           : Button
+    ///
     private func createButton(_ iconName: String) -> UIButton {
-        let config = UIImage.SymbolConfiguration(pointSize: appearance.iconPointSize, weight: appearance.iconWeight)
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
         let icon = UIImage(systemName: iconName, withConfiguration: config)!
-        let buttonFrame = CGRect(origin: .zero, size: appearance.buttonSize)
-        let button = UIButton(frame: buttonFrame)
+        let button = UIButton(frame: .zero)
         button.setImage(icon, for: .normal)
-        button.tintColor = appearance.iconColor
+        button.tintColor = .systemBlue
         return button
     }
 
     override func layoutSubviews() {
+        super.layoutSubviews()
+
+        // Setting button
         topAlignment(settingButton, 0)
+        // Workspace button
         topAlignment(workspaceButton, 1)
+        // Console button
         bottomAlignment(consoleButton, 1)
+        // Diagnostic button
         bottomAlignment(diagnosticButton, 0)
     }
 
+    ///
+    /// Top alignment
+    ///
+    /// - Parameter button  : Button
+    /// - Parameter position: Alignment position
+    ///
     private func topAlignment(_ button: UIButton, _ position: CGFloat) {
-        var buttonFrame = button.frame
+        var buttonFrame = CGRect(x: .zero, y: .zero, width: bounds.width, height: bounds.width)
         buttonFrame.origin.y = buttonFrame.height * position
         button.frame = buttonFrame
     }
 
+    ///
+    /// Bottom alignment
+    ///
+    /// - Parameter button  : Button
+    /// - Parameter position: Alignment position
+    ///
     private func bottomAlignment(_ button: UIButton, _ position: CGFloat) {
-        var buttonFrame = button.frame
-        buttonFrame.origin.y = bounds.height - buttonFrame.height * (position + 1)
+        var buttonFrame = CGRect(x: .zero, y: .zero, width: bounds.width, height: bounds.width)
+        buttonFrame.origin.y = bounds.height
+        buttonFrame.origin.y -= buttonFrame.height * (position + 1)
         button.frame = buttonFrame
     }
 

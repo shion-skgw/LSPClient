@@ -9,15 +9,6 @@
 import UIKit
 
 final class WorkspaceViewCell: UITableViewCell {
-    /// Document URI
-    var uri: DocumentUri {
-        didSet {
-            self.fileName.text = uri.lastPathComponent
-        }
-    }
-    /// Level of directory
-    let level: Int
-
     /// Folding button
     private(set) weak var foldButton: WorkspaceFoldButton?
     /// Icon image view
@@ -25,7 +16,19 @@ final class WorkspaceViewCell: UITableViewCell {
     /// File name label
     private(set) weak var fileName: UILabel!
 
-    private let appearance = WorkspaceAppearance.self
+    /// Document URI
+    var uri: DocumentUri {
+        didSet {
+            self.fileName.text = uri.lastPathComponent
+        }
+    }
+
+    private let rowHeight: CGFloat = WorkspaceViewController.rowHeight
+    private let leftMargin: CGFloat = 10
+    private let rightMargin: CGFloat = 8
+    private let indentWidth: CGFloat = 14
+    private let foldMarkSize: CGSize = CGSize(width: 10, height: 10)
+    private let fileIconSize: CGSize = CGSize(width: 22, height: 22)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         guard let identifier = WorkspaceViewCellIdentifier(reuseIdentifier ?? "") else {
@@ -34,48 +37,51 @@ final class WorkspaceViewCell: UITableViewCell {
 
         // Initialize
         self.uri = .bluff
-        self.level = identifier.level
-        super.init(style: .default, reuseIdentifier: reuseIdentifier)
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         // Remove all subviews
         self.contentView.subviews.forEach({ $0.removeFromSuperview() })
 
-        // Avoid recalculation of unnecessary frames
+        // Folding button
         if identifier.isDirectory {
-            let foldButton = createFoldButton()
+            let foldButton = createFoldButton(identifier.level)
             self.contentView.addSubview(foldButton)
             self.foldButton = foldButton
         }
 
+        // Icon image view
         let fileIcon = createFileIcon(identifier)
         self.contentView.addSubview(fileIcon)
         self.fileIcon = fileIcon
 
+        // File name label
         let fileName = createFileName(fileIcon.frame)
         self.contentView.addSubview(fileName)
         self.fileName = fileName
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    private func createFoldButton(_ level: Int) -> WorkspaceFoldButton {
+        // Calc frame
+        var foldButtonFrame = CGRect(x: .zero, y: .zero, width: rowHeight * 1.2, height: rowHeight)
+        foldButtonFrame.origin.x = leftMargin
+        foldButtonFrame.origin.x += indentWidth * CGFloat(level)
+        foldButtonFrame.origin.x += foldMarkSize.width.centeringPoint(foldButtonFrame.width)
+        foldButtonFrame.origin.y = rowHeight.centeringPoint(foldButtonFrame.height)
 
-    private func createFoldButton() -> WorkspaceFoldButton {
-        // Calc rect
-        var foldButtonFrame = CGRect(origin: .zero, size: appearance.foldButtonSize)
-        foldButtonFrame.origin.x = appearance.horizontalMargin
-        foldButtonFrame.origin.x += appearance.indentWidth * CGFloat(level)
-        foldButtonFrame.origin.x += appearance.foldMarkSize.width.centeringPoint(foldButtonFrame.width)
-        foldButtonFrame.origin.y = appearance.cellHeight.centeringPoint(foldButtonFrame.height)
-
-        // Create fold button
-        return WorkspaceFoldButton(frame: foldButtonFrame)
+        // Create folding button
+        let foldButton = WorkspaceFoldButton(frame: foldButtonFrame)
+        foldButton.tintColor = .label
+        foldButton.contentEdgeInsets.top = foldButtonFrame.height.centeringPoint(foldMarkSize.height)
+        foldButton.contentEdgeInsets.bottom = foldButton.contentEdgeInsets.top
+        foldButton.contentEdgeInsets.left = foldButtonFrame.width.centeringPoint(foldMarkSize.width)
+        foldButton.contentEdgeInsets.right = foldButton.contentEdgeInsets.left
+        return foldButton
     }
 
     private func createFileIcon(_ identifier: WorkspaceViewCellIdentifier) -> UIImageView {
         // Get icon image
         let icon: UIImage
-        let config = UIImage.SymbolConfiguration(pointSize: appearance.fileIconPointSize, weight: appearance.fileIconWeight)
+        let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .thin)
         switch (identifier.isFile, identifier.isDirectory, identifier.isLink, identifier.isHidden) {
         case (true, _, _, false):
             icon = UIImage(systemName: "doc.fill", withConfiguration: config)!
@@ -93,41 +99,48 @@ final class WorkspaceViewCell: UITableViewCell {
             icon = UIImage(systemName: "questionmark.circle", withConfiguration: config)!
         }
 
+        // Calc frame
         var fileIconFrame = CGRect(origin: .zero, size: icon.size)
-        fileIconFrame.origin.x = appearance.horizontalMargin
-        fileIconFrame.origin.x += appearance.indentWidth * CGFloat(level)
-        fileIconFrame.origin.x += appearance.foldMarkSize.width
-        fileIconFrame.origin.x += 4
-        fileIconFrame.origin.x += appearance.fileIconSize.width.centeringPoint(fileIconFrame.width)
-        fileIconFrame.origin.y = appearance.cellHeight.centeringPoint(fileIconFrame.height)
+        fileIconFrame.origin.x = leftMargin
+        fileIconFrame.origin.x += indentWidth * CGFloat(identifier.level)
+        fileIconFrame.origin.x += foldMarkSize.width
+        fileIconFrame.origin.x += 6
+        fileIconFrame.origin.x += fileIconSize.width.centeringPoint(fileIconFrame.width)
+        fileIconFrame.origin.y = rowHeight.centeringPoint(fileIconFrame.height)
 
+        // Create icon image view
         let fileIcon = UIImageView(frame: fileIconFrame)
-        fileIcon.tintColor = appearance.fileIconColor
+        fileIcon.tintColor = .label
         fileIcon.image = icon
         return fileIcon
     }
 
     private func createFileName(_ fileIconFrame: CGRect) -> UILabel {
+        // Calc frame
         var fileNameFrame = CGRect.zero
         fileNameFrame.origin.x = fileIconFrame.maxX
-        fileNameFrame.origin.x += 5
-        fileNameFrame.size.height = appearance.cellHeight
+        fileNameFrame.origin.x += 6
+        fileNameFrame.size.height = rowHeight
 
+        // Create file name label
         let fileName = UILabel(frame: fileNameFrame)
-        fileName.font = appearance.fileNameFont
-        fileName.textColor = appearance.fileNameFontColor
-        fileName.baselineAdjustment = .alignBaselines
+        fileName.font = .systemFont
+        fileName.textColor = .label
         return fileName
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        var fileNameFrame = fileName.frame
-        fileNameFrame.size.width = bounds.width
-        fileNameFrame.size.width -= fileNameFrame.minX
-        fileNameFrame.size.width -= appearance.horizontalMargin
-        fileName.frame = fileNameFrame
+        // Calc file name label width
+        var fileNameWidth = bounds.width
+        fileNameWidth -= fileName.frame.minX
+        fileNameWidth -= rightMargin
+        fileName.frame.size.width = fileNameWidth
     }
 
 }

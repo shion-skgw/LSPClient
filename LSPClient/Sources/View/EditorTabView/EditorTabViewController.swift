@@ -7,37 +7,40 @@
 //
 
 import UIKit
-import OSLog
 
 final class EditorTabViewController: UIViewController {
+    /// Tab container view
+    private(set) weak var tabContainer: EditorTabView!
+    /// Editor container view
+    private(set) weak var editorContainer: UIView!
 
-    private weak var tabContainer: EditorTabView!
-    private weak var editorContainer: UIView!
+    /// Tab container view height
+    private let tabViewHeight: CGFloat = 30
+    /// Tab item width
+    private let tabWidth: CGFloat = 140
 
-    let tabViewHeight: CGFloat = UIFont.systemFontSize * 2
-    let tabWidth: CGFloat = 140
-
-    private var currentTagNumber = 0
-    private var nextTagNumber: Int {
-        currentTagNumber += 1
-        return currentTagNumber
-    }
+    /// Active document URI
+    private(set) var activeDocumentUri: DocumentUri?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Load CodeStyle
         let codeStyle = CodeStyle.load()
 
+        // Tab container view
         let tabContainer = EditorTabView()
         tabContainer.backgroundColor = codeStyle.tabAreaColor.uiColor
         view.addSubview(tabContainer)
         self.tabContainer = tabContainer
 
+        // Editor container view
         let editorContainer = UIView()
         editorContainer.backgroundColor = codeStyle.backgroundColor.uiColor
         view.addSubview(editorContainer)
         self.editorContainer = editorContainer
 
+        // Notification
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(refreshCodeStyle), name: .didChangeCodeStyle, object: nil)
     }
@@ -45,77 +48,142 @@ final class EditorTabViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
+        // Tab container view
         var tabContainerFrame = CGRect(origin: .zero, size: view.bounds.size)
         tabContainerFrame.size.height = tabViewHeight
         tabContainer.frame = tabContainerFrame
 
+        // Editor container view
         var editorContainerFrame = CGRect(origin: .zero, size: view.bounds.size)
         editorContainerFrame.origin.y = tabContainerFrame.maxY
-        editorContainerFrame.size.height -= tabContainerFrame.maxY
+        editorContainerFrame.size.height -= editorContainerFrame.minY
         editorContainer.frame = editorContainerFrame
 
-        editorContainer.subviews.forEach({ $0.frame = CGRect(origin: .zero, size: editorContainerFrame.size) })
+        // Editor view
+        let editorViewFrame = CGRect(origin: .zero, size: editorContainerFrame.size)
+        editorContainer.subviews.forEach({ $0.frame = editorViewFrame })
     }
 
-    @objc func selectTab(sender: EditorTabItem) {
-        tabContainer.tabItems.forEach({ $0.isActive = $0.tag == sender.tag })
-        editorContainer.subviews.forEach() {
-            if $0.tag == sender.tag {
-                $0.isHidden = false
-                $0.becomeFirstResponder()
+    ///
+    /// Add editor
+    ///
+    /// - Parameter editor: EditorViewController
+    ///
+    func add(editor: EditorViewController) {
+        // Calc tab item frame
+        var tabItemFrame = CGRect(origin: .zero, size: tabContainer.bounds.size)
+        tabItemFrame.size.width = tabWidth
+        tabItemFrame.size.height -= 1
+
+        // Add tab item
+        let tabItem = EditorTabItem(frame: tabItemFrame)
+        tabItem.uri = editor.uri
+        tabItem.set(codeStyle: CodeStyle.load())
+        tabItem.addTarget(self, action: #selector(selectTab(_:)), for: .touchUpInside)
+        tabItem.closeButton.uri = editor.uri
+        tabItem.closeButton.addTarget(self, action: #selector(closeEditor(_:)), for: .touchUpInside)
+        tabItem.fileName.text = editor.uri.lastPathComponent
+        tabContainer.add(item: tabItem)
+
+        // EditorViewController
+        editor.view.frame = CGRect(origin: .zero, size: editorContainer.bounds.size)
+        addChild(editor)
+        editorContainer.addSubview(editor.view)
+        editor.didMove(toParent: self)
+
+        // Select tab
+        showEditor(uri: editor.uri)
+    }
+
+    ///
+    /// Show editor
+    ///
+    /// - Parameter uri: Document URI
+    ///
+    func showEditor(uri: DocumentUri) {
+        tabContainer.tabItems.forEach({ $0.isActive = $0.uri == uri })
+        children.compactMap({ $0 as? EditorViewController }).forEach({
+            if $0.uri == uri {
+                self.activeDocumentUri = uri
+                $0.view.isHidden = false
+                $0.view.becomeFirstResponder()
             } else {
-                $0.isHidden = true
-                $0.resignFirstResponder()
+                $0.view.isHidden = true
+                $0.view.resignFirstResponder()
             }
-        }
+        })
     }
 
-    @objc func closeTab(sender: UIButton) {
-        guard let tabItem = tabContainer.tabItems.filter({ $0.tag == sender.tag }).first,
-                let controller = children.filter({ $0.view.tag == sender.tag }).first else {
-            return
+    ///
+    /// Tab select action
+    ///
+    /// - Parameter sender: Tab item
+    ///
+    @objc private func selectTab(_ sender: EditorTabItem) {
+        showEditor(uri: sender.uri)
+    }
+
+    ///
+    /// Close editor
+    ///
+    /// - Parameter sender: Tab close button
+    ///
+    @objc private func closeEditor(_ sender: EditorTabCloseButton) {
+        guard let tabItem = tabContainer.tabItems.first(where: { $0.uri == sender.uri }),
+                let controller = children.first(where: { ($0 as? EditorViewController)?.uri == sender.uri }) else {
+            fatalError()
         }
 
-        tabContainer.remove(item: tabItem)
+        if let nextTabUri = nextTab(sender.uri)?.uri {
+            showEditor(uri: nextTabUri)
+        }
+
+        // Remove EditorViewController
         controller.willMove(toParent: nil)
         controller.view.removeFromSuperview()
         controller.removeFromParent()
 
-        if tabContainer.tabItems.filter({ $0.isActive }).isEmpty,
-                let lastAddTab = tabContainer.tabItems.max(by: { $0.tag < $1.tag }) {
-            selectTab(sender: lastAddTab)
+        // Remove tab
+        tabContainer.remove(item: tabItem)
+    }
+
+    ///
+    /// Next tab item
+    ///
+    /// - Parameter uri: Document URI
+    /// - Returns      : Next tab item
+    ///
+    private func nextTab(_ uri: DocumentUri) -> EditorTabItem? {
+        let tabItems = tabContainer.tabItems
+        if let index = tabItems.firstIndex(where: { $0.uri == uri }) {
+            if index + 1 <= tabItems.count - 1 {
+                return tabItems[index + 1]
+            } else if 0 <= index - 1 {
+                return tabItems[index - 1]
+            }
         }
+        return nil
     }
 
-    func addTab(title: String, viewController: EditorViewController) {
-        let tagNumber = nextTagNumber
-
-        // Add child controller
-        viewController.view.tag = tagNumber
-        viewController.view.frame = editorContainer.bounds
-        addChild(viewController)
-        editorContainer.addSubview(viewController.view)
-        viewController.didMove(toParent: self)
-
-        // Add tab
-        let tabItemFrame = CGRect(x: .zero, y: .zero, width: tabWidth, height: tabViewHeight - 2)
-        let tabItem = EditorTabItem(frame: tabItemFrame)
-        tabItem.set(title: title)
-        tabItem.set(codeStyle: CodeStyle.load())
-        tabItem.set(tagNumber: tagNumber)
-        tabItem.addTarget(self, action: #selector(selectTab(sender:)), for: .touchUpInside)
-        tabItem.closeButton.addTarget(self, action: #selector(closeTab(sender:)), for: .touchUpInside)
-        tabContainer.add(item: tabItem)
-
-        // Select tab
-        selectTab(sender: tabItem)
+    ///
+    /// a
+    ///
+    /// - Parameter uri: a
+    /// - Returns      : a
+    ///
+    func hasEditor(uri: DocumentUri) -> Bool {
+        return children.contains(where: { ($0 as? EditorViewController)?.uri == uri })
     }
 
-    @objc func refreshCodeStyle() {
+    ///
+    /// Refresh code style
+    ///
+    @objc private func refreshCodeStyle() {
         let codeStyle = CodeStyle.load()
-        tabContainer.backgroundColor = .secondarySystemBackground
+        tabContainer.backgroundColor = codeStyle.tabAreaColor.uiColor
         tabContainer.tabItems.forEach({ $0.set(codeStyle: codeStyle) })
         editorContainer.backgroundColor = codeStyle.backgroundColor.uiColor
+        children.compactMap({ $0 as? EditorViewController }).forEach({ $0.set(codeStyle: codeStyle) })
     }
 
 }

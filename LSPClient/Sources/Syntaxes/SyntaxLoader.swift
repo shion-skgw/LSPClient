@@ -54,7 +54,7 @@ final class SyntaxLoader {
     }
 
     private static func loadDefinitions(_ fileExtension: String) -> SyntaxDefinition {
-        if let definitions = syntaxes.filter({ $0.extensions.contains(fileExtension) }).first {
+        if let definitions = syntaxes.first(where: { $0.extensions.contains(fileExtension) }) {
             return definitions
         }
 

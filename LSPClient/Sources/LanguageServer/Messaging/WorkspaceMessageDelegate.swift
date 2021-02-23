@@ -14,16 +14,16 @@ protocol WorkspaceMessageDelegate: MessageDelegate {
     ///
     /// Receive result: workspace/symbol
     ///
-    /// - Parameter id          : Request ID
-    /// - Parameter result      : Result
+    /// - Parameter id    : Request ID
+    /// - Parameter result: Result
     ///
     func symbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>)
 
     ///
     /// Receive result: workspace/executeCommand
     ///
-    /// - Parameter id          : Request ID
-    /// - Parameter result      : Result
+    /// - Parameter id    : Request ID
+    /// - Parameter result: Result
     ///
     func executeCommand(id: RequestID, result: Result<AnyValue?, ErrorResponse>)
 
@@ -34,7 +34,7 @@ extension WorkspaceMessageDelegate {
     ///
     /// Send notification: workspace/didChangeConfiguration
     ///
-    /// - Parameter params      : Parameter
+    /// - Parameter params: Parameter
     ///
     func didChangeConfiguration(params: DidChangeConfigurationParams) {
         let message = Message.notification(WORKSPACE_DID_CHANGE_CONFIGURATION, params)
@@ -44,7 +44,7 @@ extension WorkspaceMessageDelegate {
     ///
     /// Send notification: workspace/didChangeWatchedFiles
     ///
-    /// - Parameter params      : Parameter
+    /// - Parameter params: Parameter
     ///
     func didChangeWatchedFiles(params: DidChangeWatchedFilesParams) {
         let message = Message.notification(WORKSPACE_DID_CHANGE_WATCHED_FILES, params)
@@ -54,7 +54,7 @@ extension WorkspaceMessageDelegate {
     ///
     /// Send request: workspace/symbol
     ///
-    /// - Parameter params      : Parameter
+    /// - Parameter params: Parameter
     ///
     func symbol(params: WorkspaceSymbolParams) -> RequestID {
         let context = MessageManager.RequestContext(method: WORKSPACE_SYMBOL, source: self)
@@ -67,7 +67,7 @@ extension WorkspaceMessageDelegate {
     ///
     /// Send request: workspace/executeCommand
     ///
-    /// - Parameter params      : Parameter
+    /// - Parameter params: Parameter
     ///
     func executeCommand(params: ExecuteCommandParams) -> RequestID {
         let context = MessageManager.RequestContext(method: WORKSPACE_EXECUTE_COMMAND, source: self)
@@ -80,7 +80,7 @@ extension WorkspaceMessageDelegate {
     ///
     /// Send request: workspace/applyEdit
     ///
-    /// - Parameter params      : Parameter
+    /// - Parameter params: Parameter
     ///
     func applyEdit(params: ApplyWorkspaceEditParams) -> RequestID {
         let context = MessageManager.RequestContext(method: WORKSPACE_APPLY_EDIT, source: self)
@@ -93,12 +93,12 @@ extension WorkspaceMessageDelegate {
     ///
     /// Response receive handler
     ///
-    /// - Parameter id          : Request ID
-    /// - Parameter context     : Request context
-    /// - Parameter result      : Result
-    /// - Parameter error       : Error
-    /// - Throws                : Unsupported methods
-    /// - Returns               : Delete stored request
+    /// - Parameter id     : Request ID
+    /// - Parameter context: Request context
+    /// - Parameter result : Result
+    /// - Parameter error  : Error
+    /// - Throws           : Unsupported methods
+    /// - Returns          : Delete stored request
     ///
     func receiveResponse(id: RequestID, context: MessageManager.RequestContext, result: ResultType?, error: ErrorResponse?) throws -> Bool {
         guard let source = context.source as? WorkspaceMessageDelegate else {

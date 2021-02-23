@@ -10,13 +10,11 @@ import UIKit
 
 final class RootView: UIView {
 
-    private let appearance = RootAppearance.self
-
     override func draw(_ rect: CGRect) {
         let cgContext = UIGraphicsGetCurrentContext()!
-        cgContext.setFillColor(appearance.backgroundColor.cgColor)
+        cgContext.setFillColor(UIColor.systemBackground.cgColor)
         cgContext.fill(frame)
-        cgContext.setFillColor(appearance.separatorColor.cgColor)
+        cgContext.setFillColor(UIColor.opaqueSeparator.cgColor)
         cgContext.fill(safeAreaLayoutGuide.layoutFrame)
     }
 

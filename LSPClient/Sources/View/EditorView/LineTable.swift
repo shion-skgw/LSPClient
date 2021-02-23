@@ -28,7 +28,7 @@ final class LineTable {
     ///
     /// Initialize
     ///
-    /// - Parameter content     : Text contents
+    /// - Parameter content: Text contents
     ///
     init(content: NSMutableAttributedString) {
         self.table = [:]
@@ -39,7 +39,7 @@ final class LineTable {
     ///
     /// Update line range table
     ///
-    /// - Parameter range       : Update range
+    /// - Parameter range: Update range
     ///
     func update(for range: NSRange) {
         guard let string = content?.string else {
@@ -50,7 +50,7 @@ final class LineTable {
         var testRange: NSRange
         var lineNumber: Int
         var previousLineEnd: Int
-        if let lineRange = table.filter({ NSLocationInRange(range.lowerBound, $0.value) }).first {
+        if let lineRange = table.first(where: { NSLocationInRange(range.lowerBound, $0.value) }) {
             testRange = NSMakeRange(lineRange.value.location, string.length - lineRange.value.location)
             lineNumber = lineRange.key
             previousLineEnd = lineRange.value.upperBound
@@ -86,12 +86,12 @@ final class LineTable {
     ///
     /// Returns line range
     ///
-    /// - Parameter range       : NS characters range
-    /// - Returns               : NS line range
+    /// - Parameter range: NS characters range
+    /// - Returns        : NS line range
     ///
     func lineRange(for range: NSRange) -> NSRange? {
-        guard let start = table.filter({ NSLocationInRange(range.lowerBound, $0.value) }).first?.value,
-                let end = table.filter({ NSLocationInRange(range.upperBound, $0.value) }).first?.value else {
+        guard let start = table.first(where: { NSLocationInRange(range.lowerBound, $0.value) })?.value,
+                let end = table.first(where: { NSLocationInRange(range.upperBound, $0.value) })?.value else {
             return nil
         }
         return NSMakeRange(start.lowerBound, end.upperBound)
@@ -100,8 +100,8 @@ final class LineTable {
     ///
     /// Returns line range
     ///
-    /// - Parameter range       : LSP characters range
-    /// - Returns               : NS line range
+    /// - Parameter range: LSP characters range
+    /// - Returns        : NS line range
     ///
     func lineRange(for textRange: TextRange) -> NSRange? {
         guard let start = table[textRange.start.line],
@@ -114,8 +114,8 @@ final class LineTable {
     ///
     /// Convert characters range
     ///
-    /// - Parameter textRange   : LSP characters range
-    /// - Returns               : NS characters range
+    /// - Parameter textRange: LSP characters range
+    /// - Returns            : NS characters range
     ///
     func range(for textRange: TextRange) -> NSRange? {
         guard let start = table[textRange.start.line],
@@ -130,8 +130,8 @@ final class LineTable {
     ///
     /// Convert characters range
     ///
-    /// - Parameter range       : NS characters range
-    /// - Returns               : LSP characters range
+    /// - Parameter range: NS characters range
+    /// - Returns        : LSP characters range
     ///
     func range(for range: NSRange) -> TextRange? {
         guard let start = position(for: range.lowerBound),
@@ -144,11 +144,11 @@ final class LineTable {
     ///
     /// Convert characters position
     ///
-    /// - Parameter position    : NS characters position
-    /// - Returns               : LSP characters position
+    /// - Parameter position: NS characters position
+    /// - Returns           : LSP characters position
     ///
     func position(for position: Int) -> TextPosition? {
-        guard let line = table.filter({ NSLocationInRange(position, $0.value) }).first else {
+        guard let line = table.first(where: { NSLocationInRange(position, $0.value) }) else {
             return nil
         }
         return TextPosition(line: line.key, character: position - line.value.location)

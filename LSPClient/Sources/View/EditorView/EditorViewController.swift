@@ -40,6 +40,7 @@ final class EditorViewController: UIViewController {
 
         // TextStorage
         let editorTextStorage = EditorTextStorage()
+        editorTextStorage.set(string: (try? WorkspaceManager.shared.open(uri: uri)) ?? "")
         editorTextStorage.set(codeStyle: codeStyle)
         editorTextStorage.set(tokens: SyntaxLoader.tokens(fileExtension: fileExtension, codeStyle: codeStyle))
         editorTextStorage.addLayoutManager(editorLayoutManager)
@@ -54,21 +55,16 @@ final class EditorViewController: UIViewController {
         self.editorView = editorView
         self.view = editorView
 
-        // NotificationCenter
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(refreshCodeStyle), name: .didChangeCodeStyle, object: nil)
-
         // UndoManager
         let editorUndoManager = EditorUndoManager()
         editorUndoManager.editorView = editorView
         self.editorUndoManager = editorUndoManager
     }
 
-    @objc func refreshCodeStyle() {
+    func set(codeStyle: CodeStyle) {
         guard let editorView = view as? EditorView else {
-            return
+            fatalError()
         }
-        let codeStyle = CodeStyle.load()
         editorView.set(codeStyle: codeStyle)
         editorTextStorage.set(codeStyle: codeStyle)
         editorTextStorage.set(tokens: SyntaxLoader.tokens(fileExtension: fileExtension, codeStyle: codeStyle))

@@ -11,14 +11,21 @@ import UIKit
 final class EditorView: UITextView {
 
     weak var controller: EditorViewController?
-    private var gutterColor: CGColor = UIColor.white.cgColor
-    private var gutterEdgeColor: CGColor = UIColor.white.cgColor
-    private var lineHighlight: Bool = false
-    private var lineHighlightColor: CGColor = UIColor.white.cgColor
-    private var lineNumberAttribute: [NSAttributedString.Key: Any] = [:]
+    private var gutterColor: CGColor
+    private var gutterEdgeColor: CGColor
+    private var lineHighlight: Bool
+    private var lineHighlightColor: CGColor
+    private var lineNumberAttribute: [NSAttributedString.Key: Any]
 
     override init(frame: CGRect, textContainer: NSTextContainer?) {
+        // Initialize
+        self.gutterColor = UIColor.white.cgColor
+        self.gutterEdgeColor = UIColor.white.cgColor
+        self.lineHighlight = false
+        self.lineHighlightColor = UIColor.white.cgColor
+        self.lineNumberAttribute = [:]
         super.init(frame: frame, textContainer: textContainer)
+
         self.autocapitalizationType = .none
         self.autocorrectionType = .no
         self.contentMode = .redraw
@@ -41,13 +48,13 @@ final class EditorView: UITextView {
     }
 
     override func insertText(_ text: String) {
-        setNeedsDisplay()
         super.insertText(text)
+        setNeedsDisplay()
     }
 
     override func deleteBackward() {
-        setNeedsDisplay()
         super.deleteBackward()
+        setNeedsDisplay()
     }
 
 }

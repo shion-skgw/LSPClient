@@ -9,9 +9,7 @@
 import UIKit
 
 final class WorkspaceFoldButton: UIButton {
-
-    private let appearance = WorkspaceAppearance.self
-
+    /// Folding state
     var isFold: Bool {
         didSet {
             self.setImage(isFold ? .triangleRight : .triangleDown, for: .normal)
@@ -19,18 +17,11 @@ final class WorkspaceFoldButton: UIButton {
     }
 
     override init(frame: CGRect) {
+        // Initialize
         self.isFold = false
         super.init(frame: frame)
 
-        var insets = UIEdgeInsets.zero
-        insets.top = frame.height.centeringPoint(appearance.foldMarkSize.height)
-        insets.bottom = insets.top
-        insets.left = frame.width.centeringPoint(appearance.foldMarkSize.width)
-        insets.right = insets.left
-        self.contentEdgeInsets = insets
-
-        self.tintColor = appearance.foldMarkColor
-
+        // Set fold icon image
         self.setImage(.triangleDown, for: .normal)
     }
 

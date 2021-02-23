@@ -14,16 +14,16 @@ protocol ApplicationMessageDelegate: MessageDelegate {
     ///
     /// Receive result: initialize
     /// 
-    /// - Parameter id          : Request ID
-    /// - Parameter result      : Result
+    /// - Parameter id    : Request ID
+    /// - Parameter result: Result
     ///
     func initialize(id: RequestID, result: Result<InitializeResult, ErrorResponse>)
 
     ///
     /// Receive result: shutdown
     ///
-    /// - Parameter id          : Request ID
-    /// - Parameter result      : Result
+    /// - Parameter id    : Request ID
+    /// - Parameter result: Result
     ///
     func shutdown(id: RequestID, result: Result<VoidValue?, ErrorResponse>)
 
@@ -34,7 +34,7 @@ extension ApplicationMessageDelegate {
     ///
     /// Send notification: $/cancelRequest
     ///
-    /// - Parameter params      : Parameter
+    /// - Parameter params: Parameter
     ///
     func cancelRequest(params: CancelParams) {
         let message = Message.notification(CANCEL_REQUEST, params)
@@ -44,7 +44,7 @@ extension ApplicationMessageDelegate {
     ///
     /// Send request: initialize
     ///
-    /// - Parameter params      : Parameter
+    /// - Parameter params: Parameter
     ///
     func initialize(params: InitializeParams) -> RequestID {
         let context = MessageManager.RequestContext(method: INITIALIZE, source: self)
@@ -57,7 +57,7 @@ extension ApplicationMessageDelegate {
     ///
     /// Send notification: initialized
     ///
-    /// - Parameter params      : Parameter
+    /// - Parameter params: Parameter
     ///
     func initialized(params: InitializedParams) {
         let message = Message.notification(INITIALIZED, params)
@@ -67,7 +67,7 @@ extension ApplicationMessageDelegate {
     ///
     /// Send request: shutdown
     ///
-    /// - Parameter params      : Parameter
+    /// - Parameter params: Parameter
     ///
     func shutdown(params: VoidValue) -> RequestID {
         let context = MessageManager.RequestContext(method: SHUTDOWN, source: self)
@@ -80,7 +80,7 @@ extension ApplicationMessageDelegate {
     ///
     /// Send notification: exit
     ///
-    /// - Parameter params      : Parameter
+    /// - Parameter params: Parameter
     ///
     func exit(params: VoidValue) {
         let message = Message.notification(EXIT, params)
@@ -90,12 +90,12 @@ extension ApplicationMessageDelegate {
     ///
     /// Response receive handler
     ///
-    /// - Parameter id          : Request ID
-    /// - Parameter context     : Request context
-    /// - Parameter result      : Result
-    /// - Parameter error       : Error
-    /// - Throws                : Unsupported methods
-    /// - Returns               : Delete stored request
+    /// - Parameter id     : Request ID
+    /// - Parameter context: Request context
+    /// - Parameter result : Result
+    /// - Parameter error  : Error
+    /// - Throws           : Unsupported methods
+    /// - Returns          : Delete stored request
     ///
     func receiveResponse(id: RequestID, context: MessageManager.RequestContext, result: ResultType?, error: ErrorResponse?) throws -> Bool {
         guard let source = context.source as? ApplicationMessageDelegate else {

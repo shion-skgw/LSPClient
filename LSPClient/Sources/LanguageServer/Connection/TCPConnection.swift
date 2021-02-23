@@ -31,8 +31,8 @@ final class TCPConnection: LSPConnection {
     ///
     /// Connect to language server
     ///
-    /// - Parameter host        : Language server host
-    /// - Parameter port        : Language server port
+    /// - Parameter host: Language server host
+    /// - Parameter port: Language server port
     ///
     func connection(host: String, port: Int) {
         // Access point
@@ -88,8 +88,8 @@ final class TCPConnection: LSPConnection {
     ///
     /// Send data
     ///
-    /// - Parameter data        : Send data
-    /// - Parameter completion  : Send completion handler
+    /// - Parameter data      : Send data
+    /// - Parameter completion: Send completion handler
     ///
     func send(data: Data, completion: @escaping () -> ()) {
         connection.send(content: data, completion: .contentProcessed {

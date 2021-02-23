@@ -17,7 +17,7 @@ class TestConnection: LSPConnection {
 
     static var shared = TestConnection()
 
-    weak var delegate: LSPConnectionDelegate?
+    weak var delegate: LSPConnectionDelegate!
 
     var sendData: String!
 
