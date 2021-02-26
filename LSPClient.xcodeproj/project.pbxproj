@@ -42,8 +42,8 @@
 		0540195B249373E700287026 /* FileResourceChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0540195A249373E700287026 /* FileResourceChanges.swift */; };
 		0541881D2490C71900C6D9A2 /* ParameterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0541881C2490C71900C6D9A2 /* ParameterType.swift */; };
 		05436C8925E4B710002FB02E /* EditorTabCloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05436C8825E4B710002FB02E /* EditorTabCloseButton.swift */; };
-		05436C9A25E94E69002FB02E /* ConfigurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05436C9925E94E69002FB02E /* ConfigurationView.swift */; };
-		05436CA025E94E8C002FB02E /* ConfigurationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05436C9F25E94E8C002FB02E /* ConfigurationViewController.swift */; };
+		05436C9A25E94E69002FB02E /* ConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05436C9925E94E69002FB02E /* ConfigView.swift */; };
+		05436CA025E94E8C002FB02E /* ConfigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05436C9F25E94E8C002FB02E /* ConfigViewController.swift */; };
 		0555B5D925B1727C0061CB41 /* UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0555B5D825B1727C0061CB41 /* UIApplication.swift */; };
 		05601E7925A29725007B91C1 /* EditorTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05601E7825A29725007B91C1 /* EditorTabViewController.swift */; };
 		05601E7D25A2973C007B91C1 /* EditorTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05601E7C25A2973C007B91C1 /* EditorTabView.swift */; };
@@ -171,8 +171,8 @@
 		0540195A249373E700287026 /* FileResourceChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileResourceChanges.swift; sourceTree = "<group>"; };
 		0541881C2490C71900C6D9A2 /* ParameterType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterType.swift; sourceTree = "<group>"; };
 		05436C8825E4B710002FB02E /* EditorTabCloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTabCloseButton.swift; sourceTree = "<group>"; };
-		05436C9925E94E69002FB02E /* ConfigurationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationView.swift; sourceTree = "<group>"; };
-		05436C9F25E94E8C002FB02E /* ConfigurationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationViewController.swift; sourceTree = "<group>"; };
+		05436C9925E94E69002FB02E /* ConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigView.swift; sourceTree = "<group>"; };
+		05436C9F25E94E8C002FB02E /* ConfigViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigViewController.swift; sourceTree = "<group>"; };
 		0555B5D825B1727C0061CB41 /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
 		05601E7825A29725007B91C1 /* EditorTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTabViewController.swift; sourceTree = "<group>"; };
 		05601E7C25A2973C007B91C1 /* EditorTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTabView.swift; sourceTree = "<group>"; };
@@ -341,13 +341,13 @@
 			path = Structures;
 			sourceTree = "<group>";
 		};
-		05436C9825E94E3A002FB02E /* ConfigurationView */ = {
+		05436C9825E94E3A002FB02E /* ConfigView */ = {
 			isa = PBXGroup;
 			children = (
-				05436C9925E94E69002FB02E /* ConfigurationView.swift */,
-				05436C9F25E94E8C002FB02E /* ConfigurationViewController.swift */,
+				05436C9925E94E69002FB02E /* ConfigView.swift */,
+				05436C9F25E94E8C002FB02E /* ConfigViewController.swift */,
 			);
-			path = ConfigurationView;
+			path = ConfigView;
 			sourceTree = "<group>";
 		};
 		056706A5251512DE00F9D7E7 /* Syntaxes */ = {
@@ -422,7 +422,7 @@
 		0589B58824DCF869006E0C6F /* View */ = {
 			isa = PBXGroup;
 			children = (
-				05436C9825E94E3A002FB02E /* ConfigurationView */,
+				05436C9825E94E3A002FB02E /* ConfigView */,
 				0578E6FE25D7A2C40029F28D /* ConsoleView */,
 				0578E6FF25D7A2E10029F28D /* DiagnosticView */,
 				05F45C0E25CA3AF500C96ADB /* EditorTabView */,
@@ -825,7 +825,7 @@
 				05601E7D25A2973C007B91C1 /* EditorTabView.swift in Sources */,
 				054019552493703600287026 /* Command.swift in Sources */,
 				051F887025AB3F230041BE4E /* UIImage.swift in Sources */,
-				05436C9A25E94E69002FB02E /* ConfigurationView.swift in Sources */,
+				05436C9A25E94E69002FB02E /* ConfigView.swift in Sources */,
 				0589B59024DD4EDD006E0C6F /* LineTable.swift in Sources */,
 				059150EA25D2CE34009EB71B /* Notification.swift in Sources */,
 				059150C825D04FBB009EB71B /* WorkspaceFile.swift in Sources */,
@@ -848,7 +848,7 @@
 				056B5C2B24E30EEC00797D95 /* EditorViewController.swift in Sources */,
 				05CA5CF7248C5F1700582319 /* AppDelegate.swift in Sources */,
 				056B5C2424E30DFB00797D95 /* EditorView.swift in Sources */,
-				05436CA025E94E8C002FB02E /* ConfigurationViewController.swift in Sources */,
+				05436CA025E94E8C002FB02E /* ConfigViewController.swift in Sources */,
 				051C973825C90B710031C036 /* WorkspaceViewController.swift in Sources */,
 				058B6A13248C687D0099B32F /* MessageManager.swift in Sources */,
 				056732CC24960A2100E7650B /* TextDocumentItem.swift in Sources */,

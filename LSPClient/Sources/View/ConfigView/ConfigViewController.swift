@@ -1,5 +1,5 @@
 //
-//  ConfigurationViewController.swift
+//  ConfigViewController.swift
 //  LSPClient
 //
 //  Created by Shion on 2021/02/27.
@@ -8,6 +8,6 @@
 
 import UIKit
 
-final class ConfigurationViewController: UIViewController {
-    
+final class ConfigViewController: UIViewController {
+
 }

@@ -1,5 +1,5 @@
 //
-//  ConfigurationView.swift
+//  ConfigView.swift
 //  LSPClient
 //
 //  Created by Shion on 2021/02/27.
@@ -8,6 +8,6 @@
 
 import UIKit
 
-final class ConfigurationView: UIView {
+final class ConfigView: UIView {
     
 }
