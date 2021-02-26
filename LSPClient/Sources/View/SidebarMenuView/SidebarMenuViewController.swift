@@ -10,62 +10,40 @@ import UIKit
 
 final class SidebarMenuViewController: UIViewController {
 
-    private weak var sidebarMenuView: SidebarMenuView!
+    private(set) weak var sidebarMenuView: SidebarMenuView!
 
     override func loadView() {
         let sidebarMenuView = SidebarMenuView()
         sidebarMenuView.backgroundColor = .secondarySystemBackground
-        sidebarMenuView.settingButton.addAction(showWorkspace, for: .touchUpInside)
-        sidebarMenuView.workspaceButton.addAction(showWorkspace, for: .touchUpInside)
-        sidebarMenuView.consoleButton.addAction(showConsole, for: .touchUpInside)
-        sidebarMenuView.diagnosticButton.addAction(showDiagnostic, for: .touchUpInside)
+        sidebarMenuView.settingButton.addAction(menuAction, for: .touchUpInside)
+        sidebarMenuView.workspaceButton.addAction(menuAction, for: .touchUpInside)
+        sidebarMenuView.consoleButton.addAction(menuAction, for: .touchUpInside)
+        sidebarMenuView.diagnosticButton.addAction(menuAction, for: .touchUpInside)
         self.sidebarMenuView = sidebarMenuView
         self.view = sidebarMenuView
     }
 
-    private func a(_: UIAction) {
-//        let aa = ServerViewController(presentedViewController: <#T##UIViewController#>, presenting: <#T##UIViewController?#>)
-//        add(child: aa)
-    }
-
-    private func showWorkspace(_: UIAction) {
-        guard let rootController = parent as? RootViewController else {
+    private func menuAction(_ action: UIAction) {
+        guard let sender = action.sender as? UIButton,
+                let rootController = parent as? RootViewController else {
             fatalError()
         }
-        rootController.showWorkspace()
-        view.isHidden = true
-    }
 
-    private func showConsole(_: UIAction) {
-        guard let rootController = parent as? RootViewController else {
+        if sidebarMenuView.settingButton == sender {
+            fatalError()
+
+        } else if sidebarMenuView.workspaceButton == sender {
+            rootController.showWorkspace()
+
+        } else if sidebarMenuView.consoleButton == sender {
+            rootController.showConsole()
+
+        } else if sidebarMenuView.diagnosticButton == sender {
+            rootController.showDiagnostic()
+
+        } else {
             fatalError()
         }
-        rootController.showConsole()
-        sidebarMenuView.consoleButton.isHidden = true
-        sidebarMenuView.diagnosticButton.isHidden = true
-    }
-
-    private func showDiagnostic(_: UIAction) {
-        guard let rootController = parent as? RootViewController else {
-            fatalError()
-        }
-        rootController.showDiagnostic()
-        sidebarMenuView.consoleButton.isHidden = true
-        sidebarMenuView.diagnosticButton.isHidden = true
-    }
-
-    func didCloseWorkspace() {
-        view.isHidden = false
-    }
-
-    func didCloseConsole() {
-        sidebarMenuView.consoleButton.isHidden = false
-        sidebarMenuView.diagnosticButton.isHidden = false
-    }
-
-    func didCloseDiagnostic() {
-        sidebarMenuView.consoleButton.isHidden = false
-        sidebarMenuView.diagnosticButton.isHidden = false
     }
 
 }

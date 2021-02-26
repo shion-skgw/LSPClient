@@ -31,7 +31,7 @@ final class WorkspaceViewCell: UITableViewCell {
     private let fileIconSize: CGSize = CGSize(width: 22, height: 22)
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        guard let identifier = WorkspaceViewCellIdentifier(reuseIdentifier ?? "") else {
+        guard let identifier = WorkspaceViewCellIdentifier(identifier: reuseIdentifier ?? "") else {
             fatalError()
         }
 

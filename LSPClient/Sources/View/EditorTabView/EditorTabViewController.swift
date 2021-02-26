@@ -134,6 +134,7 @@ final class EditorTabViewController: UIViewController {
             fatalError()
         }
 
+        // Show next editor
         if let nextTabUri = nextTab(sender.uri)?.uri {
             showEditor(uri: nextTabUri)
         }

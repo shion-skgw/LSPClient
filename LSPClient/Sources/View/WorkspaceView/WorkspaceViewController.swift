@@ -41,7 +41,7 @@ final class WorkspaceViewController: UIViewController {
         // Workspace menu view
         let menuView = WorkspaceMenuView()
         menuView.backgroundColor = .secondarySystemBackground
-        menuView.closeButton.addAction(UIAction(handler: { _ in self.closeView() }), for: .touchUpInside)
+        menuView.closeButton.addAction(closeWorkspace, for: .touchUpInside)
         view.addSubview(menuView)
         self.menuView = menuView
 
@@ -89,13 +89,9 @@ final class WorkspaceViewController: UIViewController {
     }
 
     func closeView() {
-        guard let rootController = parent as? RootViewController else {
-            fatalError()
-        }
         willMove(toParent: nil)
         view.removeFromSuperview()
         removeFromParent()
-        rootController.didCloseWorkspace()
     }
 
 }
@@ -104,6 +100,13 @@ final class WorkspaceViewController: UIViewController {
 // MARK: - Workspace menu
 
 extension WorkspaceViewController {
+
+    private func closeWorkspace(_ action: UIAction) {
+        guard let rootController = parent as? RootViewController else {
+            fatalError()
+        }
+        rootController.closeWorkspace()
+    }
 
 }
 
@@ -122,7 +125,7 @@ extension WorkspaceViewController: UITableViewDataSource {
         self.displayFiles = workspaceFiles.filter(shouldShowFile)
 
         for file in workspaceFiles {
-            let identifier = WorkspaceViewCellIdentifier(file).string
+            let identifier = WorkspaceViewCellIdentifier(file: file).string
             workspaceView.register(WorkspaceViewCell.self, forCellReuseIdentifier: identifier)
         }
     }
@@ -140,7 +143,7 @@ extension WorkspaceViewController {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let file = displayFiles[indexPath.row]
-        let identifier = WorkspaceViewCellIdentifier(file).string
+        let identifier = WorkspaceViewCellIdentifier(file: file).string
 
         guard let tableCell = workspaceView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as? WorkspaceViewCell else {
             fatalError()
@@ -167,61 +170,14 @@ extension WorkspaceViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let tableCell = workspaceView.cellForRow(at: indexPath) as? WorkspaceViewCell,
-                let file = workspaceFiles.first(where: { tableCell.uri == $0.uri }) else {
+                let file = workspaceFiles.first(where: { tableCell.uri == $0.uri }),
+                let rootController = parent as? RootViewController else {
             fatalError()
         }
 
-        if file.type != .file {
-            return
+        if file.type == .file {
+            rootController.willOpen(file: file)
         }
-
-        if WorkspaceManager.shared.exists(uri: file.uri) {
-            openDocument(file)
-
-        } else if file.size < fileSizeThreshold {
-            openDocumentWithClone(file)
-
-        } else if file.size < fileSizeLimit {
-            let alert = UIAlertController.largeFile(size: file.size, limit: fileSizeThreshold) {
-                [weak self, file] _ in
-                self?.openDocumentWithClone(file)
-            }
-            present(alert, animated: true)
-
-        } else {
-            present(UIAlertController.unsupportedFile(uri: file.uri), animated: true)
-        }
-    }
-
-    private func openDocumentWithClone(_ file: WorkspaceFile) {
-        do {
-            try WorkspaceManager.shared.clone(uri: file.uri)
-            _ = try WorkspaceManager.shared.open(uri: file.uri)
-            openDocument(file)
-
-        } catch WorkspaceError.fileNotFound {
-            present(UIAlertController.fileNotFound(uri: file.uri), animated: true)
-
-        } catch WorkspaceError.encodingFailure {
-            try? WorkspaceManager.shared.remove(uri: file.uri)
-            present(UIAlertController.unsupportedFile(uri: file.uri), animated: true)
-
-        } catch {
-            let title = "aaaa"
-            let message = error.localizedDescription
-            present(UIAlertController.anyAlert(title: title, message: message), animated: true)
-        }
-    }
-
-    private func openDocument(_ file: WorkspaceFile) {
-        guard let rootController = parent as? RootViewController else {
-            fatalError()
-        }
-        willMove(toParent: nil)
-        view.removeFromSuperview()
-        removeFromParent()
-        rootController.didCloseWorkspace()
-        rootController.willOpenDocument(file.uri)
     }
 
 }

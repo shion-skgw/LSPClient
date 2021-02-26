@@ -12,18 +12,15 @@ import XCTest
 class LSPMessagingTests: XCTestCase {
 
     var manager: MessageManagerDelegateStub!
-    var application: ApplicationMessageDelegateStub!
     var workspace: WorkspaceMessageDelegateStub!
     var textDocument: TextDocumentMessageDelegateStub!
 
     override func setUp() {
         self.manager = MessageManagerDelegateStub()
-        self.application = ApplicationMessageDelegateStub()
         self.workspace = WorkspaceMessageDelegateStub()
         self.textDocument = TextDocumentMessageDelegateStub()
         MessageManager.shared.delegate = self.manager
-        MessageManager.shared.connection = TestConnection.shared
-        MessageManager.shared.connection(server: LanguageServer(name: "", host: "", port: 0, comment: ""))
+        MessageManager.shared.connection(server: LanguageServer(name: "", host: "", port: 0, comment: ""), method: TestConnection.shared)
         TestConnection.shared.delegate = MessageManager.shared
     }
 
@@ -621,7 +618,7 @@ class LSPMessagingTests: XCTestCase {
     func test_cancelRequest_01() {
         // Execute
         let params = CancelParams(id: .number(1))
-        application.cancelRequest(params: params)
+        workspace.cancelRequest(params: params)
 
         // Assert send request store
         XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
@@ -633,12 +630,12 @@ class LSPMessagingTests: XCTestCase {
         XCTAssertNil(manager.params)
         XCTAssertNil(manager.id)
 
-        // Assert ApplicationMessageDelegateStub
-        XCTAssertNil(application.function)
-        XCTAssertNil(application.result)
-        XCTAssertNil(application.error)
-        XCTAssertNil(application.id)
-        XCTAssertNil(application.isSuccess)
+        // Assert WorkspaceMessageDelegateStub
+        XCTAssertNil(workspace.function)
+        XCTAssertNil(workspace.result)
+        XCTAssertNil(workspace.error)
+        XCTAssertNil(workspace.id)
+        XCTAssertNil(workspace.isSuccess)
 
         // Assert content
         let content = dictionary(TestConnection.shared.sendContent)
@@ -652,7 +649,7 @@ class LSPMessagingTests: XCTestCase {
 
     func test_initialize_01() {
         let params = InitializeParams(processId: nil, rootUri: URL(string: "file:///URL")!)
-        _ = application.initialize(params: params)
+        _ = workspace.initialize(params: params)
 
         // Assert send request store
         XCTAssertNotNil(MessageManager.shared.getSendRequest[.number(1)])
@@ -664,12 +661,12 @@ class LSPMessagingTests: XCTestCase {
         XCTAssertNil(manager.params)
         XCTAssertNil(manager.id)
 
-        // Assert ApplicationMessageDelegateStub
-        XCTAssertNil(application.function)
-        XCTAssertNil(application.result)
-        XCTAssertNil(application.error)
-        XCTAssertNil(application.id)
-        XCTAssertNil(application.isSuccess)
+        // Assert WorkspaceMessageDelegateStub
+        XCTAssertNil(workspace.function)
+        XCTAssertNil(workspace.result)
+        XCTAssertNil(workspace.error)
+        XCTAssertNil(workspace.id)
+        XCTAssertNil(workspace.isSuccess)
 
         // Assert content
         let content = dictionary(TestConnection.shared.sendContent)
@@ -691,7 +688,7 @@ class LSPMessagingTests: XCTestCase {
 
     func test_initialize_02() {
         let params = InitializeParams(processId: nil, rootUri: URL(string: "file:///URL")!)
-        _ = application.initialize(params: params)
+        _ = workspace.initialize(params: params)
 
         // Assert send request store
         XCTAssertNotNil(MessageManager.shared.getSendRequest[.number(1)])
@@ -703,12 +700,12 @@ class LSPMessagingTests: XCTestCase {
         XCTAssertNil(manager.params)
         XCTAssertNil(manager.id)
 
-        // Assert ApplicationMessageDelegateStub
-        XCTAssertNil(application.function)
-        XCTAssertNil(application.result)
-        XCTAssertNil(application.error)
-        XCTAssertNil(application.id)
-        XCTAssertNil(application.isSuccess)
+        // Assert WorkspaceMessageDelegateStub
+        XCTAssertNil(workspace.function)
+        XCTAssertNil(workspace.result)
+        XCTAssertNil(workspace.error)
+        XCTAssertNil(workspace.id)
+        XCTAssertNil(workspace.isSuccess)
 
         // Assert content
         let content = dictionary(TestConnection.shared.sendContent)
@@ -773,15 +770,15 @@ class LSPMessagingTests: XCTestCase {
         XCTAssertNil(manager.params)
         XCTAssertNil(manager.id)
 
-        // Assert ApplicationMessageDelegateStub
-        XCTAssertEqual(application.function, "initialize(id:result:)")
-        XCTAssertNotNil(application.result)
-        XCTAssertNil(application.error)
-        XCTAssertEqual(application.id, .number(1))
-        XCTAssertEqual(application.isSuccess, true)
+        // Assert WorkspaceMessageDelegateStub
+        XCTAssertEqual(workspace.function, "initialize(id:result:)")
+        XCTAssertNotNil(workspace.result)
+        XCTAssertNil(workspace.error)
+        XCTAssertEqual(workspace.id, .number(1))
+        XCTAssertEqual(workspace.isSuccess, true)
 
         // Assert InitializeResult
-        guard let result = application.result as? InitializeResult else { XCTFail(); return }
+        guard let result = workspace.result as? InitializeResult else { XCTFail(); return }
         XCTAssertEqual(result.capabilities.textDocumentSync?.openClose, nil)
         XCTAssertEqual(result.capabilities.textDocumentSync?.change, .incremental)
         XCTAssertEqual(result.capabilities.completionProvider?.triggerCharacters?.count, 1)
@@ -811,7 +808,7 @@ class LSPMessagingTests: XCTestCase {
     func test_shutdown_01() {
         // Execute
         let params = VoidValue()
-        _ = application.shutdown(params: params)
+        _ = workspace.shutdown(params: params)
 
         // Assert send request store
         XCTAssertNotNil(MessageManager.shared.getSendRequest[.number(1)])
@@ -823,12 +820,12 @@ class LSPMessagingTests: XCTestCase {
         XCTAssertNil(manager.params)
         XCTAssertNil(manager.id)
 
-        // Assert ApplicationMessageDelegateStub
-        XCTAssertNil(application.function)
-        XCTAssertNil(application.result)
-        XCTAssertNil(application.error)
-        XCTAssertNil(application.id)
-        XCTAssertNil(application.isSuccess)
+        // Assert WorkspaceMessageDelegateStub
+        XCTAssertNil(workspace.function)
+        XCTAssertNil(workspace.result)
+        XCTAssertNil(workspace.error)
+        XCTAssertNil(workspace.id)
+        XCTAssertNil(workspace.isSuccess)
 
         // Assert content
         let content = dictionary(TestConnection.shared.sendContent)
@@ -859,18 +856,18 @@ class LSPMessagingTests: XCTestCase {
         XCTAssertNil(manager.params)
         XCTAssertNil(manager.id)
 
-        // Assert ApplicationMessageDelegateStub
-        XCTAssertEqual(application.function, "shutdown(id:result:)")
-        XCTAssertNil(application.result)
-        XCTAssertNil(application.error)
-        XCTAssertEqual(application.id, .number(1))
-        XCTAssertEqual(application.isSuccess, true)
+        // Assert WorkspaceMessageDelegateStub
+        XCTAssertEqual(workspace.function, "shutdown(id:result:)")
+        XCTAssertNil(workspace.result)
+        XCTAssertNil(workspace.error)
+        XCTAssertEqual(workspace.id, .number(1))
+        XCTAssertEqual(workspace.isSuccess, true)
     }
 
     func test_exit_01() {
         // Execute
         let params = VoidValue()
-        application.exit(params: params)
+        workspace.exit(params: params)
 
         // Assert send request store
         XCTAssertTrue(MessageManager.shared.getSendRequest.isEmpty)
@@ -882,12 +879,12 @@ class LSPMessagingTests: XCTestCase {
         XCTAssertNil(manager.params)
         XCTAssertNil(manager.id)
 
-        // Assert ApplicationMessageDelegateStub
-        XCTAssertNil(application.function)
-        XCTAssertNil(application.result)
-        XCTAssertNil(application.error)
-        XCTAssertNil(application.id)
-        XCTAssertNil(application.isSuccess)
+        // Assert WorkspaceMessageDelegateStub
+        XCTAssertNil(workspace.function)
+        XCTAssertNil(workspace.result)
+        XCTAssertNil(workspace.error)
+        XCTAssertNil(workspace.id)
+        XCTAssertNil(workspace.isSuccess)
 
         // Assert content
         let content = dictionary(TestConnection.shared.sendContent)

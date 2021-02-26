@@ -12,6 +12,22 @@
 protocol WorkspaceMessageDelegate: MessageDelegate {
 
     ///
+    /// Receive result: initialize
+    ///
+    /// - Parameter id    : Request ID
+    /// - Parameter result: Result
+    ///
+    func initialize(id: RequestID, result: Result<InitializeResult, ErrorResponse>)
+
+    ///
+    /// Receive result: shutdown
+    ///
+    /// - Parameter id    : Request ID
+    /// - Parameter result: Result
+    ///
+    func shutdown(id: RequestID, result: Result<VoidValue?, ErrorResponse>)
+
+    ///
     /// Receive result: workspace/symbol
     ///
     /// - Parameter id    : Request ID
@@ -30,6 +46,62 @@ protocol WorkspaceMessageDelegate: MessageDelegate {
 }
 
 extension WorkspaceMessageDelegate {
+
+    ///
+    /// Send notification: $/cancelRequest
+    ///
+    /// - Parameter params: Parameter
+    ///
+    func cancelRequest(params: CancelParams) {
+        let message = Message.notification(CANCEL_REQUEST, params)
+        MessageManager.shared.send(message: message)
+    }
+
+    ///
+    /// Send request: initialize
+    ///
+    /// - Parameter params: Parameter
+    ///
+    func initialize(params: InitializeParams) -> RequestID {
+        let context = MessageManager.RequestContext(method: INITIALIZE, source: self)
+        let id = MessageManager.shared.nextId
+        let message = Message.request(id, context.method, params)
+        MessageManager.shared.send(message: message, context: context)
+        return id
+    }
+
+    ///
+    /// Send notification: initialized
+    ///
+    /// - Parameter params: Parameter
+    ///
+    func initialized(params: InitializedParams) {
+        let message = Message.notification(INITIALIZED, params)
+        MessageManager.shared.send(message: message)
+    }
+
+    ///
+    /// Send request: shutdown
+    ///
+    /// - Parameter params: Parameter
+    ///
+    func shutdown(params: VoidValue) -> RequestID {
+        let context = MessageManager.RequestContext(method: SHUTDOWN, source: self)
+        let id = MessageManager.shared.nextId
+        let message = Message.request(id, context.method, params)
+        MessageManager.shared.send(message: message, context: context)
+        return id
+    }
+
+    ///
+    /// Send notification: exit
+    ///
+    /// - Parameter params: Parameter
+    ///
+    func exit(params: VoidValue) {
+        let message = Message.notification(EXIT, params)
+        MessageManager.shared.send(message: message)
+    }
 
     ///
     /// Send notification: workspace/didChangeConfiguration
@@ -106,6 +178,10 @@ extension WorkspaceMessageDelegate {
         }
 
         switch context.method {
+        case INITIALIZE:
+            source.initialize(id: id, result: toResult(result, error))
+        case SHUTDOWN:
+            source.shutdown(id: id, result: toResult(result, error))
         case WORKSPACE_SYMBOL:
             source.symbol(id: id, result: toResult(result, error))
         case WORKSPACE_EXECUTE_COMMAND:

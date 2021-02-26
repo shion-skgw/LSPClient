@@ -9,7 +9,7 @@
 import UIKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, MessageManagerDelegate, ApplicationMessageDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     weak var rootViewController: RootViewController!
@@ -47,67 +47,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessageManagerDelegate, A
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
-    }
-
-}
-
-
-
-extension AppDelegate {
-
-    func shutdown(id: RequestID, result: Result<VoidValue?, ErrorResponse>) {
-        print(#function)
-        print(id)
-        print(result)
-    }
-
-    func initialize(id: RequestID, result: Result<InitializeResult, ErrorResponse>) {
-        print(#function)
-        print(id)
-        print(result)
-    }
-
-    func applyEdit(id: RequestID, params: ApplyWorkspaceEditParams) {
-        print(#function)
-        print(id)
-        print(params)
-    }
-
-    func showMessageRequest(id: RequestID, params: ShowMessageRequestParams) {
-        print(#function)
-        print(id)
-        print(params)
-    }
-
-    func connectionError(cause: Error) {
-        print(#function)
-        print(cause)
-    }
-
-    func messageParseError(cause: Error, message: Message?) {
-        print(#function)
-        print(cause)
-        print(message ?? "")
-    }
-
-    func cancelRequest(params: CancelParams) {
-        print(#function)
-        print(params)
-    }
-
-    func showMessage(params: ShowMessageParams) {
-        print(#function)
-        print(params)
-    }
-
-    func logMessage(params: LogMessageParams) {
-        print(#function)
-        print(params)
-    }
-
-    func publishDiagnostics(params: PublishDiagnosticsParams) {
-        print(#function)
-        print(params)
     }
 
 }

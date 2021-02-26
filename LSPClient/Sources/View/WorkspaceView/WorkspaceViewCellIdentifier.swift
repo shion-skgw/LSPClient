@@ -6,8 +6,6 @@
 //  Copyright © 2021 Shion. All rights reserved.
 //
 
-import Foundation
-
 struct WorkspaceViewCellIdentifier {
     let level: Int
     let isFile: Bool
@@ -24,10 +22,10 @@ struct WorkspaceViewCellIdentifier {
         } else if self.isLink {
             identifier.append(":link")
         }
-        return identifier.appending(self.isHidden ? ":hidden" : "")
+        return self.isHidden ? identifier.appending(":hidden") : identifier
     }
 
-    init(_ file: WorkspaceFile) {
+    init(file: WorkspaceFile) {
         self.level = file.level
         self.isFile = file.type == .file
         self.isDirectory = file.type == .directory
@@ -35,7 +33,7 @@ struct WorkspaceViewCellIdentifier {
         self.isHidden = file.isHidden
     }
 
-    init?(_ identifier: String) {
+    init?(identifier: String) {
         guard let level = Int(identifier.split(separator: ":").first ?? "") else {
             return nil
         }
@@ -45,4 +43,5 @@ struct WorkspaceViewCellIdentifier {
         self.isLink = identifier.contains("link")
         self.isHidden = identifier.contains("hidden")
     }
+
 }

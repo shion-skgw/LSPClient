@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0508BF2924C97267005488A9 /* ApplicationMessageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0508BF2824C97267005488A9 /* ApplicationMessageDelegate.swift */; };
 		0508BF2B24C97798005488A9 /* WorkspaceMessageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0508BF2A24C97798005488A9 /* WorkspaceMessageDelegate.swift */; };
 		0508BF2D24C97905005488A9 /* TextDocumentMessageDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0508BF2C24C97905005488A9 /* TextDocumentMessageDelegate.swift */; };
 		05114213250E7733002A4056 /* LSPConnectionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05114212250E7733002A4056 /* LSPConnectionDelegate.swift */; };
@@ -42,9 +41,9 @@
 		054019592493718200287026 /* TextDocumentEdit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 054019582493718200287026 /* TextDocumentEdit.swift */; };
 		0540195B249373E700287026 /* FileResourceChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0540195A249373E700287026 /* FileResourceChanges.swift */; };
 		0541881D2490C71900C6D9A2 /* ParameterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0541881C2490C71900C6D9A2 /* ParameterType.swift */; };
-		05436C7F25E23D61002FB02E /* ServerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05436C7E25E23D61002FB02E /* ServerView.swift */; };
-		05436C8525E23D8A002FB02E /* ServerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05436C8425E23D8A002FB02E /* ServerViewController.swift */; };
 		05436C8925E4B710002FB02E /* EditorTabCloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05436C8825E4B710002FB02E /* EditorTabCloseButton.swift */; };
+		05436C9A25E94E69002FB02E /* ConfigurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05436C9925E94E69002FB02E /* ConfigurationView.swift */; };
+		05436CA025E94E8C002FB02E /* ConfigurationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05436C9F25E94E8C002FB02E /* ConfigurationViewController.swift */; };
 		0555B5D925B1727C0061CB41 /* UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0555B5D825B1727C0061CB41 /* UIApplication.swift */; };
 		05601E7925A29725007B91C1 /* EditorTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05601E7825A29725007B91C1 /* EditorTabViewController.swift */; };
 		05601E7D25A2973C007B91C1 /* EditorTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05601E7C25A2973C007B91C1 /* EditorTabView.swift */; };
@@ -71,8 +70,6 @@
 		05828D7B249B6C7F008D2DA0 /* CodingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05828D7A249B6C7F008D2DA0 /* CodingError.swift */; };
 		0585E77825CB18FB009BA2C3 /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0585E77725CB18FB009BA2C3 /* URL.swift */; };
 		0586CD5925A2C40A0047C7BB /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586CD5825A2C40A0047C7BB /* RootViewController.swift */; };
-		0586CD5E25A2D78F0047C7BB /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586CD5D25A2D78F0047C7BB /* MainMenuView.swift */; };
-		0586CD6425A2D7B90047C7BB /* MainMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586CD6325A2D7B90047C7BB /* MainMenuViewController.swift */; };
 		0589B59024DD4EDD006E0C6F /* LineTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0589B58F24DD4EDD006E0C6F /* LineTable.swift */; };
 		058B6A13248C687D0099B32F /* MessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058B6A12248C687D0099B32F /* MessageManager.swift */; };
 		058B6A17248CF9650099B32F /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058B6A16248CF9650099B32F /* Message.swift */; };
@@ -139,7 +136,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0508BF2824C97267005488A9 /* ApplicationMessageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationMessageDelegate.swift; sourceTree = "<group>"; };
 		0508BF2A24C97798005488A9 /* WorkspaceMessageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceMessageDelegate.swift; sourceTree = "<group>"; };
 		0508BF2C24C97905005488A9 /* TextDocumentMessageDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDocumentMessageDelegate.swift; sourceTree = "<group>"; };
 		05114212250E7733002A4056 /* LSPConnectionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPConnectionDelegate.swift; sourceTree = "<group>"; };
@@ -174,9 +170,9 @@
 		054019582493718200287026 /* TextDocumentEdit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDocumentEdit.swift; sourceTree = "<group>"; };
 		0540195A249373E700287026 /* FileResourceChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileResourceChanges.swift; sourceTree = "<group>"; };
 		0541881C2490C71900C6D9A2 /* ParameterType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterType.swift; sourceTree = "<group>"; };
-		05436C7E25E23D61002FB02E /* ServerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerView.swift; sourceTree = "<group>"; };
-		05436C8425E23D8A002FB02E /* ServerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerViewController.swift; sourceTree = "<group>"; };
 		05436C8825E4B710002FB02E /* EditorTabCloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTabCloseButton.swift; sourceTree = "<group>"; };
+		05436C9925E94E69002FB02E /* ConfigurationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationView.swift; sourceTree = "<group>"; };
+		05436C9F25E94E8C002FB02E /* ConfigurationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationViewController.swift; sourceTree = "<group>"; };
 		0555B5D825B1727C0061CB41 /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
 		05601E7825A29725007B91C1 /* EditorTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTabViewController.swift; sourceTree = "<group>"; };
 		05601E7C25A2973C007B91C1 /* EditorTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTabView.swift; sourceTree = "<group>"; };
@@ -203,8 +199,6 @@
 		05828D7A249B6C7F008D2DA0 /* CodingError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodingError.swift; sourceTree = "<group>"; };
 		0585E77725CB18FB009BA2C3 /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		0586CD5825A2C40A0047C7BB /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
-		0586CD5D25A2D78F0047C7BB /* MainMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
-		0586CD6325A2D7B90047C7BB /* MainMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuViewController.swift; sourceTree = "<group>"; };
 		0589B58F24DD4EDD006E0C6F /* LineTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineTable.swift; sourceTree = "<group>"; };
 		058B6A12248C687D0099B32F /* MessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageManager.swift; sourceTree = "<group>"; };
 		058B6A16248CF9650099B32F /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
@@ -347,13 +341,13 @@
 			path = Structures;
 			sourceTree = "<group>";
 		};
-		05436C7D25E23D47002FB02E /* ServerView */ = {
+		05436C9825E94E3A002FB02E /* ConfigurationView */ = {
 			isa = PBXGroup;
 			children = (
-				05436C7E25E23D61002FB02E /* ServerView.swift */,
-				05436C8425E23D8A002FB02E /* ServerViewController.swift */,
+				05436C9925E94E69002FB02E /* ConfigurationView.swift */,
+				05436C9F25E94E8C002FB02E /* ConfigurationViewController.swift */,
 			);
-			path = ServerView;
+			path = ConfigurationView;
 			sourceTree = "<group>";
 		};
 		056706A5251512DE00F9D7E7 /* Syntaxes */ = {
@@ -428,13 +422,12 @@
 		0589B58824DCF869006E0C6F /* View */ = {
 			isa = PBXGroup;
 			children = (
+				05436C9825E94E3A002FB02E /* ConfigurationView */,
 				0578E6FE25D7A2C40029F28D /* ConsoleView */,
 				0578E6FF25D7A2E10029F28D /* DiagnosticView */,
 				05F45C0E25CA3AF500C96ADB /* EditorTabView */,
 				05F45C0F25CA3B0200C96ADB /* EditorView */,
-				05F45C1025CA3B1300C96ADB /* MainMenuView */,
 				05F45C1225CA3B6200C96ADB /* RootView */,
-				05436C7D25E23D47002FB02E /* ServerView */,
 				059150F325D2DDDA009EB71B /* SidebarMenuView */,
 				05F45C1125CA3B2200C96ADB /* WorkspaceView */,
 			);
@@ -536,7 +529,6 @@
 		05BA10B024D2D97E009A3669 /* Messaging */ = {
 			isa = PBXGroup;
 			children = (
-				0508BF2824C97267005488A9 /* ApplicationMessageDelegate.swift */,
 				05114216250E77A1002A4056 /* MessageDelegate.swift */,
 				058B6A12248C687D0099B32F /* MessageManager.swift */,
 				05114214250E7774002A4056 /* MessageManagerDelegate.swift */,
@@ -651,15 +643,6 @@
 				0589B58F24DD4EDD006E0C6F /* LineTable.swift */,
 			);
 			path = EditorView;
-			sourceTree = "<group>";
-		};
-		05F45C1025CA3B1300C96ADB /* MainMenuView */ = {
-			isa = PBXGroup;
-			children = (
-				0586CD5D25A2D78F0047C7BB /* MainMenuView.swift */,
-				0586CD6325A2D7B90047C7BB /* MainMenuViewController.swift */,
-			);
-			path = MainMenuView;
 			sourceTree = "<group>";
 		};
 		05F45C1125CA3B2200C96ADB /* WorkspaceView */ = {
@@ -799,7 +782,6 @@
 				0567AD9425CA9BCC0055F3AF /* UIFont.swift in Sources */,
 				0591511B25D47239009EB71B /* RootView.swift in Sources */,
 				056732D024960CE700E7650B /* TextDocumentPositionParams.swift in Sources */,
-				05436C8525E23D8A002FB02E /* ServerViewController.swift in Sources */,
 				0586CD5925A2C40A0047C7BB /* RootViewController.swift in Sources */,
 				05CFFB69248EBEA10069A7EA /* TCPConnection.swift in Sources */,
 				051F886F25AB3F230041BE4E /* NotificationCenter.swift in Sources */,
@@ -835,16 +817,15 @@
 				059150AD25CF1F1E009EB71B /* WorkspaceMenuView.swift in Sources */,
 				05BAAB3C24A3539F00A3EADC /* CodeFormat.swift in Sources */,
 				05182B2424DA0364007E8832 /* ConfigType.swift in Sources */,
-				0508BF2924C97267005488A9 /* ApplicationMessageDelegate.swift in Sources */,
 				0540195124936C8200287026 /* LocationLink.swift in Sources */,
 				05BAAB3024A3536900A3EADC /* Completion.swift in Sources */,
 				05BAAB3A24A3539600A3EADC /* CodeAction.swift in Sources */,
 				0508BF2B24C97798005488A9 /* WorkspaceMessageDelegate.swift in Sources */,
 				056B5C2624E30E2900797D95 /* EditorTextStorage.swift in Sources */,
-				0586CD6425A2D7B90047C7BB /* MainMenuViewController.swift in Sources */,
 				05601E7D25A2973C007B91C1 /* EditorTabView.swift in Sources */,
 				054019552493703600287026 /* Command.swift in Sources */,
 				051F887025AB3F230041BE4E /* UIImage.swift in Sources */,
+				05436C9A25E94E69002FB02E /* ConfigurationView.swift in Sources */,
 				0589B59024DD4EDD006E0C6F /* LineTable.swift in Sources */,
 				059150EA25D2CE34009EB71B /* Notification.swift in Sources */,
 				059150C825D04FBB009EB71B /* WorkspaceFile.swift in Sources */,
@@ -862,19 +843,18 @@
 				0540194F24936C2300287026 /* Location.swift in Sources */,
 				054019592493718200287026 /* TextDocumentEdit.swift in Sources */,
 				0540194B24936BA900287026 /* TextPosition.swift in Sources */,
-				05436C7F25E23D61002FB02E /* ServerView.swift in Sources */,
 				058B6A17248CF9650099B32F /* Message.swift in Sources */,
 				0540194924936B6100287026 /* URI.swift in Sources */,
 				056B5C2B24E30EEC00797D95 /* EditorViewController.swift in Sources */,
 				05CA5CF7248C5F1700582319 /* AppDelegate.swift in Sources */,
 				056B5C2424E30DFB00797D95 /* EditorView.swift in Sources */,
+				05436CA025E94E8C002FB02E /* ConfigurationViewController.swift in Sources */,
 				051C973825C90B710031C036 /* WorkspaceViewController.swift in Sources */,
 				058B6A13248C687D0099B32F /* MessageManager.swift in Sources */,
 				056732CC24960A2100E7650B /* TextDocumentItem.swift in Sources */,
 				0540195324936CC600287026 /* Diagnostic.swift in Sources */,
 				058F7ECA2511BFD00063D9AF /* String.swift in Sources */,
 				05182B2624DA0D52007E8832 /* LanguageServers.swift in Sources */,
-				0586CD5E25A2D78F0047C7BB /* MainMenuView.swift in Sources */,
 				059150F525D2DDEC009EB71B /* SidebarMenuView.swift in Sources */,
 				05BAAB2024A3531900A3EADC /* UserMessage.swift in Sources */,
 				0514099A24B120920015BBDC /* VoidValue.swift in Sources */,

@@ -63,7 +63,7 @@ class MessageManagerDelegateStub: MessageManagerDelegate {
 
 }
 
-class ApplicationMessageDelegateStub: ApplicationMessageDelegate {
+class WorkspaceMessageDelegateStub: WorkspaceMessageDelegate {
     var function: String!
     var result: ResultType!
     var error: ErrorResponse!
@@ -87,15 +87,6 @@ class ApplicationMessageDelegateStub: ApplicationMessageDelegate {
         }
         self.id = id
     }
-
-}
-
-class WorkspaceMessageDelegateStub: WorkspaceMessageDelegate {
-    var function: String!
-    var result: ResultType!
-    var error: ErrorResponse!
-    var id: RequestID!
-    var isSuccess: Bool!
 
     func symbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>) {
         self.function = #function

@@ -10,14 +10,10 @@ import UIKit
 
 final class DiagnosticViewController: UIViewController {
 
-    private func closeDiagnostic(_: UIAction) {
-        guard let rootController = parent as? RootViewController else {
-            fatalError()
-        }
+    func closeView() {
         willMove(toParent: nil)
         view.removeFromSuperview()
         removeFromParent()
-        rootController.didCloseDiagnostic()
     }
 
 }

@@ -111,13 +111,11 @@ final class RootViewController: UIViewController {
         editorFrame.size.height = leftAreaFrame.height
         editor.view.frame = editorFrame
     }
+    /// Large file size alert threshold
+    private let fileSizeThreshold: Int = 1024 * 512
+    /// Open file size limit
+    private let fileSizeLimit: Int = 1024 * 1024
 
-}
-
-
-// MARK: - Main menu action
-
-extension RootViewController {
 }
 
 
@@ -132,22 +130,19 @@ extension RootViewController {
         } else {
             let workspace = WorkspaceViewController()
             add(child: workspace)
-//            UIView.animate(withDuration: 0.25) {
-//                workspace.view.transform = CGAffineTransform(translationX: 300, y: 0)
-//            }
-//            UIView.animate(withDuration: 0.25, animations: {
-//                workspace.view.transform = CGAffineTransform(translationX: 300, y: 0)
-//            }, completion: {
-//                _ in
-//                print("done")
-//            })
-            UIView.animate(withDuration: 0.25, delay: 0.1, options: .beginFromCurrentState, animations: {
-                workspace.view.transform = CGAffineTransform(translationX: 300, y: 0)
-            }, completion: {
-                _ in
-            })
             self.workspace = workspace
         }
+
+        sidebarMenu.view.isHidden = true
+    }
+
+    func closeWorkspace() {
+        guard let workspace = self.workspace else {
+            fatalError()
+        }
+
+        sidebarMenu.view.isHidden = false
+        workspace.closeView()
     }
 
     func showConsole() {
@@ -159,6 +154,19 @@ extension RootViewController {
             add(child: console)
             self.console = console
         }
+
+        sidebarMenu.sidebarMenuView.consoleButton.isHidden = true
+        sidebarMenu.sidebarMenuView.diagnosticButton.isHidden = true
+    }
+
+    func closeConsole() {
+        guard let console = self.console else {
+            fatalError()
+        }
+
+        sidebarMenu.sidebarMenuView.consoleButton.isHidden = false
+        sidebarMenu.sidebarMenuView.diagnosticButton.isHidden = false
+        console.closeView()
     }
 
     func showDiagnostic() {
@@ -170,18 +178,19 @@ extension RootViewController {
             add(child: diagnostic)
             self.diagnostic = diagnostic
         }
+
+        sidebarMenu.sidebarMenuView.consoleButton.isHidden = true
+        sidebarMenu.sidebarMenuView.diagnosticButton.isHidden = true
     }
 
-    func didCloseWorkspace() {
-        sidebarMenu.didCloseWorkspace()
-    }
+    func closeDiagnostic() {
+        guard let diagnostic = self.diagnostic else {
+            fatalError()
+        }
 
-    func didCloseConsole() {
-        sidebarMenu.didCloseConsole()
-    }
-
-    func didCloseDiagnostic() {
-        sidebarMenu.didCloseDiagnostic()
+        sidebarMenu.sidebarMenuView.consoleButton.isHidden = false
+        sidebarMenu.sidebarMenuView.diagnosticButton.isHidden = false
+        diagnostic.closeView()
     }
 
 }
@@ -191,15 +200,99 @@ extension RootViewController {
 
 extension RootViewController {
 
-    func willOpenDocument(_ uri: DocumentUri) {
-        if let controller = editor.children.compactMap({ $0 as? EditorViewController }).filter({ $0.uri == uri }).first,
-           let tabItem = editor.tabContainer.tabItems.filter({ $0.tag == controller.view.tag }).first {
-            print()
+    func willOpen(file: WorkspaceFile) {
+        guard file.type == .file else {
+            fatalError()
+        }
+
+        if WorkspaceManager.shared.exists(uri: file.uri) {
+            openEditor(file)
+
+        } else if file.size < fileSizeThreshold {
+            openEditorWithClone(file)
+
+        } else if file.size < fileSizeLimit {
+            let alert = UIAlertController.largeFile(size: file.size, limit: fileSizeThreshold) {
+                [weak self, file] _ in
+                self?.openEditorWithClone(file)
+            }
+            present(alert, animated: true)
+
+        } else {
+            present(UIAlertController.unsupportedFile(uri: file.uri), animated: true)
+        }
+    }
+
+    private func openEditorWithClone(_ file: WorkspaceFile) {
+        do {
+            try WorkspaceManager.shared.clone(uri: file.uri)
+            _ = try WorkspaceManager.shared.open(uri: file.uri)
+            openEditor(file)
+
+        } catch WorkspaceError.fileNotFound {
+            present(UIAlertController.fileNotFound(uri: file.uri), animated: true)
+
+        } catch WorkspaceError.encodingFailure {
+            try? WorkspaceManager.shared.remove(uri: file.uri)
+            present(UIAlertController.unsupportedFile(uri: file.uri), animated: true)
+
+        } catch {
+            let title = "aaaa"
+            let message = error.localizedDescription
+            present(UIAlertController.anyAlert(title: title, message: message), animated: true)
+        }
+    }
+
+    private func openEditor(_ file: WorkspaceFile) {
+        if editor.hasEditor(uri: file.uri) {
+            editor.showEditor(uri: file.uri)
+
         } else {
             let editorViewController = EditorViewController()
-            editorViewController.uri = uri
+            editorViewController.uri = file.uri
             editor.add(editor: editorViewController)
         }
+
+        closeWorkspace()
+    }
+
+}
+
+
+
+
+
+extension RootViewController: MessageManagerDelegate {
+
+    func connectionError(cause: Error) {
+    }
+    func messageParseError(cause: Error, message: Message?) {
+    }
+    func cancelRequest(params: CancelParams) {
+    }
+    func showMessage(params: ShowMessageParams) {
+    }
+    func showMessageRequest(id: RequestID, params: ShowMessageRequestParams) {
+    }
+    func logMessage(params: LogMessageParams) {
+    }
+    func applyEdit(id: RequestID, params: ApplyWorkspaceEditParams) {
+    }
+    func publishDiagnostics(params: PublishDiagnosticsParams) {
+    }
+
+}
+
+
+extension RootViewController: WorkspaceMessageDelegate {
+
+    func initialize(id: RequestID, result: Result<InitializeResult, ErrorResponse>) {
+    }
+    func shutdown(id: RequestID, result: Result<VoidValue?, ErrorResponse>) {
+    }
+    func symbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>) {
+    }
+    func executeCommand(id: RequestID, result: Result<AnyValue?, ErrorResponse>) {
     }
 
 }

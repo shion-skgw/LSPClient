@@ -61,6 +61,12 @@ final class EditorViewController: UIViewController {
         self.editorUndoManager = editorUndoManager
     }
 
+    override func viewDidLoad() {
+//        let textDocument = TextDocumentItem(uri: uri, languageId: .ABAP, version: 1, text: editorTextStorage.string)
+//        let params = DidOpenTextDocumentParams(textDocument: textDocument)
+//        didOpen(params: params)
+    }
+
     func set(codeStyle: CodeStyle) {
         guard let editorView = view as? EditorView else {
             fatalError()
@@ -371,23 +377,28 @@ extension EditorViewController: TextDocumentMessageDelegate {
     }
 
     func completion(id: RequestID, result: Result<CompletionList?, ErrorResponse>) {
-        guard requestId != id else {
-            return
-        }
     }
-
-    func completionResolve(id: RequestID, result: Result<CompletionItem, ErrorResponse>) {}
-    func hover(id: RequestID, result: Result<Hover?, ErrorResponse>) {}
-//    func declaration(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {}
-    func definition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {}
-    func typeDefinition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {}
-    func implementation(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {}
-    func references(id: RequestID, result: Result<[Location]?, ErrorResponse>) {}
-    func documentHighlight(id: RequestID, result: Result<[DocumentHighlight]?, ErrorResponse>) {}
-    func documentSymbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>) {}
-    func codeAction(id: RequestID, result: Result<CodeActionResult?, ErrorResponse>) {}
-//    func formatting(id: RequestID, result: Result<[TextEdit]?, ErrorResponse>) {}
-    func rangeFormatting(id: RequestID, result: Result<[TextEdit]?, ErrorResponse>) {}
-    func rename(id: RequestID, result: Result<WorkspaceEdit?, ErrorResponse>) {}
+    func completionResolve(id: RequestID, result: Result<CompletionItem, ErrorResponse>) {
+    }
+    func hover(id: RequestID, result: Result<Hover?, ErrorResponse>) {
+    }
+    func definition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {
+    }
+    func typeDefinition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {
+    }
+    func implementation(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {
+    }
+    func references(id: RequestID, result: Result<[Location]?, ErrorResponse>) {
+    }
+    func documentHighlight(id: RequestID, result: Result<[DocumentHighlight]?, ErrorResponse>) {
+    }
+    func documentSymbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>) {
+    }
+    func codeAction(id: RequestID, result: Result<CodeActionResult?, ErrorResponse>) {
+    }
+    func rangeFormatting(id: RequestID, result: Result<[TextEdit]?, ErrorResponse>) {
+    }
+    func rename(id: RequestID, result: Result<WorkspaceEdit?, ErrorResponse>) {
+    }
 
 }
