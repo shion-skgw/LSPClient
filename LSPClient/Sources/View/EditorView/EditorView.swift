@@ -10,7 +10,6 @@ import UIKit
 
 final class EditorView: UITextView {
 
-    weak var controller: EditorViewController?
     private var gutterColor: CGColor
     private var gutterEdgeColor: CGColor
     private var lineHighlight: Bool
@@ -60,31 +59,13 @@ final class EditorView: UITextView {
 }
 
 
-// MARK: - Undo / Redo
-
-extension EditorView {
-
-    override var undoManager: UndoManager? {
-        controller?.undoManager
-    }
-
-    @objc func undo() {
-        controller?.undo()
-    }
-
-    @objc func redo() {
-        controller?.redo()
-    }
-
-}
-
-
 // MARK: - Draw
 
 extension EditorView {
 
     override func draw(_ rect: CGRect) {
         let cgContext = UIGraphicsGetCurrentContext()!
+        // TODO: パフォーマンス悪い
         drawGutter(cgContext)
         drawLineNumber()
         if lineHighlight {

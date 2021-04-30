@@ -43,6 +43,19 @@ final class RootViewController: UIViewController {
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(layoutSubviews), name: .keyboardWillChange, object: nil)
         notificationCenter.addObserver(self, selector: #selector(a), name: UIResponder.keyboardWillShowNotification, object: nil)
+
+        // Connect language server
+        let server = LanguageServer(name: "Test", host: "192.168.0.13", port: 2085, comment: "")
+        MessageManager.shared.delegate = self
+        MessageManager.shared.connection(server: server, method: TCPConnection.shared)
+        TCPConnection.shared.delegate = MessageManager.shared
+
+        // Init workspace
+        let url = URL(string: "file://192.168.0.13/Users/shion/Documents/PyCharm/Test/")!
+        WorkspaceManager.shared.initialize(workspaceName: "w", remoteRootUrl: url)
+
+        let param = InitializeParams(rootUri: url)
+        print(self.initialize(params: param))
     }
 
     override func viewDidLayoutSubviews() {
@@ -265,20 +278,28 @@ extension RootViewController {
 extension RootViewController: MessageManagerDelegate {
 
     func connectionError(cause: Error) {
+        print("\(#function)\n\(cause)\n")
     }
     func messageParseError(cause: Error, message: Message?) {
+        print("\(#function)\n\(cause)\n\(message)\n")
     }
     func cancelRequest(params: CancelParams) {
+        print("\(#function)\n\(params)\n")
     }
     func showMessage(params: ShowMessageParams) {
+        print("\(#function)\n\(params)\n")
     }
     func showMessageRequest(id: RequestID, params: ShowMessageRequestParams) {
+        print("\(#function)\n\(id)\n\(params)\n")
     }
     func logMessage(params: LogMessageParams) {
+        print("\(#function)\n\(params)\n")
     }
     func applyEdit(id: RequestID, params: ApplyWorkspaceEditParams) {
+        print("\(#function)\n\(id)\n\(params)\n")
     }
     func publishDiagnostics(params: PublishDiagnosticsParams) {
+        print("\(#function)\n\(params)\n")
     }
 
 }
@@ -287,12 +308,16 @@ extension RootViewController: MessageManagerDelegate {
 extension RootViewController: WorkspaceMessageDelegate {
 
     func initialize(id: RequestID, result: Result<InitializeResult, ErrorResponse>) {
+        print("\(#function)\n\(id)\n\(result)\n")
     }
     func shutdown(id: RequestID, result: Result<VoidValue?, ErrorResponse>) {
+        print("\(#function)\n\(id)\n\(result)\n")
     }
     func symbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>) {
+        print("\(#function)\n\(id)\n\(result)\n")
     }
     func executeCommand(id: RequestID, result: Result<AnyValue?, ErrorResponse>) {
+        print("\(#function)\n\(id)\n\(result)\n")
     }
 
 }

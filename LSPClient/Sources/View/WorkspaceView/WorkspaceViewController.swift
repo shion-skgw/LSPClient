@@ -17,16 +17,11 @@ final class WorkspaceViewController: UIViewController {
     private(set) weak var workspaceView: UITableView!
 
     /// Table row height
-    static let rowHeight = UIFont.systemFontSize * 2.5
+    static let rowHeight: CGFloat = UIFont.systemFontSize * 2.5
     /// Workspace menu view height
     private let menuViewHeight: CGFloat = 30
     /// Separator weight
     private let separatorWeight: CGFloat = 0.5
-
-    /// Large file size alert threshold
-    private let fileSizeThreshold: Int = 1024 * 512
-    /// Open file size limit
-    private let fileSizeLimit: Int = 1024 * 1024
 
     /// All files in the workspace
     private var workspaceFiles: [WorkspaceFile] = []

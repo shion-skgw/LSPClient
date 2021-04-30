@@ -8,3 +8,12 @@
 
 import Foundation
 
+struct LocalizedString {
+
+    struct Preference {
+        static var serverConfigTitle: String {
+            NSLocalizedString("ServerConfigTitle", tableName: "Preference", comment: "")
+        }
+    }
+
+}

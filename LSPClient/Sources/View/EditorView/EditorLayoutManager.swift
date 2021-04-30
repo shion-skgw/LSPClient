@@ -11,10 +11,10 @@ import UIKit.NSLayoutManager
 final class EditorLayoutManager: NSLayoutManager {
 
     private static let invisibles: [String: NSRegularExpression] = [
-        "\u{21B5}": try! NSRegularExpression(pattern: "\n", options: []),       // "↵" New line
-        "\u{226B}": try! NSRegularExpression(pattern: "\t", options: []),       // "≫" Tab
-        "\u{22C5}": try! NSRegularExpression(pattern: "\u{0020}", options: []), // "⋅" Space
-        "\u{25A1}": try! NSRegularExpression(pattern: "\u{3000}", options: []), // "□" Full space
+        "\u{21B5}": try! NSRegularExpression(pattern: "\n"),        // "↵" New line
+        "\u{226B}": try! NSRegularExpression(pattern: "\t"),        // "≫" Tab
+        "\u{22C5}": try! NSRegularExpression(pattern: "\u{0020}"),  // "⋅" Space
+        "\u{25A1}": try! NSRegularExpression(pattern: "\u{3000}"),  // "□" Full space
     ]
 
     private var invisiblesAttribute: [NSAttributedString.Key: Any] = [:]
@@ -43,7 +43,7 @@ final class EditorLayoutManager: NSLayoutManager {
             let char = invisible.key
             let charSize = char.size(withAttributes: invisiblesAttribute)
 
-            invisible.value.enumerateMatches(in: text, options: [], range: glyphsToShow) {
+            invisible.value.enumerateMatches(in: text, range: glyphsToShow) {
                 [weak self, char, charSize] (result, _, _) in
                 guard let range = result?.range, let self = self else {
                     return

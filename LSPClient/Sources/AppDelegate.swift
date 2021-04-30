@@ -16,12 +16,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         CodeStyle.remove()
-        var a = CodeStyle.load()
-        a.font.uiFont = UIFont.monospacedSystemFont(ofSize: 14, weight: .regular)
-        a.backgroundColor.uiColor = UIColor.brown
-        a.save()
-
-        WorkspaceManager.shared.initialize(workspaceName: "w", remoteRootUrl: URL(string: "file://asdfasdf:1234/Users/shion/Desktop/")!)
+        var codeStyle = CodeStyle.load()
+        codeStyle.font.uiFont = UIFont.monospacedSystemFont(ofSize: 14, weight: .regular)
+        codeStyle.fontColor.text.uiColor = UIColor.black
+        codeStyle.fontColor.keyword.uiColor = UIColor.red
+        codeStyle.fontColor.function.uiColor = UIColor.blue
+        codeStyle.fontColor.number.uiColor = UIColor.blue
+        codeStyle.fontColor.string.uiColor = UIColor.purple
+        codeStyle.fontColor.comment.uiColor = UIColor.green
+        codeStyle.fontColor.invisibles.uiColor = UIColor.gray
+        codeStyle.backgroundColor.uiColor = UIColor.brown
+        codeStyle.save()
 
         let rootViewController = RootViewController()
         self.rootViewController = rootViewController

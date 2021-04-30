@@ -21,50 +21,74 @@ extension String {
         (self as NSString).length
     }
 
+}
+
+// MARK: - EditorViewController
+
+extension String {
+
     @inlinable var monospaceCount: Int {
         let double = (utf8.count - utf16.count) / 2
         let single = count - double
         return single + double * 2
     }
 
-    @inlinable func enumerateLines(regex: NSRegularExpression, invoking body: (String) -> Void) {
-        var matches = regex.matches(in: self, options: [], range: range).compactMap({ $0.range })
-        if matches.isEmpty {
-            body(self)
+    @usableFromInline static let endOfLineRegex = try! NSRegularExpression(pattern: "(.*\n|[^\n]+$)")
 
-        } else {
-            let nsString = self as NSString
-            if let lastMatche = matches.last, lastMatche.upperBound < nsString.length - 1 {
-                matches.append(NSMakeRange(nsString.length - 1, lastMatche.length))
+    @inlinable func enumerateLines(range: NSRange, invoking body: (Substring) -> Void) {
+        String.endOfLineRegex.enumerateMatches(in: self, range: range) {
+            result, _, _ in
+            guard let nsRange = result?.range, let range = Range(nsRange, in: self) else {
+                return
             }
-            var location = 0
-            for range in matches {
-                let range = NSMakeRange(location, range.upperBound - location)
-                body(nsString.substring(with: range))
-                location = range.upperBound
-            }
+            body(self[range])
         }
     }
 
-    @inlinable func removeIndent(with str: String) -> Substring? {
-        if self.hasPrefix(str) {
-            return self.dropFirst(str.count)
-        }
 
-        let indent = str.prefix(1)
-        if self.hasPrefix(indent) {
-            var result = self.dropFirst(1)
-            for _ in 1 ..< str.count {
-                if !result.hasPrefix(indent) {
-                    return result
+    @inlinable func changes(from: String) -> (range: NSRange, text: String) {
+        var (removeMin, removeMax, insertMin, insertMax) = (-1, -1, -1, -1)
+        for diff in self.utf16.difference(from: from.utf16) {
+            switch diff {
+            case .remove(let offset, _, _):
+                if removeMax == -1 {
+                    (removeMax, removeMin) = (offset, offset)
+                } else if removeMin - 1 == offset {
+                    removeMin = offset
+                } else {
+                    return (from.range, self)
                 }
-                result = result.dropFirst(1)
+            case .insert(let offset, _, _):
+                if insertMin == -1 {
+                    (insertMin, insertMax) = (offset, offset)
+                } else if insertMax + 1 == offset {
+                    insertMax = offset
+                } else {
+                    return (from.range, self)
+                }
             }
-            return result
         }
 
-        return nil
+        switch (removeMin != -1, insertMin != -1) {
+        case (true, true):
+            let beforeRange = NSMakeRange(removeMin, removeMax - removeMin + 1)
+            let textRange = NSMakeRange(insertMin, insertMax - insertMin + 1)
+            let text = (self as NSString).substring(with: textRange)
+            return (beforeRange, text)
+
+        case (true, false):
+            let beforeRange = NSMakeRange(removeMin, removeMax - removeMin + 1)
+            return (beforeRange, "")
+
+        case (false, true):
+            let beforeRange = NSMakeRange(insertMin, 0)
+            let textRange = NSMakeRange(insertMin, insertMax - insertMin + 1)
+            let text = (self as NSString).substring(with: textRange)
+            return (beforeRange, text)
+
+        case (false, false):
+            return (from.range, self)
+        }
     }
 
 }
-

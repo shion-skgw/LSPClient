@@ -62,7 +62,7 @@ final class LineTable {
 
         // Create a new line range table
         var newTable: [Int: NSRange] = [:]
-        newLine.enumerateMatches(in: string, options: [], range: testRange) {
+        newLine.enumerateMatches(in: string, range: testRange) {
             (result, _, _) in
             guard let currentLineEnd = result?.range.upperBound else {
                 return

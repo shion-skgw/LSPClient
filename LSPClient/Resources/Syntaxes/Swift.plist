@@ -2,56 +2,140 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>extensions</key>
-	<array>
-		<string>swift</string>
-	</array>
 	<key>allowTokenPattern</key>
 	<string>\w`</string>
-	<key>definitions</key>
+	<key>indentTrigger</key>
+	<array>
+		<string>{</string>
+		<string>[</string>
+		<string>(</string>
+	</array>
+	<key>deindentTrigger</key>
+	<array>
+		<string>}</string>
+		<string>]</string>
+		<string>)</string>
+	</array>
+	<key>syntaxGroups</key>
 	<array>
 		<dict>
 			<key>description</key>
 			<string>Keyword</string>
 			<key>type</key>
 			<string>keyword</string>
-			<key>strings</key>
+			<key>isRegex</key>
+			<false/>
+			<key>isIgnoreCase</key>
+			<false/>
+			<key>isMultiple</key>
+			<false/>
+			<key>syntaxes</key>
 			<array>
-				<string>nil</string>
-				<string>true</string>
-				<string>false</string>
-				<string>あ</string>
-				<string>-a\+</string>
-				<string>a a</string>
+				<dict>
+					<key>string</key>
+					<string>nil</string>
+				</dict>
+				<dict>
+					<key>string</key>
+					<string>true</string>
+				</dict>
+				<dict>
+					<key>string</key>
+					<string>false</string>
+				</dict>
+				<dict>
+					<key>string</key>
+					<string>aaaaa</string>
+				</dict>
 			</array>
 		</dict>
 		<dict>
 			<key>description</key>
-			<string>Multi-line string</string>
+			<string>Comment</string>
 			<key>type</key>
-			<string>string</string>
-			<key>strings</key>
+			<string>comment</string>
+			<key>isRegex</key>
+			<false/>
+			<key>isIgnoreCase</key>
+			<false/>
+			<key>isMultiple</key>
+			<true/>
+			<key>syntaxes</key>
 			<array>
-				<string>&quot;&quot;&quot;[\s\S]*&quot;&quot;&quot;</string>
+				<dict>
+					<key>open</key>
+					<string>/*</string>
+					<key>close</key>
+					<string>*/</string>
+				</dict>
+				<dict>
+					<key>open</key>
+					<string>/+</string>
+					<key>close</key>
+					<string>+/</string>
+				</dict>
 			</array>
-			<key>regex</key>
-			<true/>
-			<key>multipleLines</key>
-			<true/>
 		</dict>
 		<dict>
 			<key>description</key>
-			<string>Multi-line comment</string>
+			<string>Comment</string>
+			<key>type</key>
+			<string>comment</string>
+			<key>isRegex</key>
+			<false/>
+			<key>isIgnoreCase</key>
+			<false/>
+			<key>isMultiple</key>
+			<false/>
+			<key>syntaxes</key>
+			<array>
+				<dict>
+					<key>open</key>
+					<string>//</string>
+				</dict>
+			</array>
+		</dict>
+		<dict>
+			<key>description</key>
+			<string>String</string>
 			<key>type</key>
 			<string>string</string>
-			<key>strings</key>
+			<key>isRegex</key>
+			<false/>
+			<key>isIgnoreCase</key>
+			<false/>
+			<key>isMultiple</key>
+			<true/>
+			<key>syntaxes</key>
 			<array>
-				<string>/\*[\s\S]*\*/</string>
+				<dict>
+					<key>open</key>
+					<string>&quot;&quot;&quot;</string>
+					<key>close</key>
+					<string>&quot;&quot;&quot;</string>
+				</dict>
 			</array>
-			<key>regex</key>
-			<true/>
-			<key>multipleLines</key>
-			<true/>
+		</dict>
+		<dict>
+			<key>description</key>
+			<string>String</string>
+			<key>type</key>
+			<string>string</string>
+			<key>isRegex</key>
+			<false/>
+			<key>isIgnoreCase</key>
+			<false/>
+			<key>isMultiple</key>
+			<false/>
+			<key>syntaxes</key>
+			<array>
+				<dict>
+					<key>open</key>
+					<string>&quot;</string>
+					<key>close</key>
+					<string>&quot;</string>
+				</dict>
+			</array>
 		</dict>
 	</array>
 </dict>

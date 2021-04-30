@@ -8,20 +8,24 @@
 
 import UIKit
 
-final class EditorViewController: UIViewController {
+final class EditorViewController: UIViewController{
 
-    var uri: DocumentUri!
-    var fileExtension: String {
-        uri?.pathExtension ?? "swift"
-    }
-    private var requestId: RequestID?
-    private var editorUndoManager: EditorUndoManager!
-    private weak var editorView: EditorView!
-    private weak var editorTextStorage: EditorTextStorage!
-    private weak var editorLayoutManager: EditorLayoutManager!
+    /// EditorView
+    private(set) weak var textView: EditorView!
+    /// SyntaxManager
+    private(set) weak var syntaxManager: SyntaxManager?
+    /// EditorTextStorage
+    private(set) weak var textStorage: EditorTextStorage!
+    /// EditorLayoutManager
+    private(set) weak var layoutManager: EditorLayoutManager!
 
     override var undoManager: UndoManager? {
-        editorUndoManager
+        self.textView.undoManager
+    }
+
+    var uri: DocumentUri!
+    var fileType: String {
+        uri?.pathExtension ?? ""
     }
 
     override func loadView() {
@@ -32,295 +36,224 @@ final class EditorViewController: UIViewController {
         let textContainer = NSTextContainer()
 
         // LayoutManager
-        let editorLayoutManager = EditorLayoutManager()
-        editorLayoutManager.set(editorSetting: editorSetting)
-        editorLayoutManager.set(codeStyle: codeStyle)
-        editorLayoutManager.addTextContainer(textContainer)
-        self.editorLayoutManager = editorLayoutManager
+        let layoutManager = EditorLayoutManager()
+        layoutManager.set(editorSetting: editorSetting)
+        layoutManager.set(codeStyle: codeStyle)
+        layoutManager.addTextContainer(textContainer)
+        self.layoutManager = layoutManager
+
+        // SyntaxManager
+        let syntaxManager = SyntaxManager.load(fileType: "swift")
+        self.syntaxManager = syntaxManager
 
         // TextStorage
-        let editorTextStorage = EditorTextStorage()
-        editorTextStorage.set(string: (try? WorkspaceManager.shared.open(uri: uri)) ?? "")
-        editorTextStorage.set(codeStyle: codeStyle)
-        editorTextStorage.set(tokens: SyntaxLoader.tokens(fileExtension: fileExtension, codeStyle: codeStyle))
-        editorTextStorage.addLayoutManager(editorLayoutManager)
-        self.editorTextStorage = editorTextStorage
+        let textStorage = EditorTextStorage(syntaxManager: syntaxManager)
+        textStorage.set(codeStyle: codeStyle)
+        textStorage.addLayoutManager(layoutManager)
+        self.textStorage = textStorage
 
         // EditorView
-        let editorView = EditorView(frame: .zero, textContainer: textContainer)
-        editorView.set(editorSetting: editorSetting)
-        editorView.set(codeStyle: codeStyle)
-        editorView.controller = self
-        editorView.delegate = self
-        self.editorView = editorView
-        self.view = editorView
-
-        // UndoManager
-        let editorUndoManager = EditorUndoManager()
-        editorUndoManager.editorView = editorView
-        self.editorUndoManager = editorUndoManager
+        let textView = EditorView(frame: .zero, textContainer: textContainer)
+        textView.set(editorSetting: editorSetting)
+        textView.set(codeStyle: codeStyle)
+        textView.delegate = self
+        self.textView = textView
+        self.view = textView
     }
 
     override func viewDidLoad() {
-//        let textDocument = TextDocumentItem(uri: uri, languageId: .ABAP, version: 1, text: editorTextStorage.string)
-//        let params = DidOpenTextDocumentParams(textDocument: textDocument)
-//        didOpen(params: params)
+        do {
+            let text = try WorkspaceManager.shared.open(uri: uri)
+            textView.text = text
+            beforeCommitText = text
+
+        } catch WorkspaceError.fileNotFound {
+            present(UIAlertController.fileNotFound(uri: uri), animated: true)
+
+        } catch WorkspaceError.encodingFailure {
+            try? WorkspaceManager.shared.remove(uri: uri)
+            present(UIAlertController.unsupportedFile(uri: uri), animated: true)
+
+        } catch {
+            let title = "aaaa"
+            let message = error.localizedDescription
+            present(UIAlertController.anyAlert(title: title, message: message), animated: true)
+        }
     }
 
     func set(codeStyle: CodeStyle) {
-        guard let editorView = view as? EditorView else {
-            fatalError()
-        }
-        editorView.set(codeStyle: codeStyle)
-        editorTextStorage.set(codeStyle: codeStyle)
-        editorTextStorage.set(tokens: SyntaxLoader.tokens(fileExtension: fileExtension, codeStyle: codeStyle))
-        editorLayoutManager.set(codeStyle: codeStyle)
+        textView.set(codeStyle: codeStyle)
+        textStorage.set(codeStyle: codeStyle)
+        layoutManager.set(codeStyle: codeStyle)
     }
 
+    private var beforeInputText: String = ""
+    private var beforeCommitText: String = ""
+    private var isNeedCommit: Bool = false
+    private var isNeedCompletion: Bool = false
 
-    // MARK: - Command
+    private let otherThanIndentRegex = try! NSRegularExpression(pattern: "[^ \t]+")
+
     override var keyCommands: [UIKeyCommand]? {
         [
-            // aaaa
-            UIKeyCommand(input: "", modifierFlags: [.command], action: #selector(_commitEdit)),
-            // Comment out
-            UIKeyCommand(input: "/", modifierFlags: [.command], action: #selector(_commitEdit)),
             // Deindent
             UIKeyCommand(input: "\t", modifierFlags: [.shift], action: #selector(deindent)),
-            // Completion request
-            UIKeyCommand(input: " ", modifierFlags: [.alternate], action: #selector(requestCompletion)),
+            // Comment out
+            UIKeyCommand(input: "/", modifierFlags: [.command], action: #selector(toggleComment)),
         ]
     }
 
+}
 
 
-    var completionTrigger = ["d", "k"]
+// MARK: - UITextViewDelegate
 
-    var rule: EditRule = EditRule()
-    var status: EditStatus = EditStatus()
-    static let newLine = try! NSRegularExpression(pattern: "\n", options: [])
+extension EditorViewController: UITextViewDelegate {
+
+    func textView(_: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let isShouldChange = shouldChange(range, text)
+        let isNeedRegisterUndo = needRegisterUndo(text)
+
+        if isNeedRegisterUndo {
+            registerUndo()
+        }
+
+        self.isNeedCompletion = needCompletion(text)
+        self.isNeedCommit = !isShouldChange || isNeedRegisterUndo || self.isNeedCompletion
+        self.beforeInputText = text
+
+        return isShouldChange
+    }
+
+    func textViewDidChangeSelection(_: UITextView) {
+        guard let undoManager = self.undoManager else {
+            fatalError()
+        }
+
+        if isNeedCommit || undoManager.isUndoing || undoManager.isRedoing {
+            commit()
+        }
+
+        if isNeedCompletion {
+            completion()
+        }
+    }
 
 }
 
 
 // MARK: - Source code edit support
 
-extension EditorViewController: UITextViewDelegate {
+extension EditorViewController {
 
-    struct EditRule {
-        var useHardTab: Bool = false
-        var tabSize: Int = 4
-        var indent: String = "    "
-        var commentOut: String = "//"
-    }
-
-    struct EditStatus {
-        var currentChange: ChangeReason = .selection
-        var previousChange: ChangeReason = .selection
-        var location: Int = -1
-        var beforeText: String = ""
-        var afterText: String = ""
-        var needCommit: Bool = false
-        var needCompletion: Bool = false
-
-        var hasEditorialContent: Bool {
-            !(beforeText.isEmpty && afterText.isEmpty)
-        }
-
-        mutating func setCommit(location: Int, before: String, after: String) {
-            self.location = location
-            self.beforeText = before
-            self.afterText = after
-            self.needCommit = true
-        }
-
-        mutating func clear() {
-            self.location = -1
-            self.beforeText = ""
-            self.afterText = ""
-            self.needCommit = false
-        }
-    }
-
-    enum ChangeReason {
-        case word
-        case nonWord
-        case newLine
-        case indent
-        case delete
-        case replace
-        case selection
-
-        private static let nonWordRegex = try! NSRegularExpression(pattern: "\\W", options: [])
-
-        static func get(_ range: NSRange, _ text: String) -> Self {
-            if text.isEmpty {
-                return range.length == 1 ? .delete : .replace
-
-            } else if text.count == 1 {
-                if text == .lineFeed {
-                    return .newLine
-                } else if range.length >= 1 && text == .tab {
-                    return .indent
-                } else if nonWordRegex.firstMatch(in: text, options: [], range: text.range) != nil {
-                    return .nonWord
-                } else {
-                    return .word
-                }
-
+    private func shouldChange(_ range: NSRange, _ text: String) -> Bool {
+        switch (text, range.length == .zero) {
+        case ("\t", true):
+            return tab(range)
+        case ("\t", false):
+            return indent(range)
+        case ("\n", true):
+            return newLine(range)
+        case ("", true):
+            return delete(range)
+        default:
+            if "({".contains(text) {
+                return enclosing(range, text)
             } else {
-                return .replace
+                return true
             }
         }
     }
 
-
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        guard editorView.markedTextRange == nil else {
-            return true
-        }
-
-        status.currentChange = ChangeReason.get(range, text)
-
-        if status.currentChange == .replace {
-            let fullText = editorTextStorage.string as NSString
-            let beforeText = range.length == 0 ? "" : fullText.substring(with: range)
-            status.setCommit(location: range.location, before: beforeText, after: text)
-
-        } else if status.currentChange == .indent {
-            let fullText = editorTextStorage.string as NSString
-            let lineRange = fullText.lineRange(for: range)
-            let beforeText = fullText.substring(with: lineRange)
-            var afterText = ""
-            beforeText.enumerateLines(regex: Self.newLine) {
-                afterText.append(self.rule.indent.appending($0))
-            }
-            editorTextStorage.replaceCharacters(in: lineRange, with: afterText)
-            editorView.selectedRange = NSMakeRange(lineRange.location, afterText.length)
-            status.setCommit(location: lineRange.location, before: beforeText, after: afterText)
-            return false
-
-        } else {
-            let replacement = replacementText(range, text) ?? text
-            if status.afterText.isEmpty {
-                status.location = range.location
-                status.afterText = replacement
-            } else {
-                status.afterText.append(replacement)
-            }
-
-            if completionTrigger.contains(replacement) {
-                status.needCommit = true
-                status.needCompletion = true
-
-            } else if status.previousChange == .word && status.currentChange != .word
-                    || status.previousChange != .newLine && status.currentChange == .newLine
-                    || status.previousChange != .delete && status.currentChange == .delete {
-                status.needCommit = true
-            }
-
-            if replacement != text {
-                editorTextStorage.replaceCharacters(in: range, with: replacement)
-                editorView.selectedRange = NSMakeRange(range.location + replacement.length, 0)
-                return false
-            }
-        }
-
+    private func tab(_ range: NSRange) -> Bool {
+        let indent = "    "
+        textStorage.replaceCharacters(in: range, with: indent)
         return true
     }
 
+    private func newLine(_ range: NSRange) -> Bool {
+        guard let level = syntaxManager?.indentLevel(text: textStorage.string, location: range.location), level >= .zero else {
+            return true
+        }
 
-    private func replacementText(_ range: NSRange, _ text: String) -> String? {
-        if text == "\t" {
-            if rule.useHardTab {
-                return nil
+        var result = "\n"
+        result.append(String(repeating: "    ", count: level))
+        textStorage.replaceCharacters(in: range, with: result)
+        textView.selectedRange = NSMakeRange(range.location + result.length, 0)
 
+        return false
+    }
+
+    private func enclosing(_ range: NSRange, _ text: String) -> Bool {
+        return true
+    }
+
+    private func indent(_ range: NSRange) -> Bool {
+        let lineRange = (textStorage.string as NSString).lineRange(for: range)
+        let indent = "    "
+
+        var result = ""
+        textStorage.string.enumerateLines(range: lineRange) {
+            result.append(indent)
+            result.append(contentsOf: $0)
+        }
+
+        textStorage.replaceCharacters(in: lineRange, with: result)
+        textView.selectedRange = NSMakeRange(lineRange.location, result.length)
+        return false
+    }
+
+    private func delete(_ range: NSRange) -> Bool {
+        let lineRange = (textStorage.string as NSString).lineRange(for: range)
+
+        let beforeCursor = NSMakeRange(lineRange.location, range.location - lineRange.location)
+        if otherThanIndentRegex.firstMatch(in: textStorage.string, range: beforeCursor) != nil {
+            return true
+        }
+
+        textStorage.replaceCharacters(in: beforeCursor, with: "")
+        return false
+    }
+
+    @objc private func deindent() {
+        let fullText = textStorage.string as NSString
+        let lineRange = fullText.lineRange(for: textView.selectedRange)
+        let indent = "    "
+
+        var result = ""
+        textStorage.string.enumerateLines(range: lineRange) {
+            if $0.hasPrefix(indent) {
+                result.append(contentsOf: $0.dropFirst(indent.count))
             } else {
-                let fullText = editorTextStorage.string as NSString
-                let lineLocation = fullText.lineRange(for: range).location
-                let lineRange = NSMakeRange(lineLocation, range.location - lineLocation)
-                let count = rule.tabSize - fullText.substring(with: lineRange).monospaceCount % rule.tabSize
-                return Array(repeating: " ", count: count).joined()
+                result.append(contentsOf: $0)
             }
         }
-        return nil
+
+        textStorage.replaceCharacters(in: lineRange, with: result)
+        textView.selectedRange = NSMakeRange(lineRange.location, result.length)
     }
 
+    @objc private func toggleComment() {
+        let fullText = textStorage.string as NSString
+        let lineRange = fullText.lineRange(for: textView.selectedRange)
+        let singleLineComment = "//"
 
-    func textViewDidChangeSelection(_ textView: UITextView) {
-        guard editorView.markedTextRange == nil else {
-            return
-        }
-
-        if status.needCommit {
-            commitUndoHistory()
-            commitEditorialContents()
-            status.clear()
-
-        } else if status.hasEditorialContent && status.previousChange != .selection && status.currentChange == .selection {
-            status.needCommit = true
-            commitUndoHistory()
-            commitEditorialContents()
-            status.clear()
-        }
-
-        if status.needCompletion {
-            requestCompletion()
-        }
-
-        status.previousChange = status.currentChange
-        status.currentChange = .selection
-    }
-
-
-    func textViewDidEndEditing(_ textView: UITextView) {
-        guard status.hasEditorialContent else {
-            return
-        }
-        commitUndoHistory()
-        commitEditorialContents()
-        status.clear()
-    }
-
-
-    @objc func deindent() {
-        let fullText = editorTextStorage.string as NSString
-        let lineRange = fullText.lineRange(for: editorView.selectedRange)
-        let beforeText = fullText.substring(with: lineRange)
-        var afterText = ""
-        beforeText.enumerateLines(regex: Self.newLine) {
-            if let line = $0.removeIndent(with: self.rule.indent) {
-                afterText.append(contentsOf: line)
+        var onlyComment = true
+        var uncomment = ""
+        var comment = ""
+        textStorage.string.enumerateLines(range: lineRange) {
+            if onlyComment && $0.hasPrefix(singleLineComment) {
+                uncomment.append(contentsOf: $0.dropFirst(singleLineComment.count))
             } else {
-                afterText.append($0)
+                onlyComment = false
+                comment.append(singleLineComment)
+                comment.append(contentsOf: $0)
             }
         }
-        if beforeText == afterText {
-            return
-        }
-        status.currentChange = .indent
-        editorTextStorage.replaceCharacters(in: lineRange, with: afterText)
-        editorView.selectedRange = NSMakeRange(lineRange.location, afterText.length)
-        status.setCommit(location: lineRange.location, before: beforeText, after: afterText)
-        commitUndoHistory()
-        commitEditorialContents()
-        status.clear()
-    }
 
-    @objc func _commitEdit() {
-        guard status.hasEditorialContent else {
-            return
-        }
-        commitUndoHistory()
-        commitEditorialContents()
-        status.clear()
-    }
-
-
-    private func commitUndoHistory() {
-        // Commit to UndoManager
-        editorUndoManager.appendHistory(location: status.location, before: status.beforeText, after: status.afterText)
-        editorUndoManager.registerUndo()
+        let result = onlyComment ? uncomment : comment
+        textStorage.replaceCharacters(in: lineRange, with: result)
+        textView.selectedRange = NSMakeRange(lineRange.location, result.length)
     }
 
 }
@@ -330,75 +263,105 @@ extension EditorViewController: UITextViewDelegate {
 
 extension EditorViewController {
 
-    func undo() {
-        guard let editHistory = editorUndoManager.editHistory,
-                editHistory.location + editHistory.after.length <= editorTextStorage.string.length else {
-            return
+    private func needRegisterUndo(_ text: String) -> Bool {
+        switch text {
+        case "\n":
+            return text != beforeInputText
+        default:
+            return false
         }
-        editorUndoManager.registerRedo()
-        status.currentChange = .replace
-        let range = NSMakeRange(editHistory.location, editHistory.after.length)
-        editorTextStorage.replaceCharacters(in: range, with: editHistory.before)
-        editorView.selectedRange = NSMakeRange(range.location, 0)
-        status.setCommit(location: range.location, before: editHistory.after, after: editHistory.before)
-        commitEditorialContents()
-        status.clear()
     }
 
-    func redo() {
-        guard let editHistory = editorUndoManager.editHistory,
-                editHistory.location + editHistory.before.length <= editorTextStorage.string.length else {
-            return
+    private func registerUndo() {
+        guard let undoManager = self.undoManager else {
+            fatalError()
         }
-        editorUndoManager.registerUndo()
-        status.currentChange = .replace
-        let range = NSMakeRange(editHistory.location, editHistory.before.length)
-        editorTextStorage.replaceCharacters(in: range, with: editHistory.after)
-        editorView.selectedRange = NSMakeRange(range.location + editHistory.after.length, 0)
-        status.setCommit(location: range.location, before: editHistory.before, after: editHistory.after)
-        commitEditorialContents()
-        status.clear()
+
+        // Regist Undo/Redo
+        undoManager.registerUndo(withTarget: self, handler: { _ in self.registerUndo() })
     }
 
 }
+
+
+// MARK: - Committing edits support
+
+extension EditorViewController {
+
+    private func commit() {
+        guard textStorage.string != beforeCommitText else {
+            return
+        }
+
+        let changes = textStorage.string.changes(from: beforeCommitText)
+        let range = changes.range
+        let replace = changes.text.replacingOccurrences(of: "\n", with: "\\n")
+        print("commit -> range: \(range), replace: \"\(replace)\"")
+
+        beforeCommitText = textStorage.string
+        isNeedCommit = false
+    }
+
+}
+
+
+// MARK: - Completion support
+
+extension EditorViewController {
+
+    private func needCompletion(_ text: String) -> Bool {
+        return ".;".contains(text)
+    }
+
+    private func completion() {
+        guard textView.selectedRange.length != .zero else {
+            return
+        }
+
+        let range = textView.selectedRange
+        print("range: \(range)")
+        isNeedCompletion = false
+    }
+
+}
+
+
+// MARK: - Hover support
+
+extension EditorViewController {}
+
+
+// MARK: - Definition support
+
+extension EditorViewController {}
+
+
+// MARK: - Document highlight support
+
+extension EditorViewController {}
+
+
+// MARK: - Document symbol support
+
+extension EditorViewController {}
+
+
+// MARK: - Code action support
+
+extension EditorViewController {}
+
+
+// MARK: - Code formatting support
+
+extension EditorViewController {}
+
+
+// MARK: - Symbol rename support
+
+extension EditorViewController {}
 
 
 // MARK: - Language server support
 
-extension EditorViewController: TextDocumentMessageDelegate {
-
-    func commitEditorialContents() {
-        print("\(status.location): \"\(status.beforeText)\" -> \"\(status.afterText)\"")
-    }
-
-    @objc func requestCompletion() {
-        print(#function)
-        status.needCompletion = false
-    }
-
-    func completion(id: RequestID, result: Result<CompletionList?, ErrorResponse>) {
-    }
-    func completionResolve(id: RequestID, result: Result<CompletionItem, ErrorResponse>) {
-    }
-    func hover(id: RequestID, result: Result<Hover?, ErrorResponse>) {
-    }
-    func definition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {
-    }
-    func typeDefinition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {
-    }
-    func implementation(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {
-    }
-    func references(id: RequestID, result: Result<[Location]?, ErrorResponse>) {
-    }
-    func documentHighlight(id: RequestID, result: Result<[DocumentHighlight]?, ErrorResponse>) {
-    }
-    func documentSymbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>) {
-    }
-    func codeAction(id: RequestID, result: Result<CodeActionResult?, ErrorResponse>) {
-    }
-    func rangeFormatting(id: RequestID, result: Result<[TextEdit]?, ErrorResponse>) {
-    }
-    func rename(id: RequestID, result: Result<WorkspaceEdit?, ErrorResponse>) {
-    }
-
-}
+//extension EditorViewController: TextDocumentMessageDelegate {
+//}

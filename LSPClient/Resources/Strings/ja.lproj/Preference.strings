@@ -1,0 +1,9 @@
+/* 
+  Preference.strings
+  LSPClient
+
+  Created by Shion on 2021/03/17.
+  Copyright © 2021 Shion. All rights reserved.
+*/
+
+"ServerConfigTitle" = "サーバーコンフィグ";

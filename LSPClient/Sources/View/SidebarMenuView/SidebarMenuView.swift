@@ -18,6 +18,9 @@ final class SidebarMenuView: UIView {
     /// Diagnostic button
     private(set) weak var diagnosticButton: UIButton!
 
+    /// Button icon image point size
+    private let iconPointSize: CGFloat = 20
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -53,7 +56,7 @@ final class SidebarMenuView: UIView {
     /// - Returns           : Button
     ///
     private func createButton(_ iconName: String) -> UIButton {
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .regular)
+        let config = UIImage.SymbolConfiguration(pointSize: iconPointSize, weight: .regular)
         let icon = UIImage(systemName: iconName, withConfiguration: config)!
         let button = UIButton(frame: .zero)
         button.setImage(icon, for: .normal)

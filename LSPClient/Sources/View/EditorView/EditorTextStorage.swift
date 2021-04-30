@@ -10,20 +10,38 @@ import UIKit.NSTextStorage
 
 final class EditorTextStorage: NSTextStorage {
 
-    let lineTable: LineTable
     let content: NSMutableAttributedString
-    private(set) var tokens: [Token]
+    private(set) weak var syntaxManager: SyntaxManager?
     private(set) var textAttribute: [NSAttributedString.Key: Any]
+    private(set) var highlightAttribute: [SyntaxType: [NSAttributedString.Key: Any]]
 
     override var string: String {
         content.string
     }
 
-    override init() {
+    var highlightRange: NSRange {
+        guard let syntaxManager = self.syntaxManager else {
+            return editedRange
+        }
+
+        let tampRange = NSMakeRange(max(0, editedRange.location - 1), editedRange.length + 1)
+        let fullRange = string.range
+
+        if let range = Range(NSIntersectionRange(tampRange, fullRange), in: string) {
+            let text = string[range]
+            let isNeedRefresh = syntaxManager.multipleLineSymbol.contains(where: { text.contains($0) })
+            return isNeedRefresh ? fullRange : (string as NSString).lineRange(for: editedRange)
+
+        } else {
+            return (string as NSString).lineRange(for: editedRange)
+        }
+    }
+
+    init(syntaxManager: SyntaxManager?) {
         self.content = NSMutableAttributedString()
-        self.lineTable = LineTable(content: self.content)
-        self.tokens = []
+        self.syntaxManager = syntaxManager
         self.textAttribute = [:]
+        self.highlightAttribute = [:]
         super.init()
     }
 
@@ -38,7 +56,6 @@ final class EditorTextStorage: NSTextStorage {
     override func replaceCharacters(in range: NSRange, with str: String) {
         beginEditing()
         content.replaceCharacters(in: range, with: str)
-        lineTable.update(for: range)
         edited([.editedCharacters, .editedAttributes], range: range, changeInLength: str.count - range.length)
         endEditing()
     }
@@ -51,21 +68,18 @@ final class EditorTextStorage: NSTextStorage {
     }
 
     override func processEditing() {
-        let lineRange = (string as NSString).lineRange(for: editedRange)
-        setAttributes(textAttribute, range: lineRange)
-        applySyntaxHighlight(lineRange)
+        let range = highlightRange
+        setAttributes(textAttribute, range: range)
+        applySyntaxHighlight(range)
         super.processEditing()
     }
 
     private func applySyntaxHighlight(_ range: NSRange) {
-        for token in tokens {
-            token.regex.enumerateMatches(in: string, options: [], range: token.isMultipleLines ? string.range : range) {
-                [weak self, token] (result, _, _) in
-                guard let range = result?.range, let self = self else {
-                    return
-                }
-                self.content.addAttributes(token.textAttribute, range: range)
+        syntaxManager?.highlight(text: string, range: range).forEach() {
+            guard let attribute = self.highlightAttribute[$0.type] else {
+                fatalError()
             }
+            self.content.addAttributes(attribute, range: $0.range)
         }
     }
 
@@ -73,26 +87,19 @@ final class EditorTextStorage: NSTextStorage {
 
 extension EditorTextStorage {
 
-    func set(string: String) {
-        let range = self.string.range
-        content.replaceCharacters(in: range, with: string)
-        lineTable.update(for: range)
-        self.applySyntaxHighlight(range) // TODO: 必要か確認する
-    }
-
-    func set(tokens: [Token]) {
-        self.tokens.removeAll()
-        self.tokens.append(contentsOf: tokens.sorted(by: { !$0.isMultipleLines && $1.isMultipleLines }))
-        self.applySyntaxHighlight(self.string.range)
-    }
-
     func set(codeStyle: CodeStyle) {
-        // Font settings
+        fontSetting(codeStyle)
+        tabSetting(codeStyle)
+        highlightSetting(codeStyle)
+    }
+
+    private func fontSetting(_ codeStyle: CodeStyle) {
         self.textAttribute.removeAll()
         self.textAttribute[.font] = codeStyle.font.uiFont
         self.textAttribute[.foregroundColor] = codeStyle.fontColor.text.uiColor
+    }
 
-        // Tab settings
+    private func tabSetting(_ codeStyle: CodeStyle) {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.tabStops?.removeAll()
         let baseTabWidth = " ".size(withAttributes: self.textAttribute).width * CGFloat(codeStyle.tabSize)
@@ -101,6 +108,26 @@ extension EditorTextStorage {
             paragraphStyle.addTabStop(textTab)
         }
         self.textAttribute[.paragraphStyle] = paragraphStyle
+    }
+
+    private func highlightSetting(_ codeStyle: CodeStyle) {
+        self.highlightAttribute.removeAll()
+        var attribute: [NSAttributedString.Key: Any] = [.font: codeStyle.font.uiFont]
+
+        attribute[.foregroundColor] = codeStyle.fontColor.keyword.uiColor
+        self.highlightAttribute[.keyword] = attribute
+
+        attribute[.foregroundColor] = codeStyle.fontColor.function.uiColor
+        self.highlightAttribute[.function] = attribute
+
+        attribute[.foregroundColor] = codeStyle.fontColor.number.uiColor
+        self.highlightAttribute[.number] = attribute
+
+        attribute[.foregroundColor] = codeStyle.fontColor.string.uiColor
+        self.highlightAttribute[.string] = attribute
+
+        attribute[.foregroundColor] = codeStyle.fontColor.comment.uiColor
+        self.highlightAttribute[.comment] = attribute
     }
 
 }
