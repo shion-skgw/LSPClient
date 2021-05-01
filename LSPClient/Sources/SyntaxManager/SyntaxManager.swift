@@ -11,7 +11,7 @@ import Foundation
 final class SyntaxManager {
 
     private static var storage: NSMutableDictionary = [:]
-    private static let syntaxMap: [String: String] = [
+    private static let languageTable: [String: String] = [
         "swift": "Swift",
     ]
 
@@ -24,28 +24,37 @@ final class SyntaxManager {
     let indentTriggerRegex: NSRegularExpression!
     let deindentTriggerRegex: NSRegularExpression!
 
-    static func load(fileType: String) -> SyntaxManager? {
-        guard let type = syntaxMap[fileType] else {
+    static func load(fileExtension: String) -> SyntaxManager? {
+        guard let language = languageTable[fileExtension] else {
             return nil
         }
 
-        if let instance = storage[type] as? SyntaxManager {
+        if let instance = storage[language] as? SyntaxManager {
             return instance
+        }
 
-        } else if let instance = self.init(fileType) {
-            storage[type] = instance
-            return instance
+        let definition = loadDefinition(language)
+        let instance = self.init(definition)
+        storage[language] = instance
+        return instance
+    }
 
-        } else {
-            return nil
+    private static func loadDefinition(_ language: String) -> CommonDefinition {
+        guard let path = Bundle.main.path(forResource: language, ofType: "plist") else {
+            fatalError()
+        }
+
+        do {
+            let data = try Data(contentsOf: URL(fileURLWithPath: path))
+            let definition = try PropertyListDecoder().decode(CommonDefinition.self, from: data)
+            assert(checkDefinition(definition))
+            return definition
+        } catch {
+            fatalError()
         }
     }
 
-    private init?(_ fileType: String) {
-        guard let definition = SyntaxManager.loadDefinition(fileType) else {
-            return nil
-        }
-
+    private init?(_ definition: CommonDefinition) {
         var syntaxes: [SyntaxRegex] = []
         var stringOpenSymbol: [String] = []
         var commentOpenSymbol: [String] = []
@@ -104,21 +113,6 @@ final class SyntaxManager {
         } else {
             self.indentTriggerRegex = nil
             self.deindentTriggerRegex = nil
-        }
-    }
-
-    private static func loadDefinition(_ fileType: String) -> CommonDefinition? {
-        guard let path = Bundle.main.path(forResource: syntaxMap[fileType] ?? "", ofType: "plist") else {
-            return nil
-        }
-
-        do {
-            let data = try Data(contentsOf: URL(fileURLWithPath: path))
-            let definition = try PropertyListDecoder().decode(CommonDefinition.self, from: data)
-            assert(checkDefinition(definition))
-            return definition
-        } catch {
-            fatalError()
         }
     }
 

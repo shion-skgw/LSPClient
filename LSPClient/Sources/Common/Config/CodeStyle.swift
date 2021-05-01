@@ -18,7 +18,6 @@ struct CodeStyle: ConfigType {
     var tabSize: Int
     var useHardTab: Bool
     var showInvisibles: Bool
-    var lineHighlight: Bool
 
     init() {
         self.font = Font()
@@ -27,7 +26,6 @@ struct CodeStyle: ConfigType {
         self.tabSize = 4
         self.useHardTab = true
         self.showInvisibles = true
-        self.lineHighlight = true
     }
 }
 

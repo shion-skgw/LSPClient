@@ -38,13 +38,26 @@ extension String {
     @inlinable func enumerateLines(range: NSRange, invoking body: (Substring) -> Void) {
         String.endOfLineRegex.enumerateMatches(in: self, range: range) {
             result, _, _ in
-            guard let nsRange = result?.range, let range = Range(nsRange, in: self) else {
+            guard let nsRange = result?.range, let lineRange = Range(nsRange, in: self) else {
                 return
             }
-            body(self[range])
+            body(self[lineRange])
         }
     }
 
+    @inlinable func enumerateLines(range: NSRange, invoking body: (Int, NSRange) -> Void) {
+        var lineNumber = 1
+        String.endOfLineRegex.enumerateMatches(in: self, range: NSMakeRange(.zero, range.upperBound)) {
+            result, _, stop in
+            guard let lineRange = result?.range else {
+                return
+            }
+            if range.location <= lineRange.location {
+                body(lineNumber, lineRange)
+            }
+            lineNumber += 1
+        }
+    }
 
     @inlinable func changes(from: String) -> (range: NSRange, text: String) {
         var (removeMin, removeMax, insertMin, insertMax) = (-1, -1, -1, -1)

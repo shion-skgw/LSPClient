@@ -12,19 +12,19 @@ final class EditorViewController: UIViewController{
 
     /// EditorView
     private(set) weak var textView: EditorView!
-    /// SyntaxManager
-    private(set) weak var syntaxManager: SyntaxManager?
     /// EditorTextStorage
     private(set) weak var textStorage: EditorTextStorage!
     /// EditorLayoutManager
     private(set) weak var layoutManager: EditorLayoutManager!
+    /// SyntaxManager
+    private(set) weak var syntaxManager: SyntaxManager?
 
     override var undoManager: UndoManager? {
         self.textView.undoManager
     }
 
     var uri: DocumentUri!
-    var fileType: String {
+    var fileExtension: String {
         uri?.pathExtension ?? ""
     }
 
@@ -43,7 +43,7 @@ final class EditorViewController: UIViewController{
         self.layoutManager = layoutManager
 
         // SyntaxManager
-        let syntaxManager = SyntaxManager.load(fileType: "swift")
+        let syntaxManager = SyntaxManager.load(fileExtension: "swift")
         self.syntaxManager = syntaxManager
 
         // TextStorage
@@ -361,7 +361,48 @@ extension EditorViewController {}
 extension EditorViewController {}
 
 
+// MARK: - File change event support
+
+extension EditorViewController {
+
+    private func sendDidOpen() {
+        let languageId = LanguageID.of(fileExtension: fileExtension)
+        let text = textStorage.string
+        let textDocument = TextDocumentItem(uri: uri, languageId: languageId, version: 1, text: text)
+
+        let didOpenParams = DidOpenTextDocumentParams(textDocument: textDocument)
+
+        didOpen(params: didOpenParams)
+    }
+
+    private func sendDidChange() {
+
+    }
+
+    private func sendDidSave() {
+
+    }
+
+}
+
+
 // MARK: - Language server support
 
-//extension EditorViewController: TextDocumentMessageDelegate {
-//}
+extension EditorViewController: TextDocumentMessageDelegate {
+
+    func completion(id: RequestID, result: Result<CompletionList?, ErrorResponse>) {}
+    func completionResolve(id: RequestID, result: Result<CompletionItem, ErrorResponse>) {}
+    func hover(id: RequestID, result: Result<Hover?, ErrorResponse>) {}
+//    func declaration(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {}
+    func definition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {}
+    func typeDefinition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {}
+    func implementation(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {}
+    func references(id: RequestID, result: Result<[Location]?, ErrorResponse>) {}
+    func documentHighlight(id: RequestID, result: Result<[DocumentHighlight]?, ErrorResponse>) {}
+    func documentSymbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>) {}
+    func codeAction(id: RequestID, result: Result<CodeActionResult?, ErrorResponse>) {}
+//    func formatting(id: RequestID, result: Result<[TextEdit]?, ErrorResponse>) {}
+    func rangeFormatting(id: RequestID, result: Result<[TextEdit]?, ErrorResponse>) {}
+    func rename(id: RequestID, result: Result<WorkspaceEdit?, ErrorResponse>) {}
+
+}

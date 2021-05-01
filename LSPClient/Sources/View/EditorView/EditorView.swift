@@ -12,7 +12,6 @@ final class EditorView: UITextView {
 
     private var gutterColor: CGColor
     private var gutterEdgeColor: CGColor
-    private var lineHighlight: Bool
     private var lineHighlightColor: CGColor
     private var lineNumberAttribute: [NSAttributedString.Key: Any]
 
@@ -20,7 +19,6 @@ final class EditorView: UITextView {
         // Initialize
         self.gutterColor = UIColor.white.cgColor
         self.gutterEdgeColor = UIColor.white.cgColor
-        self.lineHighlight = false
         self.lineHighlightColor = UIColor.white.cgColor
         self.lineNumberAttribute = [:]
         super.init(frame: frame, textContainer: textContainer)
@@ -65,47 +63,41 @@ extension EditorView {
 
     override func draw(_ rect: CGRect) {
         let cgContext = UIGraphicsGetCurrentContext()!
-        // TODO: パフォーマンス悪い
         drawGutter(cgContext)
-        drawLineNumber()
-        if lineHighlight {
-            drawLineHighlight(cgContext)
-        }
+        drawLineNumber(rect)
+        drawLineHighlight(cgContext)
         super.draw(rect)
     }
 
     private func drawGutter(_ cgContext: CGContext) {
-        let height = max(bounds.height, contentSize.height)
-
-        let gutterRect = CGRect(x: bounds.origin.x, y: bounds.origin.y, width: textContainerInset.left, height: height)
+        let gutterRect = CGRect(x: bounds.origin.x, y: bounds.origin.y, width: textContainerInset.left, height: bounds.height)
         cgContext.setFillColor(gutterColor)
         cgContext.fill(gutterRect)
 
-        let gutterEdgeRect = CGRect(x: textContainerInset.left, y: bounds.origin.y - 0.5, width: 0.5, height: height)
+        let gutterEdgeRect = CGRect(x: textContainerInset.left, y: bounds.origin.y - 0.5, width: 0.5, height: bounds.height)
         cgContext.setFillColor(gutterEdgeColor)
         cgContext.fill(gutterEdgeRect)
     }
 
-    private func drawLineNumber() {
-        let nsString = text as NSString
+    private func drawLineNumber(_ rect: CGRect) {
+        let glyphRange = layoutManager.glyphRange(forBoundingRect: rect, in: textContainer)
+        var lineNumber = Int.zero
+        var lineRect = CGRect.zero
 
-        var lineNumber = 1
-        var currentLineRange = nsString.lineRange(for: NSMakeRange(0, 0))
-        var currentLineRect = layoutManager.boundingRect(forGlyphRange: currentLineRange, in: textContainer)
-
-        while true {
-            drawLineNumber(lineNumber, currentLineRect)
-            if text.range.upperBound <= currentLineRange.upperBound {
-                break
-            }
-            lineNumber += 1
-            currentLineRange = nsString.lineRange(for: NSMakeRange(currentLineRange.upperBound, 0))
-            currentLineRect = layoutManager.boundingRect(forGlyphRange: currentLineRange, in: textContainer)
+        text.enumerateLines(range: glyphRange) {
+            number, range in
+            lineNumber = number
+            lineRect = layoutManager.boundingRect(forGlyphRange: range, in: textContainer)
+            drawLineNumber(lineNumber, lineRect)
         }
 
         if text.hasSuffix("\n") {
-            currentLineRect.origin.y += currentLineRect.size.height
-            drawLineNumber(lineNumber + 1, currentLineRect)
+            lineRect.origin.y += lineRect.size.height
+            drawLineNumber(lineNumber + 1, lineRect)
+
+        } else if text.isEmpty {
+            lineRect = layoutManager.boundingRect(forGlyphRange: NSRange(), in: textContainer)
+            drawLineNumber(1, lineRect)
         }
     }
 
@@ -147,8 +139,8 @@ extension EditorView {
         self.gutterColor = codeStyle.gutterColor.uiColor.cgColor
         self.gutterEdgeColor = codeStyle.gutterEdgeColor.uiColor.cgColor
 
-        self.lineHighlight = codeStyle.lineHighlight
         self.lineHighlightColor = codeStyle.lineHighlightColor.uiColor.cgColor
+
         self.lineNumberAttribute.removeAll()
         self.lineNumberAttribute[.font] = codeStyle.font.uiFont.withSize(codeStyle.lineNumberSize)
         self.lineNumberAttribute[.foregroundColor] = codeStyle.lineNumberColor.uiColor
