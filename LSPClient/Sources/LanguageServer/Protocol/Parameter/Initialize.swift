@@ -11,7 +11,7 @@
 struct InitializeParams: RequestParamsType {
     let processId: RequiredValue<Int>
     let clientInfo: ClientInfo?
-    let rootPath: String?
+//    let rootPath: String? deprecated
     let rootUri: DocumentUri
     let initializationOptions: AnyValue?
     let capabilities: ClientCapabilities
@@ -19,13 +19,13 @@ struct InitializeParams: RequestParamsType {
 
     init(processId: Int? = nil,
             clientInfo: ClientInfo? = nil,
-            rootPath: String? = nil,
+//            rootPath: String? = nil, deprecated
             rootUri: DocumentUri,
             initializationOptions: AnyValue? = nil,
             trace: TraceMode? = .off) {
         self.processId = RequiredValue(processId)
         self.clientInfo = clientInfo
-        self.rootPath = rootPath
+//        self.rootPath = rootPath deprecated
         self.rootUri = rootUri
         self.initializationOptions = initializationOptions
         self.capabilities = ClientCapabilities.load()

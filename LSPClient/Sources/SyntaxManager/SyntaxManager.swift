@@ -16,7 +16,6 @@ final class SyntaxManager {
     ]
 
     let syntaxes: [SyntaxRegex]
-    let stringOpenSymbol: [String]
     let commentOpenSymbol: [String]
     let multipleLineSymbol: [String]
     let isBracketIndent: Bool
@@ -56,7 +55,6 @@ final class SyntaxManager {
 
     private init?(_ definition: CommonDefinition) {
         var syntaxes: [SyntaxRegex] = []
-        var stringOpenSymbol: [String] = []
         var commentOpenSymbol: [String] = []
         var multipleLineSymbol: Set<String> = []
         var invalidLinePattern: [String] = []
@@ -65,9 +63,7 @@ final class SyntaxManager {
             if group.type == .string || group.type == .comment {
                 invalidLinePattern.append(contentsOf: group.enclosures)
 
-                if group.type == .string {
-                    stringOpenSymbol.append(contentsOf: group.rawOpens)
-                } else {
+                if group.type == .comment {
                     commentOpenSymbol.append(contentsOf: group.rawOpens)
                 }
 
@@ -94,7 +90,6 @@ final class SyntaxManager {
         }
 
         self.syntaxes = syntaxes
-        self.stringOpenSymbol = stringOpenSymbol
         self.commentOpenSymbol = commentOpenSymbol
         self.multipleLineSymbol = Array(multipleLineSymbol)
         self.isBracketIndent = !definition.indentTrigger.isEmpty && !definition.deindentTrigger.isEmpty
@@ -116,6 +111,20 @@ final class SyntaxManager {
         }
     }
 
+    func highlightRange(text: String, range: NSRange) -> NSRange {
+        let fullRange = text.range
+        let lineRange = (text as NSString).lineRange(for: range)
+        let tampRange = NSMakeRange(max(.zero, range.location - 1), range.length + 1)
+
+        if let range = Range(NSIntersectionRange(tampRange, fullRange), in: text) {
+            let text = text[range]
+            return multipleLineSymbol.contains(where: { text.contains($0) }) ? fullRange : lineRange
+
+        } else {
+            return lineRange
+        }
+    }
+
     func highlight(text: String, range: NSRange) -> [SyntaxRange] {
         var highlight: [SyntaxRange] = []
 
@@ -124,21 +133,18 @@ final class SyntaxManager {
             guard let nsRange = result?.range, let range = Range(nsRange, in: text) else {
                 return
             }
-            if stringOpenSymbol.contains(where: { text[range].hasPrefix($0) }) {
-                highlight.append(SyntaxRange(type: .string, range: nsRange))
-            } else if commentOpenSymbol.contains(where: { text[range].hasPrefix($0) }) {
-                highlight.append(SyntaxRange(type: .comment, range: nsRange))
-            }
+            let syntaxType: SyntaxType = commentOpenSymbol.contains(where: { text[range].hasPrefix($0) }) ? .comment : .string
+            highlight.append(SyntaxRange(type: syntaxType, range: nsRange))
         }
 
         for syntax in syntaxes {
             syntax.regex.enumerateMatches(in: text, range: range) {
                 result, _, _ in
-                guard let range = result?.range else {
+                guard let nsRange = result?.range else {
                     return
                 }
-                if !highlight.contains(where: { NSLocationInRange(range.location, $0.range) }) {
-                    highlight.append(SyntaxRange(type: syntax.type, range: range))
+                if !highlight.contains(where: { NSLocationInRange(nsRange.location, $0.range) }) {
+                    highlight.append(SyntaxRange(type: syntax.type, range: nsRange))
                 }
             }
         }

@@ -19,24 +19,6 @@ final class EditorTextStorage: NSTextStorage {
         content.string
     }
 
-    var highlightRange: NSRange {
-        guard let syntaxManager = self.syntaxManager else {
-            return editedRange
-        }
-
-        let tampRange = NSMakeRange(max(0, editedRange.location - 1), editedRange.length + 1)
-        let fullRange = string.range
-
-        if let range = Range(NSIntersectionRange(tampRange, fullRange), in: string) {
-            let text = string[range]
-            let isNeedRefresh = syntaxManager.multipleLineSymbol.contains(where: { text.contains($0) })
-            return isNeedRefresh ? fullRange : (string as NSString).lineRange(for: editedRange)
-
-        } else {
-            return (string as NSString).lineRange(for: editedRange)
-        }
-    }
-
     init(syntaxManager: SyntaxManager?) {
         self.content = NSMutableAttributedString()
         self.syntaxManager = syntaxManager
@@ -68,7 +50,7 @@ final class EditorTextStorage: NSTextStorage {
     }
 
     override func processEditing() {
-        let range = highlightRange
+        let range = syntaxManager?.highlightRange(text: string, range: editedRange) ?? editedRange
         setAttributes(textAttribute, range: range)
         applySyntaxHighlight(range)
         super.processEditing()

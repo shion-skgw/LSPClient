@@ -185,6 +185,8 @@ final class MessageManager: LSPConnectionDelegate {
         let message = try encoder.encode(message)
         var content = String(format: REQUEST_HEADERS, message.count).data(using: .utf8)!
         content.append(message)
+        print("send ==================")
+        print(String(data: content, encoding: .utf8)!)
         return content
     }
 

@@ -42,6 +42,7 @@
 		0540195B249373E700287026 /* FileResourceChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0540195A249373E700287026 /* FileResourceChanges.swift */; };
 		0541881D2490C71900C6D9A2 /* ParameterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0541881C2490C71900C6D9A2 /* ParameterType.swift */; };
 		05436C8925E4B710002FB02E /* EditorTabCloseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05436C8825E4B710002FB02E /* EditorTabCloseButton.swift */; };
+		0552A06D263E90E500D4B9CC /* CollectionDifference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0552A06C263E90E500D4B9CC /* CollectionDifference.swift */; };
 		0555B5D925B1727C0061CB41 /* UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0555B5D825B1727C0061CB41 /* UIApplication.swift */; };
 		05601E7925A29725007B91C1 /* EditorTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05601E7825A29725007B91C1 /* EditorTabViewController.swift */; };
 		05601E7D25A2973C007B91C1 /* EditorTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05601E7C25A2973C007B91C1 /* EditorTabView.swift */; };
@@ -184,6 +185,7 @@
 		0540195A249373E700287026 /* FileResourceChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileResourceChanges.swift; sourceTree = "<group>"; };
 		0541881C2490C71900C6D9A2 /* ParameterType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParameterType.swift; sourceTree = "<group>"; };
 		05436C8825E4B710002FB02E /* EditorTabCloseButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTabCloseButton.swift; sourceTree = "<group>"; };
+		0552A06C263E90E500D4B9CC /* CollectionDifference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionDifference.swift; sourceTree = "<group>"; };
 		0555B5D825B1727C0061CB41 /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
 		05601E7825A29725007B91C1 /* EditorTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTabViewController.swift; sourceTree = "<group>"; };
 		05601E7C25A2973C007B91C1 /* EditorTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTabView.swift; sourceTree = "<group>"; };
@@ -512,6 +514,7 @@
 				051F886E25AB3F230041BE4E /* UIImage.swift */,
 				05F0264625168C0E003CCEA4 /* UIViewController.swift */,
 				0585E77725CB18FB009BA2C3 /* URL.swift */,
+				0552A06C263E90E500D4B9CC /* CollectionDifference.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -905,6 +908,7 @@
 				05436C8925E4B710002FB02E /* EditorTabCloseButton.swift in Sources */,
 				059150CC25D05A63009EB71B /* WorkspaceViewCellIdentifier.swift in Sources */,
 				05D4D4AB24D6AA7400A76239 /* PropertiesType.swift in Sources */,
+				0552A06D263E90E500D4B9CC /* CollectionDifference.swift in Sources */,
 				05BAAB2A24A3534D00A3EADC /* ExecuteCommand.swift in Sources */,
 				0555B5D925B1727C0061CB41 /* UIApplication.swift in Sources */,
 				05F419EA25F14267002C3626 /* WorkspaceConfigViewController.swift in Sources */,

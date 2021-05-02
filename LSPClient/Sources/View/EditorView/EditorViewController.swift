@@ -64,15 +64,9 @@ final class EditorViewController: UIViewController{
     override func viewDidLoad() {
         do {
             let text = try WorkspaceManager.shared.open(uri: uri)
-            textView.text = text
-            beforeCommitText = text
-
-        } catch WorkspaceError.fileNotFound {
-            present(UIAlertController.fileNotFound(uri: uri), animated: true)
-
-        } catch WorkspaceError.encodingFailure {
-            try? WorkspaceManager.shared.remove(uri: uri)
-            present(UIAlertController.unsupportedFile(uri: uri), animated: true)
+            textStorage.replaceCharacters(in: textStorage.string.range, with: text)
+            beforeChangesText = text
+            sendDidOpen()
 
         } catch {
             let title = "aaaa"
@@ -88,9 +82,11 @@ final class EditorViewController: UIViewController{
     }
 
     private var beforeInputText: String = ""
-    private var beforeCommitText: String = ""
-    private var isNeedCommit: Bool = false
+    private var beforeChangesText: String = ""
+    private var isNeedCommitChanges: Bool = false
     private var isNeedCompletion: Bool = false
+    private var currentVersion: Int = 1
+    private var currentRequestID: RequestID? = nil
 
     private let otherThanIndentRegex = try! NSRegularExpression(pattern: "[^ \t]+")
 
@@ -119,7 +115,7 @@ extension EditorViewController: UITextViewDelegate {
         }
 
         self.isNeedCompletion = needCompletion(text)
-        self.isNeedCommit = !isShouldChange || isNeedRegisterUndo || self.isNeedCompletion
+        self.isNeedCommitChanges = !isShouldChange || isNeedRegisterUndo || self.isNeedCompletion
         self.beforeInputText = text
 
         return isShouldChange
@@ -130,12 +126,12 @@ extension EditorViewController: UITextViewDelegate {
             fatalError()
         }
 
-        if isNeedCommit || undoManager.isUndoing || undoManager.isRedoing {
-            commit()
+        if isNeedCommitChanges || undoManager.isUndoing || undoManager.isRedoing {
+            sendDidChange()
         }
 
         if isNeedCompletion {
-            completion()
+            sendCompletion()
         }
     }
 
@@ -166,13 +162,13 @@ extension EditorViewController {
     }
 
     private func tab(_ range: NSRange) -> Bool {
-        let indent = "    "
-        textStorage.replaceCharacters(in: range, with: indent)
+//        let indent = "    "
+//        textStorage.replaceCharacters(in: range, with: indent)
         return true
     }
 
     private func newLine(_ range: NSRange) -> Bool {
-        guard let level = syntaxManager?.indentLevel(text: textStorage.string, location: range.location), level >= .zero else {
+        guard let level = syntaxManager?.indentLevel(text: textStorage.string, location: range.location), level > .zero else {
             return true
         }
 
@@ -193,7 +189,7 @@ extension EditorViewController {
         let indent = "    "
 
         var result = ""
-        textStorage.string.enumerateLines(range: lineRange) {
+        textStorage.string.lines(range: lineRange).forEach() {
             result.append(indent)
             result.append(contentsOf: $0)
         }
@@ -221,7 +217,7 @@ extension EditorViewController {
         let indent = "    "
 
         var result = ""
-        textStorage.string.enumerateLines(range: lineRange) {
+        textStorage.string.lines(range: lineRange).forEach() {
             if $0.hasPrefix(indent) {
                 result.append(contentsOf: $0.dropFirst(indent.count))
             } else {
@@ -241,7 +237,7 @@ extension EditorViewController {
         var onlyComment = true
         var uncomment = ""
         var comment = ""
-        textStorage.string.enumerateLines(range: lineRange) {
+        textStorage.string.lines(range: lineRange).forEach() {
             if onlyComment && $0.hasPrefix(singleLineComment) {
                 uncomment.append(contentsOf: $0.dropFirst(singleLineComment.count))
             } else {
@@ -276,30 +272,8 @@ extension EditorViewController {
         guard let undoManager = self.undoManager else {
             fatalError()
         }
-
         // Regist Undo/Redo
         undoManager.registerUndo(withTarget: self, handler: { _ in self.registerUndo() })
-    }
-
-}
-
-
-// MARK: - Committing edits support
-
-extension EditorViewController {
-
-    private func commit() {
-        guard textStorage.string != beforeCommitText else {
-            return
-        }
-
-        let changes = textStorage.string.changes(from: beforeCommitText)
-        let range = changes.range
-        let replace = changes.text.replacingOccurrences(of: "\n", with: "\\n")
-        print("commit -> range: \(range), replace: \"\(replace)\"")
-
-        beforeCommitText = textStorage.string
-        isNeedCommit = false
     }
 
 }
@@ -313,14 +287,19 @@ extension EditorViewController {
         return ".;".contains(text)
     }
 
-    private func completion() {
-        guard textView.selectedRange.length != .zero else {
+    private func sendCompletion() {
+        guard let range = Range(textView.selectedRange, in: textView.text), !range.isEmpty else {
             return
         }
 
-        let range = textView.selectedRange
-        print("range: \(range)")
-        isNeedCompletion = false
+        // Generate parameters
+        let textDocument = TextDocumentIdentifier(uri: uri)
+        let position = TextPosition(range, in: textView.text)
+        let context = CompletionContext(triggerKind: .invoked, triggerCharacter: "a")
+        let completionParams = CompletionParams(textDocument: textDocument, position: position, context: context)
+
+        // Send request "textDocument/completion"
+        currentRequestID = completion(params: completionParams)
     }
 
 }
@@ -366,21 +345,47 @@ extension EditorViewController {}
 extension EditorViewController {
 
     private func sendDidOpen() {
+        // Generate parameters
         let languageId = LanguageID.of(fileExtension: fileExtension)
-        let text = textStorage.string
-        let textDocument = TextDocumentItem(uri: uri, languageId: languageId, version: 1, text: text)
-
+        let textDocument = TextDocumentItem(uri: uri, languageId: languageId, version: currentVersion, text: textStorage.string)
         let didOpenParams = DidOpenTextDocumentParams(textDocument: textDocument)
 
+        // Send notification "textDocument/didOpen"
         didOpen(params: didOpenParams)
     }
 
     private func sendDidChange() {
+        guard textStorage.string != beforeChangesText else {
+            return
+        }
 
+        // Get the changes
+        let changes = textStorage.string.changes(from: beforeChangesText)
+
+        // Generate parameters
+        currentVersion += 1
+        let textDocument = VersionedTextDocumentIdentifier(uri: uri, version: currentVersion)
+        let range = TextRange(changes.range, in: beforeChangesText)
+        let contentChange = TextDocumentContentChangeEvent.incremental(range, changes.text)
+        let didChangeParams = DidChangeTextDocumentParams(textDocument: textDocument, contentChanges: [contentChange])
+
+        // Send notification "textDocument/didChange"
+        didChange(params: didChangeParams)
+
+        print("b: \"\(beforeChangesText.replacingOccurrences(of: "\n", with: "\\n"))\"")
+        print("a: \"\(textStorage.string.replacingOccurrences(of: "\n", with: "\\n"))\"")
+        // Update status
+        isNeedCommitChanges = false
+        beforeChangesText = textStorage.string
     }
 
     private func sendDidSave() {
+        // Generate parameters
+        let textDocument = TextDocumentIdentifier(uri: uri)
+        let didOpenParams = DidSaveTextDocumentParams(textDocument: textDocument, text: textStorage.string)
 
+        // Send notification "textDocument/didSave"
+        didSave(params: didOpenParams)
     }
 
 }
@@ -404,5 +409,33 @@ extension EditorViewController: TextDocumentMessageDelegate {
 //    func formatting(id: RequestID, result: Result<[TextEdit]?, ErrorResponse>) {}
     func rangeFormatting(id: RequestID, result: Result<[TextEdit]?, ErrorResponse>) {}
     func rename(id: RequestID, result: Result<WorkspaceEdit?, ErrorResponse>) {}
+
+}
+
+extension TextRange {
+
+    init(_ range: Range<String.Index>, in text: String) {
+        let lineRanges = text.lineRanges(range: NSRange(text.lineRange(for: range), in: text))
+        guard let start = lineRanges.first, let end = lineRanges.last else {
+            print(NSRange(range, in: text))
+            fatalError() // why?
+        }
+        let startCharacter = text.utf8.distance(from: start.range.lowerBound, to: range.lowerBound)
+        self.start = TextPosition(line: start.line, character: startCharacter)
+        let endCharacter = text.utf8.distance(from: end.range.lowerBound, to: range.upperBound)
+        self.end = TextPosition(line: end.line, character: endCharacter)
+    }
+
+}
+
+extension TextPosition {
+
+    init(_ range: Range<String.Index>, in text: String) {
+        guard let lineRange = text.lineRanges(range: NSRange(text.lineRange(for: range), in: text)).first else {
+            fatalError()
+        }
+        self.line = lineRange.line
+        self.character = text.utf8.distance(from: lineRange.range.lowerBound, to: range.lowerBound)
+    }
 
 }

@@ -23,9 +23,17 @@ final class EditorView: UITextView {
         self.lineNumberAttribute = [:]
         super.init(frame: frame, textContainer: textContainer)
 
+        // UIView setting
+        self.contentMode = .redraw
+
+        // UITextInputTraits setting
         self.autocapitalizationType = .none
         self.autocorrectionType = .no
-        self.contentMode = .redraw
+        self.spellCheckingType = .no
+        self.smartQuotesType = .no
+        self.smartDashesType = .no
+        self.smartInsertDeleteType = .no
+        self.keyboardType = .asciiCapable
     }
 
     required init?(coder: NSCoder) {
@@ -80,14 +88,12 @@ extension EditorView {
     }
 
     private func drawLineNumber(_ rect: CGRect) {
-        let glyphRange = layoutManager.glyphRange(forBoundingRect: rect, in: textContainer)
         var lineNumber = Int.zero
         var lineRect = CGRect.zero
 
-        text.enumerateLines(range: glyphRange) {
-            number, range in
-            lineNumber = number
-            lineRect = layoutManager.boundingRect(forGlyphRange: range, in: textContainer)
+        text.lineRanges(range: layoutManager.glyphRange(forBoundingRect: rect, in: textContainer)).forEach() {
+            lineNumber = $0.line + 1
+            lineRect = layoutManager.boundingRect(forGlyphRange: NSRange($0.range, in: text), in: textContainer)
             drawLineNumber(lineNumber, lineRect)
         }
 

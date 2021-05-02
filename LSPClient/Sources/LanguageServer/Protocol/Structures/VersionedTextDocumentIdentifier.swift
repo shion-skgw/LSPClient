@@ -9,4 +9,9 @@
 struct VersionedTextDocumentIdentifier: TextDocumentIdentifierType, Codable {
     let uri: DocumentUri
     let version: RequiredValue<Int>
+
+    init(uri: DocumentUri, version: Int?) {
+        self.uri = uri
+        self.version = RequiredValue(version)
+    }
 }

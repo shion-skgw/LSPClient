@@ -41,11 +41,12 @@ struct DidChangeTextDocumentParams: NotificationParamsType {
 
 enum TextDocumentContentChangeEvent: Codable {
     case full(String)
-    case incremental(TextRange, Int, String)
+//    case incremental(TextRange, Int, String) deprecated
+    case incremental(TextRange, String)
 
     private enum CodingKeys: String, CodingKey {
         case range
-        case rangeLength
+//        case rangeLength deprecated
         case text
     }
 
@@ -59,9 +60,9 @@ enum TextDocumentContentChangeEvent: Codable {
         switch self {
         case .full(let text):
             try container.encode(text, forKey: .text)
-        case .incremental(let range, let rangeLength, let text):
+        case .incremental(let range, let text):
             try container.encode(range, forKey: .range)
-            try container.encode(rangeLength, forKey: .rangeLength)
+//            try container.encode(rangeLength, forKey: .rangeLength)
             try container.encode(text, forKey: .text)
         }
     }
