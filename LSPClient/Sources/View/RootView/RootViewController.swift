@@ -48,7 +48,6 @@ final class RootViewController: UIViewController {
         let server = LanguageServer(name: "Test", host: "192.168.0.13", port: 2085, comment: "")
         MessageManager.shared.delegate = self
         MessageManager.shared.connection(server: server, method: TCPConnection.shared)
-        TCPConnection.shared.delegate = MessageManager.shared
 
         // Init workspace
         let url = URL(string: "file://192.168.0.13/Users/shion/Documents/PyCharm/Test/")!

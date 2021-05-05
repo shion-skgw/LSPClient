@@ -20,8 +20,8 @@ final class EditorLayoutManager: NSLayoutManager {
     private var invisiblesAttribute: [NSAttributedString.Key: Any] = [:]
     private var lineHeight: CGFloat = .zero
     private var showInvisibles: Bool = false
-    private var gutterWidth: CGFloat = .zero
-    private var verticalMargin: CGFloat = .zero
+    private var gutterWidth: CGFloat = EditorViewController.gutterWidth
+    private var verticalMargin: CGFloat = EditorViewController.verticalMargin
 
     override init() {
         super.init()
@@ -73,11 +73,6 @@ final class EditorLayoutManager: NSLayoutManager {
 }
 
 extension EditorLayoutManager {
-
-    func set(editorSetting: EditorSetting) {
-        self.gutterWidth = CGFloat(editorSetting.gutterWidth)
-        self.verticalMargin = CGFloat(editorSetting.verticalMargin)
-    }
 
     func set(codeStyle: CodeStyle) {
         self.invisiblesAttribute.removeAll()

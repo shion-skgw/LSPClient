@@ -10,7 +10,7 @@ import Foundation
 
 extension String {
 
-    @usableFromInline static let endOfLineRegex = try! NSRegularExpression(pattern: "(.*\n|[^\n]+$)")
+    @usableFromInline static let endOfLineRegex = try! NSRegularExpression(pattern: "^.*(\n|$)", options: .anchorsMatchLines)
 
 //    @inlinable var monospaceCount: Int {
 //        let double = (utf8.count - utf16.count) / 2
@@ -35,7 +35,7 @@ extension String {
     @inlinable func lineRanges(range: NSRange) -> [(line: Int, range: Range<Index>)] {
         var lineNumber = 0
         return String.endOfLineRegex.matches(in: self, range: NSMakeRange(.zero, range.upperBound)).compactMap() {
-            let result = range.location <= $0.range.location ? (lineNumber, Range($0.range, in: self)!) : nil
+            let result = range.lowerBound <= $0.range.upperBound ? (lineNumber, Range($0.range, in: self)!) : nil
             lineNumber += 1
             return result
         }

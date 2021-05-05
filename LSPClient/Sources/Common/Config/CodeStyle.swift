@@ -32,30 +32,30 @@ struct CodeStyle: ConfigType {
 extension CodeStyle {
 
     var tabAreaColor: Color {
-        Color(uiColor: self.backgroundColor.uiColor.contrast(0.2))
+        Color(uiColor: self.backgroundColor.uiColor.contrast(0.1))
     }
     var activeTabColor: Color {
         self.backgroundColor
     }
     var inactiveTabColor: Color {
-        Color(uiColor: self.backgroundColor.uiColor.contrast(0.4))
+        Color(uiColor: self.backgroundColor.uiColor.contrast(0.2))
     }
 
     var gutterColor: Color {
         self.backgroundColor
     }
     var gutterEdgeColor: Color {
-        Color(uiColor: self.backgroundColor.uiColor.contrast(0.25))
+        Color(uiColor: self.backgroundColor.uiColor.contrast(0.1))
     }
     var lineNumberColor: Color {
-        Color(uiColor: self.backgroundColor.uiColor.contrast(0.5))
+        Color(uiColor: self.backgroundColor.uiColor.contrast(0.3))
     }
     var lineNumberSize: CGFloat {
         CGFloat(Int(font.size * 0.8))
     }
 
     var lineHighlightColor: Color {
-        Color(uiColor: self.backgroundColor.uiColor.contrast(0.2))
+        Color(uiColor: self.backgroundColor.uiColor.contrast(0.1))
     }
 
 }

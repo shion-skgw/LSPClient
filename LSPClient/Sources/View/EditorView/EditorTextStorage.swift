@@ -11,7 +11,7 @@ import UIKit.NSTextStorage
 final class EditorTextStorage: NSTextStorage {
 
     let content: NSMutableAttributedString
-    private(set) weak var syntaxManager: SyntaxManager?
+    weak var syntaxManager: SyntaxManager?
     private(set) var textAttribute: [NSAttributedString.Key: Any]
     private(set) var highlightAttribute: [SyntaxType: [NSAttributedString.Key: Any]]
 
@@ -19,9 +19,9 @@ final class EditorTextStorage: NSTextStorage {
         content.string
     }
 
-    init(syntaxManager: SyntaxManager?) {
+    override init() {
         self.content = NSMutableAttributedString()
-        self.syntaxManager = syntaxManager
+        self.syntaxManager = nil
         self.textAttribute = [:]
         self.highlightAttribute = [:]
         super.init()
@@ -94,22 +94,26 @@ extension EditorTextStorage {
 
     private func highlightSetting(_ codeStyle: CodeStyle) {
         self.highlightAttribute.removeAll()
-        var attribute: [NSAttributedString.Key: Any] = [.font: codeStyle.font.uiFont]
-
-        attribute[.foregroundColor] = codeStyle.fontColor.keyword.uiColor
-        self.highlightAttribute[.keyword] = attribute
-
-        attribute[.foregroundColor] = codeStyle.fontColor.function.uiColor
-        self.highlightAttribute[.function] = attribute
-
-        attribute[.foregroundColor] = codeStyle.fontColor.number.uiColor
-        self.highlightAttribute[.number] = attribute
-
-        attribute[.foregroundColor] = codeStyle.fontColor.string.uiColor
-        self.highlightAttribute[.string] = attribute
-
-        attribute[.foregroundColor] = codeStyle.fontColor.comment.uiColor
-        self.highlightAttribute[.comment] = attribute
+        self.highlightAttribute[.keyword] = [
+            .font: codeStyle.font.uiFont,
+            .foregroundColor: codeStyle.fontColor.keyword.uiColor,
+        ]
+        self.highlightAttribute[.function] = [
+            .font: codeStyle.font.uiFont,
+            .foregroundColor: codeStyle.fontColor.function.uiColor,
+        ]
+        self.highlightAttribute[.number] = [
+            .font: codeStyle.font.uiFont,
+            .foregroundColor: codeStyle.fontColor.number.uiColor,
+        ]
+        self.highlightAttribute[.string] = [
+            .font: codeStyle.font.uiFont,
+            .foregroundColor: codeStyle.fontColor.string.uiColor,
+        ]
+        self.highlightAttribute[.comment] = [
+            .font: codeStyle.font.uiFont,
+            .foregroundColor: codeStyle.fontColor.comment.uiColor,
+        ]
     }
 
 }

@@ -78,6 +78,8 @@ enum LanguageID: String, Codable {
             return .Swift
         case "py":
             return .Python
+        case "xml":
+            return .XML
         default:
             fatalError()
         }

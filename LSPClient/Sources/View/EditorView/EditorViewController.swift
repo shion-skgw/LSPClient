@@ -19,6 +19,9 @@ final class EditorViewController: UIViewController{
     /// SyntaxManager
     private(set) weak var syntaxManager: SyntaxManager?
 
+    static let gutterWidth: CGFloat = 40.0
+    static let verticalMargin: CGFloat = 4.0
+
     override var undoManager: UndoManager? {
         self.textView.undoManager
     }
@@ -30,16 +33,14 @@ final class EditorViewController: UIViewController{
 
     override func loadView() {
         let codeStyle = CodeStyle.load()
-        let editorSetting = EditorSetting.load()
 
         // TextContainer
         let textContainer = NSTextContainer()
 
         // LayoutManager
         let layoutManager = EditorLayoutManager()
-        layoutManager.set(editorSetting: editorSetting)
-        layoutManager.set(codeStyle: codeStyle)
         layoutManager.addTextContainer(textContainer)
+        layoutManager.set(codeStyle: codeStyle)
         self.layoutManager = layoutManager
 
         // SyntaxManager
@@ -47,14 +48,14 @@ final class EditorViewController: UIViewController{
         self.syntaxManager = syntaxManager
 
         // TextStorage
-        let textStorage = EditorTextStorage(syntaxManager: syntaxManager)
-        textStorage.set(codeStyle: codeStyle)
+        let textStorage = EditorTextStorage()
+        textStorage.syntaxManager = syntaxManager
         textStorage.addLayoutManager(layoutManager)
+        textStorage.set(codeStyle: codeStyle)
         self.textStorage = textStorage
 
         // EditorView
         let textView = EditorView(frame: .zero, textContainer: textContainer)
-        textView.set(editorSetting: editorSetting)
         textView.set(codeStyle: codeStyle)
         textView.delegate = self
         self.textView = textView
@@ -284,11 +285,11 @@ extension EditorViewController {
 extension EditorViewController {
 
     private func needCompletion(_ text: String) -> Bool {
-        return ".;".contains(text)
+        return "." == text
     }
 
     private func sendCompletion() {
-        guard let range = Range(textView.selectedRange, in: textView.text), !range.isEmpty else {
+        guard let range = Range(textView.selectedRange, in: textView.text), range.isEmpty else {
             return
         }
 
@@ -300,6 +301,9 @@ extension EditorViewController {
 
         // Send request "textDocument/completion"
         currentRequestID = completion(params: completionParams)
+
+        // Update status
+        isNeedCompletion = false
     }
 
 }
@@ -372,8 +376,6 @@ extension EditorViewController {
         // Send notification "textDocument/didChange"
         didChange(params: didChangeParams)
 
-        print("b: \"\(beforeChangesText.replacingOccurrences(of: "\n", with: "\\n"))\"")
-        print("a: \"\(textStorage.string.replacingOccurrences(of: "\n", with: "\\n"))\"")
         // Update status
         isNeedCommitChanges = false
         beforeChangesText = textStorage.string
@@ -395,7 +397,17 @@ extension EditorViewController {
 
 extension EditorViewController: TextDocumentMessageDelegate {
 
-    func completion(id: RequestID, result: Result<CompletionList?, ErrorResponse>) {}
+    func completion(id: RequestID, result: Result<CompletionList?, ErrorResponse>) {
+        switch result {
+        case .success(let result):
+            result?.items.forEach() {
+                print($0)
+            }
+        default:
+            fatalError()
+        }
+    }
+
     func completionResolve(id: RequestID, result: Result<CompletionItem, ErrorResponse>) {}
     func hover(id: RequestID, result: Result<Hover?, ErrorResponse>) {}
 //    func declaration(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {}
@@ -416,14 +428,17 @@ extension TextRange {
 
     init(_ range: Range<String.Index>, in text: String) {
         let lineRanges = text.lineRanges(range: NSRange(text.lineRange(for: range), in: text))
-        guard let start = lineRanges.first, let end = lineRanges.last else {
-            print(NSRange(range, in: text))
-            fatalError() // why?
+        if let start = lineRanges.first, let end = lineRanges.last {
+            let startCharacter = text.utf8.distance(from: start.range.lowerBound, to: range.lowerBound)
+            self.start = TextPosition(line: start.line, character: startCharacter)
+            let endCharacter = text.utf8.distance(from: end.range.lowerBound, to: range.upperBound)
+            self.end = TextPosition(line: end.line, character: endCharacter)
+
+        } else {
+            self.start = TextPosition(line: .zero, character: .zero)
+            self.end = TextPosition(line: .zero, character: .zero)
+            if !text.isEmpty { fatalError() }
         }
-        let startCharacter = text.utf8.distance(from: start.range.lowerBound, to: range.lowerBound)
-        self.start = TextPosition(line: start.line, character: startCharacter)
-        let endCharacter = text.utf8.distance(from: end.range.lowerBound, to: range.upperBound)
-        self.end = TextPosition(line: end.line, character: endCharacter)
     }
 
 }
@@ -431,11 +446,16 @@ extension TextRange {
 extension TextPosition {
 
     init(_ range: Range<String.Index>, in text: String) {
-        guard let lineRange = text.lineRanges(range: NSRange(text.lineRange(for: range), in: text)).first else {
-            fatalError()
+        let lineRanges = text.lineRanges(range: NSRange(range, in: text))
+        if let start = lineRanges.first {
+            self.line = start.line
+            self.character = text.utf8.distance(from: start.range.lowerBound, to: range.upperBound)
+
+        } else {
+            self.line = .zero
+            self.character = .zero
+            if !text.isEmpty { fatalError() }
         }
-        self.line = lineRange.line
-        self.character = text.utf8.distance(from: lineRange.range.lowerBound, to: range.lowerBound)
     }
 
 }

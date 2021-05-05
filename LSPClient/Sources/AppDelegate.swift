@@ -18,14 +18,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         CodeStyle.remove()
         var codeStyle = CodeStyle.load()
         codeStyle.font.uiFont = UIFont.monospacedSystemFont(ofSize: 14, weight: .regular)
-        codeStyle.fontColor.text.uiColor = UIColor.black
-        codeStyle.fontColor.keyword.uiColor = UIColor.red
-        codeStyle.fontColor.function.uiColor = UIColor.blue
-        codeStyle.fontColor.number.uiColor = UIColor.blue
-        codeStyle.fontColor.string.uiColor = UIColor.purple
-        codeStyle.fontColor.comment.uiColor = UIColor.green
-        codeStyle.fontColor.invisibles.uiColor = UIColor.gray
-        codeStyle.backgroundColor.uiColor = UIColor.brown
+        codeStyle.fontColor.text.uiColor = UIColor.white
+        codeStyle.fontColor.keyword.uiColor = UIColor(red: 0.8078, green: 0.1686, blue: 0.6392, alpha: 1.0)
+        codeStyle.fontColor.function.uiColor = UIColor(red: 0.4353, green: 0.5961, blue: 0.8078, alpha: 1.0)
+        codeStyle.fontColor.number.uiColor = UIColor(red: 1, green: 0.3176, blue: 0.3176, alpha: 1.0)
+        codeStyle.fontColor.string.uiColor = UIColor(red: 1, green: 0.3176, blue: 0.3176, alpha: 1.0)
+        codeStyle.fontColor.comment.uiColor = UIColor(red: 0.3451, green: 0.7294, blue: 0.2627, alpha: 1.0)
+        codeStyle.fontColor.invisibles.uiColor = UIColor.white.withAlphaComponent(0.2)
+        codeStyle.backgroundColor.uiColor = UIColor(red: 0.1137, green: 0.1255, blue: 0.1686, alpha: 1.0)
         codeStyle.save()
 
         let rootViewController = RootViewController()

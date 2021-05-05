@@ -23,6 +23,10 @@ final class EditorView: UITextView {
         self.lineNumberAttribute = [:]
         super.init(frame: frame, textContainer: textContainer)
 
+        self.textContainerInset.top = EditorViewController.verticalMargin
+        self.textContainerInset.bottom = EditorViewController.verticalMargin
+        self.textContainerInset.left = EditorViewController.gutterWidth
+
         // UIView setting
         self.contentMode = .redraw
 
@@ -62,6 +66,11 @@ final class EditorView: UITextView {
         setNeedsDisplay()
     }
 
+//    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+//        print(action)
+//        return super.canPerformAction(action, withSender: sender)
+//    }
+
 }
 
 
@@ -100,10 +109,6 @@ extension EditorView {
         if text.hasSuffix("\n") {
             lineRect.origin.y += lineRect.size.height
             drawLineNumber(lineNumber + 1, lineRect)
-
-        } else if text.isEmpty {
-            lineRect = layoutManager.boundingRect(forGlyphRange: NSRange(), in: textContainer)
-            drawLineNumber(1, lineRect)
         }
     }
 
@@ -133,28 +138,22 @@ extension EditorView {
 
 extension EditorView {
 
-    func set(editorSetting: EditorSetting) {
-        let verticalMargin = editorSetting.verticalMargin
-        let gutterWidth = editorSetting.gutterWidth
-        self.textContainerInset.top = verticalMargin
-        self.textContainerInset.bottom = verticalMargin
-        self.textContainerInset.left = gutterWidth
-    }
-
     func set(codeStyle: CodeStyle) {
+        // Gutter setting
         self.gutterColor = codeStyle.gutterColor.uiColor.cgColor
         self.gutterEdgeColor = codeStyle.gutterEdgeColor.uiColor.cgColor
-
-        self.lineHighlightColor = codeStyle.lineHighlightColor.uiColor.cgColor
-
         self.lineNumberAttribute.removeAll()
         self.lineNumberAttribute[.font] = codeStyle.font.uiFont.withSize(codeStyle.lineNumberSize)
         self.lineNumberAttribute[.foregroundColor] = codeStyle.lineNumberColor.uiColor
+
+        // Line highlight setting
+        self.lineHighlightColor = codeStyle.lineHighlightColor.uiColor.cgColor
 
         // UITextView
         self.font = codeStyle.font.uiFont
         self.textColor = codeStyle.fontColor.text.uiColor
         self.backgroundColor = codeStyle.backgroundColor.uiColor
+        self.indicatorStyle = codeStyle.backgroundColor.uiColor.isBright ? .black : .white
     }
 
 }
