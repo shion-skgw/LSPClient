@@ -31,14 +31,11 @@ extension MessageDelegate {
     /// Create Result object
     ///
     /// - Parameter result: Result
-    /// - Parameter error : Error
     /// - Returns         : Result object
     ///
-    func toResult<T: ResultType>(_ result: ResultType?, _ error: ErrorResponse?) -> Result<T, ErrorResponse> {
+    func toResult<T: ResultType>(_ result: ResultType?) -> T {
         if let result = result as? T {
-            return .success(result)
-        } else if let error = error {
-            return .failure(error)
+            return result
         } else {
             fatalError()
         }

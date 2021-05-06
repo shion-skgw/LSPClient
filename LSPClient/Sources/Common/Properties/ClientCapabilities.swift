@@ -6,8 +6,6 @@
 //  Copyright © 2020 Shion. All rights reserved.
 //
 
-import Foundation
-
 struct ClientCapabilities: PropertiesType {
     #if DEBUG
     static let resourceName = "ClientCapabilities_test"

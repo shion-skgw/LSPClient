@@ -24,7 +24,7 @@ private let OPEN_CURLY_BRACKET = UInt8(123)
 final class MessageManager: LSPConnectionDelegate {
 
     /// Get request method
-    typealias StoredRequest = (RequestID) -> String?
+    typealias StoredRequest = (RequestID) -> MessageMethod?
 
     /// MessageManager shared instance
     static let shared: MessageManager = MessageManager()
@@ -52,7 +52,7 @@ final class MessageManager: LSPConnectionDelegate {
     ///
     private init() {
         self.decoder.userInfo[.storedRequest] = {
-            [unowned self] (id) -> String? in
+            [unowned self] (id) -> MessageMethod? in
             return self.sendRequest[id]?.method
         }
     }
@@ -198,7 +198,7 @@ final class MessageManager: LSPConnectionDelegate {
         return sendRequest
     }
     func appendSendRequest(id: RequestID, method: String, source: MessageDelegate?) {
-        sendRequest[id] = RequestContext(method: method, source: source)
+        sendRequest[id] = RequestContext(method: MessageMethod(rawValue: method) ?? .unsupported, source: source)
     }
     #endif
 
@@ -213,7 +213,7 @@ extension MessageManager {
     ///
     struct RequestContext {
         /// Request method
-        let method: String
+        let method: MessageMethod
         /// Request source
         weak var source: MessageDelegate?
     }

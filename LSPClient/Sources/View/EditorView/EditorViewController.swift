@@ -8,7 +8,7 @@
 
 import UIKit
 
-final class EditorViewController: UIViewController{
+final class EditorViewController: UIViewController {
 
     /// EditorView
     private(set) weak var textView: EditorView!
@@ -18,6 +18,8 @@ final class EditorViewController: UIViewController{
     private(set) weak var layoutManager: EditorLayoutManager!
     /// SyntaxManager
     private(set) weak var syntaxManager: SyntaxManager?
+
+    private(set) weak var completion: CompletionViewController?
 
     static let gutterWidth: CGFloat = 40.0
     static let verticalMargin: CGFloat = 4.0
@@ -97,6 +99,7 @@ final class EditorViewController: UIViewController{
             UIKeyCommand(input: "\t", modifierFlags: [.shift], action: #selector(deindent)),
             // Comment out
             UIKeyCommand(input: "/", modifierFlags: [.command], action: #selector(toggleComment)),
+            UIKeyCommand(input: " ", modifierFlags: .alternate, action: #selector(sendCompletion))
         ]
     }
 
@@ -288,7 +291,7 @@ extension EditorViewController {
         return "." == text
     }
 
-    private func sendCompletion() {
+    @objc private func sendCompletion() {
         guard let range = Range(textView.selectedRange, in: textView.text), range.isEmpty else {
             return
         }
@@ -397,30 +400,37 @@ extension EditorViewController {
 
 extension EditorViewController: TextDocumentMessageDelegate {
 
-    func completion(id: RequestID, result: Result<CompletionList?, ErrorResponse>) {
-        switch result {
-        case .success(let result):
-            result?.items.forEach() {
-                print($0)
-            }
-        default:
-            fatalError()
+    func completion(id: RequestID, result: CompletionList?) {
+        guard let items = result?.items else {
+            return
         }
     }
-
-    func completionResolve(id: RequestID, result: Result<CompletionItem, ErrorResponse>) {}
-    func hover(id: RequestID, result: Result<Hover?, ErrorResponse>) {}
-//    func declaration(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {}
-    func definition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {}
-    func typeDefinition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {}
-    func implementation(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {}
-    func references(id: RequestID, result: Result<[Location]?, ErrorResponse>) {}
-    func documentHighlight(id: RequestID, result: Result<[DocumentHighlight]?, ErrorResponse>) {}
-    func documentSymbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>) {}
-    func codeAction(id: RequestID, result: Result<CodeActionResult?, ErrorResponse>) {}
-//    func formatting(id: RequestID, result: Result<[TextEdit]?, ErrorResponse>) {}
-    func rangeFormatting(id: RequestID, result: Result<[TextEdit]?, ErrorResponse>) {}
-    func rename(id: RequestID, result: Result<WorkspaceEdit?, ErrorResponse>) {}
+    func completionResolve(id: RequestID, result: CompletionItem) {
+    }
+    func hover(id: RequestID, result: Hover?) {
+    }
+//    func declaration(id: RequestID, result: FindLocationResult?) {}
+    func definition(id: RequestID, result: FindLocationResult?) {
+    }
+    func typeDefinition(id: RequestID, result: FindLocationResult?) {
+    }
+    func implementation(id: RequestID, result: FindLocationResult?) {
+    }
+    func references(id: RequestID, result: [Location]?) {
+    }
+    func documentHighlight(id: RequestID, result: [DocumentHighlight]?) {
+    }
+    func documentSymbol(id: RequestID, result: [SymbolInformation]?) {
+    }
+    func codeAction(id: RequestID, result: CodeActionResult?) {
+    }
+//    func formatting(id: RequestID, result: [TextEdit]?) {}
+    func rangeFormatting(id: RequestID, result: [TextEdit]?) {
+    }
+    func rename(id: RequestID, result: WorkspaceEdit?) {
+    }
+    func responseError(id: RequestID, method: MessageMethod, error: ErrorResponse) {
+    }
 
 }
 

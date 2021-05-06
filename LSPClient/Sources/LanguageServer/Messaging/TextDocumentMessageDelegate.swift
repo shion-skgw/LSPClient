@@ -17,7 +17,7 @@ protocol TextDocumentMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func completion(id: RequestID, result: Result<CompletionList?, ErrorResponse>)
+    func completion(id: RequestID, result: CompletionList?)
 
     ///
     /// Receive result: completionItem/resolve
@@ -25,7 +25,7 @@ protocol TextDocumentMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func completionResolve(id: RequestID, result: Result<CompletionItem, ErrorResponse>)
+    func completionResolve(id: RequestID, result: CompletionItem)
 
     ///
     /// Receive result: textDocument/hover
@@ -33,7 +33,7 @@ protocol TextDocumentMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func hover(id: RequestID, result: Result<Hover?, ErrorResponse>)
+    func hover(id: RequestID, result: Hover?)
 
     ///
     /// Receive result: textDocument/declaration
@@ -41,7 +41,7 @@ protocol TextDocumentMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-//    func declaration(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>)
+//    func declaration(id: RequestID, result: FindLocationResult?)
 
     ///
     /// Receive result: textDocument/definition
@@ -49,7 +49,7 @@ protocol TextDocumentMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func definition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>)
+    func definition(id: RequestID, result: FindLocationResult?)
 
     ///
     /// Receive result: textDocument/typeDefinition
@@ -57,7 +57,7 @@ protocol TextDocumentMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func typeDefinition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>)
+    func typeDefinition(id: RequestID, result: FindLocationResult?)
 
     ///
     /// Receive result: textDocument/implementation
@@ -65,7 +65,7 @@ protocol TextDocumentMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func implementation(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>)
+    func implementation(id: RequestID, result: FindLocationResult?)
 
     ///
     /// Receive result: textDocument/references
@@ -73,7 +73,7 @@ protocol TextDocumentMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func references(id: RequestID, result: Result<[Location]?, ErrorResponse>)
+    func references(id: RequestID, result: [Location]?)
 
     ///
     /// Receive result: textDocument/documentHighlight
@@ -81,7 +81,7 @@ protocol TextDocumentMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func documentHighlight(id: RequestID, result: Result<[DocumentHighlight]?, ErrorResponse>)
+    func documentHighlight(id: RequestID, result: [DocumentHighlight]?)
 
     ///
     /// Receive result: textDocument/documentSymbol
@@ -89,7 +89,7 @@ protocol TextDocumentMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func documentSymbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>)
+    func documentSymbol(id: RequestID, result: [SymbolInformation]?)
 
     ///
     /// Receive result: textDocument/codeAction
@@ -97,7 +97,7 @@ protocol TextDocumentMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func codeAction(id: RequestID, result: Result<CodeActionResult?, ErrorResponse>)
+    func codeAction(id: RequestID, result: CodeActionResult?)
 
     ///
     /// Receive result: textDocument/formatting
@@ -105,7 +105,7 @@ protocol TextDocumentMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-//    func formatting(id: RequestID, result: Result<[TextEdit]?, ErrorResponse>)
+//    func formatting(id: RequestID, result: [TextEdit]?)
 
     ///
     /// Receive result: textDocument/rangeFormatting
@@ -113,7 +113,7 @@ protocol TextDocumentMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func rangeFormatting(id: RequestID, result: Result<[TextEdit]?, ErrorResponse>)
+    func rangeFormatting(id: RequestID, result: [TextEdit]?)
 
     ///
     /// Receive result: textDocument/rename
@@ -121,7 +121,16 @@ protocol TextDocumentMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func rename(id: RequestID, result: Result<WorkspaceEdit?, ErrorResponse>)
+    func rename(id: RequestID, result: WorkspaceEdit?)
+
+    ///
+    /// Receive error
+    ///
+    /// - Parameter id    : Request ID
+    /// - Parameter method: Method
+    /// - Parameter error : Error
+    ///
+    func responseError(id: RequestID, method: MessageMethod, error: ErrorResponse)
 
 }
 
@@ -133,7 +142,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func didOpen(params: DidOpenTextDocumentParams) {
-        let message = Message.notification(TEXT_DOCUMENT_DID_OPEN, params)
+        let message = Message.notification(.textDocumentDidOpen, params)
         MessageManager.shared.send(message: message)
     }
 
@@ -143,7 +152,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func didChange(params: DidChangeTextDocumentParams) {
-        let message = Message.notification(TEXT_DOCUMENT_DID_CHANGE, params)
+        let message = Message.notification(.textDocumentDidChange, params)
         MessageManager.shared.send(message: message)
     }
 
@@ -153,7 +162,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func didSave(params: DidSaveTextDocumentParams) {
-        let message = Message.notification(TEXT_DOCUMENT_DID_SAVE, params)
+        let message = Message.notification(.textDocumentDidSave, params)
         MessageManager.shared.send(message: message)
     }
 
@@ -163,7 +172,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func didClose(params: DidCloseTextDocumentParams) {
-        let message = Message.notification(TEXT_DOCUMENT_DID_CLOSE, params)
+        let message = Message.notification(.textDocumentDidClose, params)
         MessageManager.shared.send(message: message)
     }
 
@@ -173,7 +182,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func completion(params: CompletionParams) -> RequestID {
-        let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_COMPLETION, source: self)
+        let context = MessageManager.RequestContext(method: .textDocumentCompletion, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -186,7 +195,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func completionResolve(params: CompletionItem) -> RequestID {
-        let context = MessageManager.RequestContext(method: COMPLETION_ITEM_RESOLVE, source: self)
+        let context = MessageManager.RequestContext(method: .completionItemResolve, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -199,7 +208,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func hover(params: HoverParams) -> RequestID {
-        let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_HOVER, source: self)
+        let context = MessageManager.RequestContext(method: .textDocumentHover, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -212,7 +221,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
 //    func declaration(params: DeclarationParams) -> RequestID {
-//        let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_DECLARATION, source: self)
+//        let context = MessageManager.RequestContext(method: .textDocumentDeclaration, source: self)
 //        let id = MessageManager.shared.nextId
 //        let message = Message.request(id, context.method, params)
 //        MessageManager.shared.send(message: message, context: context)
@@ -225,7 +234,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func definition(params: DefinitionParams) -> RequestID {
-        let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_DEFINITION, source: self)
+        let context = MessageManager.RequestContext(method: .textDocumentDefinition, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -238,7 +247,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func typeDefinition(params: TypeDefinitionParams) -> RequestID {
-        let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_TYPE_DEFINITION, source: self)
+        let context = MessageManager.RequestContext(method: .textDocumentTypeDefinition, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -251,7 +260,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func implementation(params: ImplementationParams) -> RequestID {
-        let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_IMPLEMENTATION, source: self)
+        let context = MessageManager.RequestContext(method: .textDocumentImplementation, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -264,7 +273,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func references(params: ReferenceParams) -> RequestID {
-        let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_REFERENCES, source: self)
+        let context = MessageManager.RequestContext(method: .textDocumentReferences, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -277,7 +286,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func documentHighlight(params: DocumentHighlightParams) -> RequestID {
-        let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_DOCUMENT_HIGHLIGHT, source: self)
+        let context = MessageManager.RequestContext(method: .textDocumentDocumentHighlight, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -290,7 +299,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func documentSymbol(params: DocumentSymbolParams) -> RequestID {
-        let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_DOCUMENT_SYMBOL, source: self)
+        let context = MessageManager.RequestContext(method: .textDocumentDocumentSymbol, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -303,7 +312,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func codeAction(params: CodeActionParams) -> RequestID {
-        let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_CODE_ACTION, source: self)
+        let context = MessageManager.RequestContext(method: .textDocumentCodeAction, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -316,7 +325,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
 //    func formatting(params: DocumentFormattingParams) -> RequestID {
-//        let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_FORMATTING, source: self)
+//        let context = MessageManager.RequestContext(method: .textDocumentFormatting, source: self)
 //        let id = MessageManager.shared.nextId
 //        let message = Message.request(id, context.method, params)
 //        MessageManager.shared.send(message: message, context: context)
@@ -329,7 +338,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func rangeFormatting(params: DocumentRangeFormattingParams) -> RequestID {
-        let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_RANGE_FORMATTING, source: self)
+        let context = MessageManager.RequestContext(method: .textDocumentRangeFormatting, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -342,7 +351,7 @@ extension TextDocumentMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func rename(params: RenameParams) -> RequestID {
-        let context = MessageManager.RequestContext(method: TEXT_DOCUMENT_RENAME, source: self)
+        let context = MessageManager.RequestContext(method: .textDocumentRename, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -364,38 +373,43 @@ extension TextDocumentMessageDelegate {
             fatalError()
         }
 
+        if let error = error {
+            source.responseError(id: id, method: context.method, error: error)
+            return true
+        }
+
         switch context.method {
-        case TEXT_DOCUMENT_COMPLETION:
-            source.completion(id: id, result: toResult(result, error))
+        case .textDocumentCompletion:
+            source.completion(id: id, result: toResult(result))
             return (result as? CompletionList)?.isIncomplete == false
-        case COMPLETION_ITEM_RESOLVE:
-            source.completionResolve(id: id, result: toResult(result, error))
-        case TEXT_DOCUMENT_HOVER:
-            source.hover(id: id, result: toResult(result, error))
-//        case TEXT_DOCUMENT_DECLARATION:
-//            source.declaration(id: id, result: or(result, error))
-        case TEXT_DOCUMENT_DEFINITION:
-            source.definition(id: id, result: toResult(result, error))
-        case TEXT_DOCUMENT_TYPE_DEFINITION:
-            source.typeDefinition(id: id, result: toResult(result, error))
-        case TEXT_DOCUMENT_IMPLEMENTATION:
-            source.implementation(id: id, result: toResult(result, error))
-        case TEXT_DOCUMENT_REFERENCES:
-            source.references(id: id, result: toResult(result, error))
-        case TEXT_DOCUMENT_DOCUMENT_HIGHLIGHT:
-            source.documentHighlight(id: id, result: toResult(result, error))
-        case TEXT_DOCUMENT_DOCUMENT_SYMBOL:
-            source.documentSymbol(id: id, result: toResult(result, error))
-        case TEXT_DOCUMENT_CODE_ACTION:
-            source.codeAction(id: id, result: toResult(result, error))
-//        case TEXT_DOCUMENT_FORMATTING:
-//            source.formatting(id: id, result: or(result, error))
-        case TEXT_DOCUMENT_RANGE_FORMATTING:
-            source.rangeFormatting(id: id, result: toResult(result, error))
-        case TEXT_DOCUMENT_RENAME:
-            source.rename(id: id, result: toResult(result, error))
+        case .completionItemResolve:
+            source.completionResolve(id: id, result: toResult(result))
+        case .textDocumentHover:
+            source.hover(id: id, result: toResult(result))
+//        case .textDocumentDeclaration:
+//            source.declaration(id: id, result: toResult(result)
+        case .textDocumentDefinition:
+            source.definition(id: id, result: toResult(result))
+        case .textDocumentTypeDefinition:
+            source.typeDefinition(id: id, result: toResult(result))
+        case .textDocumentImplementation:
+            source.implementation(id: id, result: toResult(result))
+        case .textDocumentReferences:
+            source.references(id: id, result: toResult(result))
+        case .textDocumentDocumentHighlight:
+            source.documentHighlight(id: id, result: toResult(result))
+        case .textDocumentDocumentSymbol:
+            source.documentSymbol(id: id, result: toResult(result))
+        case .textDocumentCodeAction:
+            source.codeAction(id: id, result: toResult(result))
+//        case .textDocumentFormatting:
+//            source.formatting(id: id, result: toResult(result)
+        case .textDocumentRangeFormatting:
+            source.rangeFormatting(id: id, result: toResult(result))
+        case .textDocumentRename:
+            source.rename(id: id, result: toResult(result))
         default:
-            throw MessageDecodingError.unsupportedMethod(id, context.method)
+            throw MessageDecodingError.unsupportedMethod(id, context.method.rawValue)
         }
 
         return true

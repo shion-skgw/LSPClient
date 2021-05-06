@@ -306,17 +306,10 @@ extension RootViewController: MessageManagerDelegate {
 
 extension RootViewController: WorkspaceMessageDelegate {
 
-    func initialize(id: RequestID, result: Result<InitializeResult, ErrorResponse>) {
-        print("\(#function)\n\(id)\n\(result)\n")
-    }
-    func shutdown(id: RequestID, result: Result<VoidValue?, ErrorResponse>) {
-        print("\(#function)\n\(id)\n\(result)\n")
-    }
-    func symbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>) {
-        print("\(#function)\n\(id)\n\(result)\n")
-    }
-    func executeCommand(id: RequestID, result: Result<AnyValue?, ErrorResponse>) {
-        print("\(#function)\n\(id)\n\(result)\n")
-    }
+    func initialize(id: RequestID, result: InitializeResult) {}
+    func shutdown(id: RequestID, result: VoidValue?) {}
+    func symbol(id: RequestID, result: [SymbolInformation]?) {}
+    func executeCommand(id: RequestID, result: AnyValue?) {}
+    func responseError(id: RequestID, method: MessageMethod, error: ErrorResponse) {}
 
 }

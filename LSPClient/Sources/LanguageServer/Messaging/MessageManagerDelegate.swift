@@ -108,14 +108,14 @@ extension MessageManagerDelegate {
     /// - Parameter params: Parameter
     /// - Throws          : Unsupported methods
     ///
-    func receiveRequest(id: RequestID, method: String, params: RequestParamsType) throws {
+    func receiveRequest(id: RequestID, method: MessageMethod, params: RequestParamsType) throws {
         switch method {
-        case WINDOW_SHOW_MESSAGE_REQUEST:
+        case .windowShowMessageRequest:
             showMessageRequest(id: id, params: toParam(params))
-        case WORKSPACE_APPLY_EDIT:
+        case .workspaceApplyEdit:
             applyEdit(id: id, params: toParam(params))
         default:
-            throw MessageDecodingError.unsupportedMethod(id, method)
+            throw MessageDecodingError.unsupportedMethod(id, method.rawValue)
         }
     }
 
@@ -126,18 +126,18 @@ extension MessageManagerDelegate {
     /// - Parameter params: Parameter
     /// - Throws          : Unsupported methods
     ///
-    func receiveNotification(method: String, params: NotificationParamsType) throws {
+    func receiveNotification(method: MessageMethod, params: NotificationParamsType) throws {
         switch method {
-        case CANCEL_REQUEST:
+        case .cancelRequest:
             cancelRequest(params: toParam(params))
-        case WINDOW_SHOW_MESSAGE:
+        case .windowShowMessage:
             showMessage(params: toParam(params))
-        case WINDOW_LOG_MESSAGE:
+        case .windowLogMessage:
             logMessage(params: toParam(params))
-        case TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS:
+        case .textDocumentPublishDiagnostics:
             publishDiagnostics(params: toParam(params))
         default:
-            throw MessageDecodingError.unsupportedMethod(nil, method)
+            throw MessageDecodingError.unsupportedMethod(nil, method.rawValue)
         }
     }
 

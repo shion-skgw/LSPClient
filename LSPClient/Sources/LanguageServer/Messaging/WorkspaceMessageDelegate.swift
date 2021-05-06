@@ -17,7 +17,7 @@ protocol WorkspaceMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func initialize(id: RequestID, result: Result<InitializeResult, ErrorResponse>)
+    func initialize(id: RequestID, result: InitializeResult)
 
     ///
     /// Receive result: shutdown
@@ -25,7 +25,7 @@ protocol WorkspaceMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func shutdown(id: RequestID, result: Result<VoidValue?, ErrorResponse>)
+    func shutdown(id: RequestID, result: VoidValue?)
 
     ///
     /// Receive result: workspace/symbol
@@ -33,7 +33,7 @@ protocol WorkspaceMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func symbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>)
+    func symbol(id: RequestID, result: [SymbolInformation]?)
 
     ///
     /// Receive result: workspace/executeCommand
@@ -41,7 +41,16 @@ protocol WorkspaceMessageDelegate: MessageDelegate {
     /// - Parameter id    : Request ID
     /// - Parameter result: Result
     ///
-    func executeCommand(id: RequestID, result: Result<AnyValue?, ErrorResponse>)
+    func executeCommand(id: RequestID, result: AnyValue?)
+
+    ///
+    /// Receive error
+    ///
+    /// - Parameter id    : Request ID
+    /// - Parameter method: Method
+    /// - Parameter error : Error
+    ///
+    func responseError(id: RequestID, method: MessageMethod, error: ErrorResponse)
 
 }
 
@@ -53,7 +62,7 @@ extension WorkspaceMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func cancelRequest(params: CancelParams) {
-        let message = Message.notification(CANCEL_REQUEST, params)
+        let message = Message.notification(.cancelRequest, params)
         MessageManager.shared.send(message: message)
     }
 
@@ -63,7 +72,7 @@ extension WorkspaceMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func initialize(params: InitializeParams) -> RequestID {
-        let context = MessageManager.RequestContext(method: INITIALIZE, source: self)
+        let context = MessageManager.RequestContext(method: .initialize, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -76,7 +85,7 @@ extension WorkspaceMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func initialized(params: InitializedParams) {
-        let message = Message.notification(INITIALIZED, params)
+        let message = Message.notification(.initialized, params)
         MessageManager.shared.send(message: message)
     }
 
@@ -86,7 +95,7 @@ extension WorkspaceMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func shutdown(params: VoidValue) -> RequestID {
-        let context = MessageManager.RequestContext(method: SHUTDOWN, source: self)
+        let context = MessageManager.RequestContext(method: .shutdown, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -99,7 +108,7 @@ extension WorkspaceMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func exit(params: VoidValue) {
-        let message = Message.notification(EXIT, params)
+        let message = Message.notification(.exit, params)
         MessageManager.shared.send(message: message)
     }
 
@@ -109,7 +118,7 @@ extension WorkspaceMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func didChangeConfiguration(params: DidChangeConfigurationParams) {
-        let message = Message.notification(WORKSPACE_DID_CHANGE_CONFIGURATION, params)
+        let message = Message.notification(.workspaceDidChangeConfiguration, params)
         MessageManager.shared.send(message: message)
     }
 
@@ -119,7 +128,7 @@ extension WorkspaceMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func didChangeWatchedFiles(params: DidChangeWatchedFilesParams) {
-        let message = Message.notification(WORKSPACE_DID_CHANGE_WATCHED_FILES, params)
+        let message = Message.notification(.workspaceDidChangeWatchedFiles, params)
         MessageManager.shared.send(message: message)
     }
 
@@ -129,7 +138,7 @@ extension WorkspaceMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func symbol(params: WorkspaceSymbolParams) -> RequestID {
-        let context = MessageManager.RequestContext(method: WORKSPACE_SYMBOL, source: self)
+        let context = MessageManager.RequestContext(method: .workspaceSymbol, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -142,7 +151,7 @@ extension WorkspaceMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func executeCommand(params: ExecuteCommandParams) -> RequestID {
-        let context = MessageManager.RequestContext(method: WORKSPACE_EXECUTE_COMMAND, source: self)
+        let context = MessageManager.RequestContext(method: .workspaceExecuteCommand, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -155,7 +164,7 @@ extension WorkspaceMessageDelegate {
     /// - Parameter params: Parameter
     ///
     func applyEdit(params: ApplyWorkspaceEditParams) -> RequestID {
-        let context = MessageManager.RequestContext(method: WORKSPACE_APPLY_EDIT, source: self)
+        let context = MessageManager.RequestContext(method: .workspaceApplyEdit, source: self)
         let id = MessageManager.shared.nextId
         let message = Message.request(id, context.method, params)
         MessageManager.shared.send(message: message, context: context)
@@ -177,17 +186,22 @@ extension WorkspaceMessageDelegate {
             fatalError()
         }
 
+        if let error = error {
+            source.responseError(id: id, method: context.method, error: error)
+            return true
+        }
+
         switch context.method {
-        case INITIALIZE:
-            source.initialize(id: id, result: toResult(result, error))
-        case SHUTDOWN:
-            source.shutdown(id: id, result: toResult(result, error))
-        case WORKSPACE_SYMBOL:
-            source.symbol(id: id, result: toResult(result, error))
-        case WORKSPACE_EXECUTE_COMMAND:
-            source.executeCommand(id: id, result: toResult(result, error))
+        case .initialize:
+            source.initialize(id: id, result: toResult(result))
+        case .shutdown:
+            source.shutdown(id: id, result: toResult(result))
+        case .workspaceSymbol:
+            source.symbol(id: id, result: toResult(result))
+        case .workspaceExecuteCommand:
+            source.executeCommand(id: id, result: toResult(result))
         default:
-            throw MessageDecodingError.unsupportedMethod(id, context.method)
+            throw MessageDecodingError.unsupportedMethod(id, context.method.rawValue)
         }
 
         return true

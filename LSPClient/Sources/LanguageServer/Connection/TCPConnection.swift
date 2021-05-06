@@ -42,12 +42,12 @@ final class TCPConnection: LSPConnection {
         // Connection initialization
         connection = NWConnection(host: host, port: port, using: .tcp)
         connection.stateUpdateHandler = {
-            [unowned self] (state) in
+            state in
             switch state {
             case .waiting(let error):
-                self.delegate.connectionError(cause: error)
+                self.connectionError(error)
             case .failed(let error):
-                self.delegate.connectionError(cause: error)
+                self.connectionError(error)
             default:
                 break
             }
@@ -70,15 +70,15 @@ final class TCPConnection: LSPConnection {
     ///
     private func receive() {
         connection.receive(minimumIncompleteLength: 1, maximumLength: Int(UInt32.max)) {
-            [unowned self] (data, _, isComplete, error) in
+            data, _, isComplete, error in
             if let data = data, !data.isEmpty {
-                self.delegate.didReceive(data: data)
+                self.didReceive(data)
             }
 
             if isComplete {
                 self.close()
             } else if let error = error {
-                self.delegate.connectionError(cause: error)
+                self.connectionError(error)
             } else {
                 self.receive()
             }
@@ -93,13 +93,25 @@ final class TCPConnection: LSPConnection {
     ///
     func send(data: Data, completion: @escaping () -> ()) {
         connection.send(content: data, completion: .contentProcessed {
-            [unowned self, completion] (error) in
+            [completion] error in
             if let error = error {
-                self.delegate.connectionError(cause: error)
+                self.connectionError(error)
             } else {
                 completion()
             }
         })
+    }
+
+    private func connectionError(_ cause: Error) {
+        DispatchQueue.main.async {
+            self.delegate.connectionError(cause: cause)
+        }
+    }
+
+    private func didReceive(_ data: Data) {
+        DispatchQueue.main.async {
+            self.delegate.didReceive(data: data)
+        }
     }
 
 }

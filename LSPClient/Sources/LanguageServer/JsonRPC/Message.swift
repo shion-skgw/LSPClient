@@ -7,8 +7,8 @@
 //
 
 enum Message {
-    case request(RequestID, String, RequestParamsType)
-    case notification(String, NotificationParamsType)
+    case request(RequestID, MessageMethod, RequestParamsType)
+    case notification(MessageMethod, NotificationParamsType)
     case response(RequestID, ResultType?)
     case errorResponse(RequestID, ErrorResponse)
 }
@@ -32,23 +32,23 @@ extension Message: Codable {
         }
 
         let id = try container.decodeIfPresent(RequestID.self, forKey: .id)
-        let method = try container.decodeIfPresent(String.self, forKey: .method)
+        let method = try container.decodeIfPresent(MessageMethod.self, forKey: .method)
         let hasResult = container.contains(.result)
         let hasError = container.contains(.error)
 
         switch (id, method, hasResult, hasError) {
         case (let id?, let method?, false, false):
             /* Request */
-            guard let paramsType = REQUEST_PARAMS_TYPE[method] else {
-                throw MessageDecodingError.unsupportedMethod(id, method)
+            guard let paramsType = method.requestParamsType else {
+                throw MessageDecodingError.unsupportedMethod(id, method.rawValue)
             }
             let params = try paramsType.init(from: container.superDecoder(forKey: .params))
             self = .request(id, method, params)
 
         case (nil, let method?, false, false):
             /* Notification */
-            guard let paramsType = NOTIFICATION_PARAMS_TYPE[method] else {
-                throw MessageDecodingError.unsupportedMethod(nil, method)
+            guard let paramsType = method.notificationParamsType else {
+                throw MessageDecodingError.unsupportedMethod(id, method.rawValue)
             }
             let params = try paramsType.init(from: container.superDecoder(forKey: .params))
             self = .notification(method, params)
@@ -58,8 +58,8 @@ extension Message: Codable {
             guard let method = (decoder.userInfo[.storedRequest] as? MessageManager.StoredRequest)?(id) else {
                 throw MessageDecodingError.unknownRequestID
             }
-            guard let resultType = RESPONSE_RESULT_TYPE[method] else {
-                throw MessageDecodingError.unsupportedMethod(id, method)
+            guard let resultType = method.responseResultType else {
+                throw MessageDecodingError.unsupportedMethod(id, method.rawValue)
             }
             let result = try resultType.init(from: container.superDecoder(forKey: .result))
             self = .response(id, result)

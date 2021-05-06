@@ -28,7 +28,6 @@ class MessageManagerDelegateStub: MessageManagerDelegate {
         self.cause = cause
     }
 
-
     func cancelRequest(params: CancelParams) {
         self.function = #function
         self.params = params
@@ -70,39 +69,37 @@ class WorkspaceMessageDelegateStub: WorkspaceMessageDelegate {
     var id: RequestID!
     var isSuccess: Bool!
 
-    func initialize(id: RequestID, result: Result<InitializeResult, ErrorResponse>) {
+    func initialize(id: RequestID, result: InitializeResult) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
         self.id = id
     }
 
-    func shutdown(id: RequestID, result: Result<VoidValue?, ErrorResponse>) {
+    func shutdown(id: RequestID, result: VoidValue?) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
         self.id = id
     }
 
-    func symbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>) {
+    func symbol(id: RequestID, result: [SymbolInformation]?) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
         self.id = id
     }
 
-    func executeCommand(id: RequestID, result: Result<AnyValue?, ErrorResponse>) {
+    func executeCommand(id: RequestID, result: AnyValue?) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
+        self.id = id
+    }
+
+    func responseError(id: RequestID, method: MessageMethod, error: ErrorResponse) {
+        self.function = #function
+        self.error = error
         self.id = id
     }
 
@@ -115,111 +112,93 @@ class TextDocumentMessageDelegateStub: TextDocumentMessageDelegate {
     var id: RequestID!
     var isSuccess: Bool!
 
-    func completion(id: RequestID, result: Result<CompletionList?, ErrorResponse>) {
+    func completion(id: RequestID, result: CompletionList?) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
         self.id = id
     }
 
-    func completionResolve(id: RequestID, result: Result<CompletionItem, ErrorResponse>) {
+    func completionResolve(id: RequestID, result: CompletionItem) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
         self.id = id
     }
 
-    func hover(id: RequestID, result: Result<Hover?, ErrorResponse>) {
+    func hover(id: RequestID, result: Hover?) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
         self.id = id
     }
 
-    func definition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {
+    func definition(id: RequestID, result: FindLocationResult?) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
         self.id = id
     }
 
-    func typeDefinition(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {
+    func typeDefinition(id: RequestID, result: FindLocationResult?) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
         self.id = id
     }
 
-    func implementation(id: RequestID, result: Result<FindLocationResult?, ErrorResponse>) {
+    func implementation(id: RequestID, result: FindLocationResult?) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
         self.id = id
     }
 
-    func references(id: RequestID, result: Result<[Location]?, ErrorResponse>) {
+    func references(id: RequestID, result: [Location]?) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
         self.id = id
     }
 
-    func documentHighlight(id: RequestID, result: Result<[DocumentHighlight]?, ErrorResponse>) {
+    func documentHighlight(id: RequestID, result: [DocumentHighlight]?) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
         self.id = id
     }
 
-    func documentSymbol(id: RequestID, result: Result<[SymbolInformation]?, ErrorResponse>) {
+    func documentSymbol(id: RequestID, result: [SymbolInformation]?) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
         self.id = id
     }
 
-    func codeAction(id: RequestID, result: Result<CodeActionResult?, ErrorResponse>) {
+    func codeAction(id: RequestID, result: CodeActionResult?) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
         self.id = id
     }
 
-    func rangeFormatting(id: RequestID, result: Result<[TextEdit]?, ErrorResponse>) {
+    func rangeFormatting(id: RequestID, result: [TextEdit]?) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
         self.id = id
     }
 
-    func rename(id: RequestID, result: Result<WorkspaceEdit?, ErrorResponse>) {
+    func rename(id: RequestID, result: WorkspaceEdit?) {
         self.function = #function
-        switch result {
-        case .success(let result): self.result = result; isSuccess = true
-        case .failure(let error):  self.error  = error
-        }
+        self.result = result
+        self.isSuccess = true
+        self.id = id
+    }
+
+    func responseError(id: RequestID, method: MessageMethod, error: ErrorResponse) {
+        self.function = #function
+        self.error = error
         self.id = id
     }
 

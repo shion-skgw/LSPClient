@@ -6,8 +6,6 @@
 //  Copyright © 2020 Shion. All rights reserved.
 //
 
-import Foundation
-
 enum ErrorCodes: Int, Codable {
     case parseError = -32700
     case invalidRequest = -32600

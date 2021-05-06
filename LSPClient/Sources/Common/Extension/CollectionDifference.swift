@@ -6,8 +6,6 @@
 //  Copyright © 2021 Shion. All rights reserved.
 //
 
-import Foundation
-
 extension CollectionDifference {
 
     @inlinable var isSequential: Bool {

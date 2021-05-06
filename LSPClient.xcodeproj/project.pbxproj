@@ -116,6 +116,7 @@
 		05D4D4AF24D6B13500A76239 /* ClientCapabilities_test.plist in Resources */ = {isa = PBXBuildFile; fileRef = 05D4D4AE24D6B13500A76239 /* ClientCapabilities_test.plist */; };
 		05DBAEAB25DDD9FA00B028B2 /* UIAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DBAEAA25DDD9FA00B028B2 /* UIAlertController.swift */; };
 		05E7BFD5263B65A30072527A /* SyntaxType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E7BFD4263B65A30072527A /* SyntaxType.swift */; };
+		05E8A4BC264218C90013AA65 /* CompletionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E8A4BB264218C90013AA65 /* CompletionViewController.swift */; };
 		05EE6F8425CD6A4200F94B24 /* WorkspaceFoldButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EE6F8325CD6A4200F94B24 /* WorkspaceFoldButton.swift */; };
 		05EE6F8825CD6B7400F94B24 /* WorkspaceViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EE6F8725CD6B7400F94B24 /* WorkspaceViewCell.swift */; };
 		05F0264725168C0E003CCEA4 /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F0264625168C0E003CCEA4 /* UIViewController.swift */; };
@@ -261,6 +262,7 @@
 		05D4D4AE24D6B13500A76239 /* ClientCapabilities_test.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ClientCapabilities_test.plist; sourceTree = "<group>"; };
 		05DBAEAA25DDD9FA00B028B2 /* UIAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlertController.swift; sourceTree = "<group>"; };
 		05E7BFD4263B65A30072527A /* SyntaxType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxType.swift; sourceTree = "<group>"; };
+		05E8A4BB264218C90013AA65 /* CompletionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionViewController.swift; sourceTree = "<group>"; };
 		05EE6F8325CD6A4200F94B24 /* WorkspaceFoldButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceFoldButton.swift; sourceTree = "<group>"; };
 		05EE6F8725CD6B7400F94B24 /* WorkspaceViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceViewCell.swift; sourceTree = "<group>"; };
 		05F0264625168C0E003CCEA4 /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
@@ -428,6 +430,7 @@
 		0589B58824DCF869006E0C6F /* View */ = {
 			isa = PBXGroup;
 			children = (
+				05E8A4BA264218B60013AA65 /* CompletionView */,
 				0578E6FE25D7A2C40029F28D /* ConsoleView */,
 				0578E6FF25D7A2E10029F28D /* DiagnosticView */,
 				05F45C0E25CA3AF500C96ADB /* EditorTabView */,
@@ -635,6 +638,14 @@
 				05D4D4AA24D6AA7400A76239 /* PropertiesType.swift */,
 			);
 			path = Properties;
+			sourceTree = "<group>";
+		};
+		05E8A4BA264218B60013AA65 /* CompletionView */ = {
+			isa = PBXGroup;
+			children = (
+				05E8A4BB264218C90013AA65 /* CompletionViewController.swift */,
+			);
+			path = CompletionView;
 			sourceTree = "<group>";
 		};
 		05F419C825F13F8A002C3626 /* PreferenceView */ = {
@@ -867,6 +878,7 @@
 			files = (
 				0540195B249373E700287026 /* FileResourceChanges.swift in Sources */,
 				05601E8125A2974D007B91C1 /* EditorTabItem.swift in Sources */,
+				05E8A4BC264218C90013AA65 /* CompletionViewController.swift in Sources */,
 				058B6A1D248D79C00099B32F /* AnyValue.swift in Sources */,
 				05F419F225F14381002C3626 /* PreferenceView.swift in Sources */,
 				0578E70125D7A2FC0029F28D /* ConsoleView.swift in Sources */,
