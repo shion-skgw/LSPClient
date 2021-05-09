@@ -1,7 +1,7 @@
 # LSPClient
 I want to code on my iPad!
 
-**Current version sample**
+**Current version sample**  
 ![](./sample.gif)
 
 # LSP Support
