@@ -1,4 +1,8 @@
 # LSPClient
+I want to code on my iPad!
+
+**Current version sample**
+![](./sample.gif)
 
 # LSP Support
 | Name | Method | Support |
@@ -92,6 +96,9 @@ https://github.com/microsoft/language-server-protocol/blob/gh-pages/_specificati
 - [UITextView内のカーソル位置をCGRectで取得する](https://h3poteto.hatenablog.com/entry/2015/07/03/000034)
 - [iOSでキーボードショートカットに対応する](https://qiita.com/kowloon/items/ceb03e6c288b31e24f79)
 - [UIMenuControllerにMenuItemを追加](http://faboplatform.github.io/SwiftDocs/1.uikit/033_uimenucontroller/)
+
+## Network.framework
+- [Network.framework を使った TCP Socket 通信してみる](https://tech.unifa-e.com/entry/2018/11/20/133851)
 
 ## UITableView
 - [UITableViewCellの再利用を知る](https://shiba1014.medium.com/uitableviewcellの再利用を知る-24f00d68f17d)

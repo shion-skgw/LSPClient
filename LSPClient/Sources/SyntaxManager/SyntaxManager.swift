@@ -13,6 +13,7 @@ final class SyntaxManager {
     private static var storage: NSMutableDictionary = [:]
     private static let languageTable: [String: String] = [
         "swift": "Swift",
+        "py": "Python",
     ]
 
     let syntaxes: [SyntaxRegex]
@@ -53,7 +54,7 @@ final class SyntaxManager {
         }
     }
 
-    private init?(_ definition: CommonDefinition) {
+    private init(_ definition: CommonDefinition) {
         var syntaxes: [SyntaxRegex] = []
         var commentOpenSymbol: [String] = []
         var multipleLineSymbol: Set<String> = []

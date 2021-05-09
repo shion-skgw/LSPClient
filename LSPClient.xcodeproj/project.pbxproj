@@ -89,6 +89,8 @@
 		059150FB25D2DE04009EB71B /* SidebarMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059150FA25D2DE04009EB71B /* SidebarMenuViewController.swift */; };
 		0591511B25D47239009EB71B /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0591511A25D47239009EB71B /* RootView.swift */; };
 		059549DD2647FEA900935907 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 059549DC2647FEA900935907 /* README.md */; };
+		059549E32648072D00935907 /* Python.plist in Resources */ = {isa = PBXBuildFile; fileRef = 059549E22648072D00935907 /* Python.plist */; };
+		059549E726480BB300935907 /* sample.gif in Resources */ = {isa = PBXBuildFile; fileRef = 059549E626480BB300935907 /* sample.gif */; };
 		05BA10AF24D2D922009A3669 /* LSPConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BA10AE24D2D922009A3669 /* LSPConnection.swift */; };
 		05BAAB1C24A3530500A3EADC /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BAAB1B24A3530500A3EADC /* Common.swift */; };
 		05BAAB1E24A3530E00A3EADC /* Initialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BAAB1D24A3530E00A3EADC /* Initialize.swift */; };
@@ -234,6 +236,8 @@
 		059150FA25D2DE04009EB71B /* SidebarMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarMenuViewController.swift; sourceTree = "<group>"; };
 		0591511A25D47239009EB71B /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		059549DC2647FEA900935907 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		059549E22648072D00935907 /* Python.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Python.plist; sourceTree = "<group>"; };
+		059549E626480BB300935907 /* sample.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = sample.gif; sourceTree = "<group>"; };
 		05BA10AE24D2D922009A3669 /* LSPConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPConnection.swift; sourceTree = "<group>"; };
 		05BAAB1B24A3530500A3EADC /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		05BAAB1D24A3530E00A3EADC /* Initialize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Initialize.swift; sourceTree = "<group>"; };
@@ -378,6 +382,7 @@
 			isa = PBXGroup;
 			children = (
 				056706A6251521AB00F9D7E7 /* Swift.plist */,
+				059549E22648072D00935907 /* Python.plist */,
 			);
 			path = Syntaxes;
 			sourceTree = "<group>";
@@ -562,6 +567,7 @@
 				05182B1B24D9DFB5007E8832 /* LSPClientUtils */,
 				05CA5CF4248C5F1700582319 /* Products */,
 				059549DC2647FEA900935907 /* README.md */,
+				059549E626480BB300935907 /* sample.gif */,
 			);
 			sourceTree = "<group>";
 		};
@@ -864,6 +870,8 @@
 				05CA5D03248C5F1900582319 /* LaunchScreen.storyboard in Resources */,
 				05FA2242260173B4002BD02A /* Preference.strings in Resources */,
 				05182B1D24D9DFE6007E8832 /* ClientCapabilities.yaml in Resources */,
+				059549E32648072D00935907 /* Python.plist in Resources */,
+				059549E726480BB300935907 /* sample.gif in Resources */,
 				05182B2124D9F362007E8832 /* ClientCapabilities.plist in Resources */,
 				05D4D4AF24D6B13500A76239 /* ClientCapabilities_test.plist in Resources */,
 				056706A7251521AB00F9D7E7 /* Swift.plist in Resources */,

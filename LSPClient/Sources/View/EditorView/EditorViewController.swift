@@ -46,7 +46,7 @@ final class EditorViewController: UIViewController {
         self.layoutManager = layoutManager
 
         // SyntaxManager
-        let syntaxManager = SyntaxManager.load(fileExtension: "swift")
+        let syntaxManager = SyntaxManager.load(fileExtension: fileExtension)
         self.syntaxManager = syntaxManager
 
         // TextStorage
