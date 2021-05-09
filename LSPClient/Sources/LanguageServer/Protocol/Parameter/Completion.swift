@@ -101,7 +101,7 @@ extension CompletionItem {
     }
 }
 
-enum CompletionItemKind: Int, Codable {
+enum CompletionItemKind: Int, Codable, CaseIterable {
     case text = 1
     case method = 2
     case function = 3

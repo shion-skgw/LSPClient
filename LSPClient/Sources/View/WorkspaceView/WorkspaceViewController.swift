@@ -51,7 +51,7 @@ final class WorkspaceViewController: UIViewController {
         workspaceView.delegate = self
         workspaceView.dataSource = self
         workspaceView.separatorStyle = .none
-        workspaceView.estimatedRowHeight = 0
+        workspaceView.estimatedRowHeight = .zero
         workspaceView.rowHeight = WorkspaceViewController.rowHeight
         view.addSubview(workspaceView)
         self.workspaceView = workspaceView
@@ -120,8 +120,8 @@ extension WorkspaceViewController: UITableViewDataSource {
         self.displayFiles = workspaceFiles.filter(shouldShowFile)
 
         for file in workspaceFiles {
-            let identifier = WorkspaceViewCellIdentifier(file: file).string
-            workspaceView.register(WorkspaceViewCell.self, forCellReuseIdentifier: identifier)
+            let identifier = WorkspaceViewCellIdentifier(file: file)
+            workspaceView.register(WorkspaceViewCell.self, forCellReuseIdentifier: identifier.string)
         }
     }
 

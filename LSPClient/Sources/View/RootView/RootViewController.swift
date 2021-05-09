@@ -277,28 +277,20 @@ extension RootViewController {
 extension RootViewController: MessageManagerDelegate {
 
     func connectionError(cause: Error) {
-        print("\(#function)\n\(cause)\n")
     }
     func messageParseError(cause: Error, message: Message?) {
-        print("\(#function)\n\(cause)\n\(message)\n")
     }
     func cancelRequest(params: CancelParams) {
-        print("\(#function)\n\(params)\n")
     }
     func showMessage(params: ShowMessageParams) {
-        print("\(#function)\n\(params)\n")
     }
     func showMessageRequest(id: RequestID, params: ShowMessageRequestParams) {
-        print("\(#function)\n\(id)\n\(params)\n")
     }
     func logMessage(params: LogMessageParams) {
-        print("\(#function)\n\(params)\n")
     }
     func applyEdit(id: RequestID, params: ApplyWorkspaceEditParams) {
-        print("\(#function)\n\(id)\n\(params)\n")
     }
     func publishDiagnostics(params: PublishDiagnosticsParams) {
-        print("\(#function)\n\(params)\n")
     }
 
 }
@@ -306,7 +298,10 @@ extension RootViewController: MessageManagerDelegate {
 
 extension RootViewController: WorkspaceMessageDelegate {
 
-    func initialize(id: RequestID, result: InitializeResult) {}
+    func initialize(id: RequestID, result: InitializeResult) {
+        let initializedParams = InitializedParams()
+        initialized(params: initializedParams)
+    }
     func shutdown(id: RequestID, result: VoidValue?) {}
     func symbol(id: RequestID, result: [SymbolInformation]?) {}
     func executeCommand(id: RequestID, result: AnyValue?) {}

@@ -66,19 +66,19 @@ enum MessageMethod: String, Codable {
 
 }
 
-fileprivate let REQUEST_PARAMS_TYPE: [MessageMethod: RequestParamsType.Type] = [
+private let REQUEST_PARAMS_TYPE: [MessageMethod: RequestParamsType.Type] = [
     .windowShowMessageRequest: ShowMessageRequestParams.self,
     .workspaceApplyEdit: ApplyWorkspaceEditParams.self,
 ]
 
-fileprivate let NOTIFICATION_PARAMS_TYPE: [MessageMethod: NotificationParamsType.Type] = [
+private let NOTIFICATION_PARAMS_TYPE: [MessageMethod: NotificationParamsType.Type] = [
     .cancelRequest: CancelParams.self,
     .windowShowMessage: ShowMessageParams.self,
     .windowLogMessage: LogMessageParams.self,
     .textDocumentPublishDiagnostics: PublishDiagnosticsParams.self,
 ]
 
-fileprivate let RESPONSE_RESULT_TYPE: [MessageMethod: ResultType.Type] = [
+private let RESPONSE_RESULT_TYPE: [MessageMethod: ResultType.Type] = [
     .initialize: InitializeResult.self,
     .shutdown: VoidValue?.self,
     .workspaceSymbol: [SymbolInformation]?.self,

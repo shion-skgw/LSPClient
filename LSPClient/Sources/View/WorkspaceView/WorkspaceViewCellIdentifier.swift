@@ -6,6 +6,8 @@
 //  Copyright © 2021 Shion. All rights reserved.
 //
 
+import UIKit.UIImage
+
 struct WorkspaceViewCellIdentifier {
     let level: Int
     let isFile: Bool
@@ -42,6 +44,25 @@ struct WorkspaceViewCellIdentifier {
         self.isDirectory = identifier.contains("directory")
         self.isLink = identifier.contains("link")
         self.isHidden = identifier.contains("hidden")
+    }
+
+    func icon(config: UIImage.SymbolConfiguration) -> UIImage {
+        switch (isFile, isDirectory, isLink, isHidden) {
+        case (true, _, _, false):
+            return UIImage(systemName: "doc.fill", withConfiguration: config)!
+        case (true, _, _, true):
+            return UIImage(systemName: "doc", withConfiguration: config)!
+        case (_, true, _, false):
+            return UIImage(systemName: "folder.fill", withConfiguration: config)!
+        case (_, true, _, true):
+            return UIImage(systemName: "folder", withConfiguration: config)!
+        case (_, _, true, false):
+            return UIImage(systemName: "arrowshape.turn.up.right.circle.fill", withConfiguration: config)!
+        case (_, _, true, true):
+            return UIImage(systemName: "arrowshape.turn.up.right.circle", withConfiguration: config)!
+        default:
+            return UIImage(systemName: "questionmark.circle", withConfiguration: config)!
+        }
     }
 
 }

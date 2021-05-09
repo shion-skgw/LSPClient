@@ -80,24 +80,8 @@ final class WorkspaceViewCell: UITableViewCell {
 
     private func createFileIcon(_ identifier: WorkspaceViewCellIdentifier) -> UIImageView {
         // Get icon image
-        let icon: UIImage
         let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .thin)
-        switch (identifier.isFile, identifier.isDirectory, identifier.isLink, identifier.isHidden) {
-        case (true, _, _, false):
-            icon = UIImage(systemName: "doc.fill", withConfiguration: config)!
-        case (true, _, _, true):
-            icon = UIImage(systemName: "doc", withConfiguration: config)!
-        case (_, true, _, false):
-            icon = UIImage(systemName: "folder.fill", withConfiguration: config)!
-        case (_, true, _, true):
-            icon = UIImage(systemName: "folder", withConfiguration: config)!
-        case (_, _, true, false):
-            icon = UIImage(systemName: "arrowshape.turn.up.right.circle.fill", withConfiguration: config)!
-        case (_, _, true, true):
-            icon = UIImage(systemName: "arrowshape.turn.up.right.circle", withConfiguration: config)!
-        default:
-            icon = UIImage(systemName: "questionmark.circle", withConfiguration: config)!
-        }
+        let icon = identifier.icon(config: config)
 
         // Calc frame
         var fileIconFrame = CGRect(origin: .zero, size: icon.size)

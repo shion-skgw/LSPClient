@@ -401,9 +401,12 @@ extension EditorViewController {
 extension EditorViewController: TextDocumentMessageDelegate {
 
     func completion(id: RequestID, result: CompletionList?) {
-        guard let items = result?.items else {
+        guard result?.items.isEmpty == false else {
             return
         }
+        let a = CompletionViewController()
+        a.data = result
+        add(child: a)
     }
     func completionResolve(id: RequestID, result: CompletionItem) {
     }
