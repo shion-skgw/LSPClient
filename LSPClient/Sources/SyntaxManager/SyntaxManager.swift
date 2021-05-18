@@ -115,7 +115,7 @@ final class SyntaxManager {
     func highlightRange(text: String, range: NSRange) -> NSRange {
         let fullRange = text.range
         let lineRange = (text as NSString).lineRange(for: range)
-        let tampRange = NSMakeRange(max(.zero, range.location - 1), range.length + 1)
+        let tampRange = NSMakeRange(range.location - 1, range.length + 1)
 
         if let range = Range(NSIntersectionRange(tampRange, fullRange), in: text) {
             let text = text[range]

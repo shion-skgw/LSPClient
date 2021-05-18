@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         codeStyle.fontColor.string.uiColor = UIColor(red: 1, green: 0.3176, blue: 0.3176, alpha: 1.0)
         codeStyle.fontColor.comment.uiColor = UIColor(red: 0.3451, green: 0.7294, blue: 0.2627, alpha: 1.0)
         codeStyle.fontColor.invisibles.uiColor = UIColor.white.withAlphaComponent(0.2)
-        codeStyle.backgroundColor.uiColor = UIColor(red: 0.1137, green: 0.1255, blue: 0.1686, alpha: 1.0)
+        codeStyle.editorBaseColor.uiColor = UIColor(red: 0.1137, green: 0.1255, blue: 0.1686, alpha: 1.0)
         codeStyle.save()
 
         let rootViewController = RootViewController()

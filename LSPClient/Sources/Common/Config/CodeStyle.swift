@@ -14,7 +14,7 @@ struct CodeStyle: ConfigType {
 
     var font: Font
     var fontColor: FontColor
-    var backgroundColor: Color
+    var editorBaseColor: Color
     var tabSize: Int
     var useHardTab: Bool
     var showInvisibles: Bool
@@ -22,7 +22,7 @@ struct CodeStyle: ConfigType {
     init() {
         self.font = Font()
         self.fontColor = FontColor()
-        self.backgroundColor = .white
+        self.editorBaseColor = .white
         self.tabSize = 4
         self.useHardTab = true
         self.showInvisibles = true
@@ -31,31 +31,24 @@ struct CodeStyle: ConfigType {
 
 extension CodeStyle {
 
-    var tabAreaColor: Color {
-        Color(uiColor: self.backgroundColor.uiColor.contrast(0.1))
+    var backgroundColor: UIColor {
+        self.editorBaseColor.uiColor
     }
-    var activeTabColor: Color {
-        self.backgroundColor
+    var highlightColor: UIColor {
+        self.editorBaseColor.uiColor.contrast(0.1)
     }
-    var inactiveTabColor: Color {
-        Color(uiColor: self.backgroundColor.uiColor.contrast(0.2))
+    var edgeColor: UIColor {
+        self.editorBaseColor.uiColor.contrast(0.3)
+    }
+    var inactiveTabColor: UIColor {
+        self.editorBaseColor.uiColor.contrast(0.1)
+    }
+    var tabAreaColor: UIColor {
+        self.editorBaseColor.uiColor.contrast(0.2)
     }
 
-    var gutterColor: Color {
-        self.backgroundColor
-    }
-    var gutterEdgeColor: Color {
-        Color(uiColor: self.backgroundColor.uiColor.contrast(0.1))
-    }
-    var lineNumberColor: Color {
-        Color(uiColor: self.backgroundColor.uiColor.contrast(0.3))
-    }
     var lineNumberSize: CGFloat {
         CGFloat(Int(font.size * 0.8))
-    }
-
-    var lineHighlightColor: Color {
-        Color(uiColor: self.backgroundColor.uiColor.contrast(0.1))
     }
 
 }
@@ -126,10 +119,6 @@ extension CodeStyle {
             self.saturation = saturation
             self.brightness = brightness
             self.alpha = alpha
-        }
-
-        init() {
-            self.init(hue: 0.0, saturation: 0.0, brightness: 0.0, alpha: 1.0)
         }
     }
 

@@ -10,7 +10,7 @@ import UIKit.UIViewController
 
 extension UIViewController {
 
-    @inlinable func add(child: UIViewController) {
+    func add(child: UIViewController) {
         addChild(child)
         view.addSubview(child.view)
         child.didMove(toParent: self)

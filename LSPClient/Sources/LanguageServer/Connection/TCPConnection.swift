@@ -21,6 +21,8 @@ final class TCPConnection: LSPConnection {
     private var connection: NWConnection!
     /// DispatchQueue
     private let queue = DispatchQueue(label: "lsp.connection.tcpconnection")
+    /// Previously received data
+    private var previousData: Data = Data()
 
     ///
     /// Initialize
@@ -55,6 +57,7 @@ final class TCPConnection: LSPConnection {
 
         // Start connection
         connection.start(queue: queue)
+        previousData.removeAll()
         receive()
     }
 
@@ -70,19 +73,36 @@ final class TCPConnection: LSPConnection {
     ///
     private func receive() {
         connection.receive(minimumIncompleteLength: 1, maximumLength: Int(UInt32.max)) {
-            data, _, isComplete, error in
-            if let data = data, !data.isEmpty {
-                self.didReceive(data)
+            [unowned self] data, _, isComplete, error in
+            if let currentData = data {
+                previousData.append(currentData)
+                if checkLength(previousData) {
+                    didReceive(previousData)
+                    previousData.removeAll()
+                } else {
+                    print("======================== skip ========================")
+                }
             }
 
             if isComplete {
-                self.close()
+                close()
             } else if let error = error {
-                self.connectionError(error)
+                connectionError(error)
             } else {
-                self.receive()
+                receive()
             }
         }
+    }
+
+    private func checkLength(_ data: Data) -> Bool {
+        guard let lengthEnd = data.firstIndex(of: .carriageReturn),
+                let lengthString = String(data: data[data.startIndex..<lengthEnd], encoding: .utf8),
+                let lengthRange = lengthString.range(of: "[0-9]+", options: .regularExpression),
+                let length = Int(lengthString[lengthRange]),
+                let jsonStart = data.firstIndex(of: .openCurlyBracket) else {
+            return true
+        }
+        return data[jsonStart..<data.endIndex].count >= length
     }
 
     ///
@@ -93,9 +113,9 @@ final class TCPConnection: LSPConnection {
     ///
     func send(data: Data, completion: @escaping () -> ()) {
         connection.send(content: data, completion: .contentProcessed {
-            [completion] error in
+            [unowned self, completion] error in
             if let error = error {
-                self.connectionError(error)
+                connectionError(error)
             } else {
                 completion()
             }

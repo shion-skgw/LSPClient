@@ -19,58 +19,58 @@ extension String {
 //    }
 
     @inlinable var range: NSRange {
-        NSMakeRange(0, length)
+        NSMakeRange(.zero, self.utf16.count)
     }
 
     @inlinable var length: Int {
-        (self as NSString).length
+        self.utf16.count
     }
 
-    @inlinable func lines(range: NSRange) -> [Substring] {
-        return String.endOfLineRegex.matches(in: self, range: range).map() {
-            self[Range($0.range, in: self)!]
-        }
+    @inlinable func replacing(of target: String, with replacement: String) -> String {
+        return self.replacingOccurrences(of: target, with: replacement, options: .regularExpression)
     }
 
-    @inlinable func lineRanges(range: NSRange) -> [(line: Int, range: Range<Index>)] {
-        var lineNumber = 0
-        return String.endOfLineRegex.matches(in: self, range: NSMakeRange(.zero, range.upperBound)).compactMap() {
-            let result = range.lowerBound <= $0.range.upperBound ? (lineNumber, Range($0.range, in: self)!) : nil
-            lineNumber += 1
-            return result
-        }
+    @inlinable func lines(range: NSRange) -> [String] {
+        let string = self as NSString
+        return String.endOfLineRegex.matches(in: self, range: range).map({ string.substring(with: $0.range) })
+    }
+
+    @inlinable func lineRanges(range: NSRange) -> [(number: Int, range: NSRange)] {
+        let upperBound = range.length != .zero ? range.upperBound : min(range.upperBound + 1, self.length)
+        return String.endOfLineRegex.matches(in: self, range: NSMakeRange(.zero, upperBound))
+            .enumerated()
+            .filter({ range.lowerBound <= $0.element.range.upperBound })
+            .map({ ($0.offset, $0.element.range) })
     }
 
     @inlinable func index(offsetBy: Int) -> Index {
         return index(startIndex, offsetBy: offsetBy)
     }
 
-    @inlinable func changes(from: String) -> (range: Range<Index>, text: String) {
+    @inlinable func changes(from: String) -> (range: NSRange, text: String) {
         let difference = self.difference(from: from)
 
         guard !difference.isEmpty, difference.isSequential else {
-            return (from.startIndex..<from.endIndex, self)
+            return (from.range, self)
         }
 
-        let removeMin = difference.removals.first?.offset
-        let removeMax = difference.removals.last?.offset
-        let insertMin = difference.insertions.first?.offset
-        let insertMax = difference.insertions.last?.offset
+        let remove = difference.removals
+        let insert = difference.insertions
 
-        switch (removeMin, removeMax, insertMin, insertMax) {
+        switch (remove.first?.offset, remove.last?.offset, insert.first?.offset, insert.last?.offset) {
         case (nil, nil, let insertMin?, let insertMax?):
             let editRange = from.index(offsetBy: insertMin)..<from.index(offsetBy: insertMin)
             let textRange = self.index(offsetBy: insertMin)..<self.index(offsetBy: insertMax + 1)
-            return (editRange, String(self[textRange]))
+            return (NSRange(editRange, in: from), String(self[textRange]))
 
         case (let removeMin?, let removeMax?, nil, nil):
             let editRange = from.index(offsetBy: removeMin)..<from.index(offsetBy: removeMax + 1)
-            return (editRange, "")
+            return (NSRange(editRange, in: from), "")
 
         case (let removeMin?, let removeMax?, let insertMin?, let insertMax?):
             let editRange = from.index(offsetBy: removeMin)..<from.index(offsetBy: removeMax + 1)
             let textRange = self.index(offsetBy: insertMin)..<self.index(offsetBy: insertMax + 1)
-            return (editRange, String(self[textRange]))
+            return (NSRange(editRange, in: from), String(self[textRange]))
 
         default:
             fatalError()

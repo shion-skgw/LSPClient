@@ -12,8 +12,6 @@ import Foundation
 
 /// LSP request header format
 private let REQUEST_HEADERS	= "Content-Length: %d\r\nContent-Type: application/vscode-jsonrpc; charset=utf8\r\n\r\n"
-/// Open curly bracket "{"
-private let OPEN_CURLY_BRACKET = UInt8(123)
 
 
 // MARK: - MessageManager
@@ -53,7 +51,7 @@ final class MessageManager: LSPConnectionDelegate {
     private init() {
         self.decoder.userInfo[.storedRequest] = {
             [unowned self] (id) -> MessageMethod? in
-            return self.sendRequest[id]?.method
+            return sendRequest[id]?.method
         }
     }
 
@@ -145,7 +143,7 @@ final class MessageManager: LSPConnectionDelegate {
     /// - Returns       : Message
     ///
     private func decode(_ data: Data) throws -> Message {
-        guard let firstIndex = data.firstIndex(of: OPEN_CURLY_BRACKET) else {
+        guard let firstIndex = data.firstIndex(of: .openCurlyBracket) else {
             throw DecodingError.dataCorruptedError([], "TODO")
         }
         return try decoder.decode(Message.self, from: data[firstIndex..<data.endIndex])
@@ -166,7 +164,7 @@ final class MessageManager: LSPConnectionDelegate {
                 [unowned self, message] in
                 switch message {
                 case .request(let id, _, _):
-                    self.sendRequest[id] = context
+                    sendRequest[id] = context
                 default:
                     break
                 }

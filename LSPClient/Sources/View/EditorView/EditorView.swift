@@ -10,6 +10,7 @@ import UIKit
 
 final class EditorView: UITextView {
 
+    weak var controller: EditorViewController?
     private var gutterColor: CGColor
     private var gutterEdgeColor: CGColor
     private var lineHighlightColor: CGColor
@@ -44,6 +45,16 @@ final class EditorView: UITextView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override var keyCommands: [UIKeyCommand]? {
+        guard let controller = self.controller, controller.completion?.view.isHidden == false else {
+            return nil
+        }
+        return [
+            UIKeyCommand(input: UIKeyCommand.inputUpArrow, modifierFlags: [], action: #selector(controller.didInputArrow)),
+            UIKeyCommand(input: UIKeyCommand.inputDownArrow, modifierFlags: [], action: #selector(controller.didInputArrow)),
+        ]
+    }
+
     override var selectedTextRange: UITextRange? {
         didSet {
             setNeedsDisplay()
@@ -65,11 +76,6 @@ final class EditorView: UITextView {
         super.deleteBackward()
         setNeedsDisplay()
     }
-
-//    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-//        print(action)
-//        return super.canPerformAction(action, withSender: sender)
-//    }
 
 }
 
@@ -101,8 +107,8 @@ extension EditorView {
         var lineRect = CGRect.zero
 
         text.lineRanges(range: layoutManager.glyphRange(forBoundingRect: rect, in: textContainer)).forEach() {
-            lineNumber = $0.line + 1
-            lineRect = layoutManager.boundingRect(forGlyphRange: NSRange($0.range, in: text), in: textContainer)
+            lineNumber = $0.number + 1
+            lineRect = layoutManager.boundingRect(forGlyphRange: $0.range, in: textContainer)
             drawLineNumber(lineNumber, lineRect)
         }
 
@@ -140,20 +146,20 @@ extension EditorView {
 
     func set(codeStyle: CodeStyle) {
         // Gutter setting
-        self.gutterColor = codeStyle.gutterColor.uiColor.cgColor
-        self.gutterEdgeColor = codeStyle.gutterEdgeColor.uiColor.cgColor
+        self.gutterColor = codeStyle.backgroundColor.cgColor
+        self.gutterEdgeColor = codeStyle.edgeColor.cgColor
         self.lineNumberAttribute.removeAll()
         self.lineNumberAttribute[.font] = codeStyle.font.uiFont.withSize(codeStyle.lineNumberSize)
-        self.lineNumberAttribute[.foregroundColor] = codeStyle.lineNumberColor.uiColor
+        self.lineNumberAttribute[.foregroundColor] = codeStyle.edgeColor
 
         // Line highlight setting
-        self.lineHighlightColor = codeStyle.lineHighlightColor.uiColor.cgColor
+        self.lineHighlightColor = codeStyle.highlightColor.cgColor
 
         // UITextView
         self.font = codeStyle.font.uiFont
         self.textColor = codeStyle.fontColor.text.uiColor
-        self.backgroundColor = codeStyle.backgroundColor.uiColor
-        self.indicatorStyle = codeStyle.backgroundColor.uiColor.isBright ? .black : .white
+        self.backgroundColor = codeStyle.backgroundColor
+        self.indicatorStyle = codeStyle.backgroundColor.isBright ? .black : .white
     }
 
 }

@@ -10,7 +10,7 @@ import UIKit.UIFont
 
 extension UIFont {
 
-    @inlinable static var systemFont: UIFont {
+    static var systemFont: UIFont {
         UIFont.systemFont(ofSize: UIFont.systemFontSize)
     }
 

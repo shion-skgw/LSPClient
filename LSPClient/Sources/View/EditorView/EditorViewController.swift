@@ -60,6 +60,7 @@ final class EditorViewController: UIViewController {
         let textView = EditorView(frame: .zero, textContainer: textContainer)
         textView.set(codeStyle: codeStyle)
         textView.delegate = self
+        textView.controller = self
         self.textView = textView
         self.view = textView
     }
@@ -99,7 +100,7 @@ final class EditorViewController: UIViewController {
             UIKeyCommand(input: "\t", modifierFlags: [.shift], action: #selector(deindent)),
             // Comment out
             UIKeyCommand(input: "/", modifierFlags: [.command], action: #selector(toggleComment)),
-            UIKeyCommand(input: " ", modifierFlags: .alternate, action: #selector(sendCompletion))
+            UIKeyCommand(input: " ", modifierFlags: .alternate, action: #selector(sendCompletion)),
         ]
     }
 
@@ -126,6 +127,11 @@ extension EditorViewController: UITextViewDelegate {
     }
 
     func textViewDidChangeSelection(_: UITextView) {
+        if textView.selectedRange.length == .zero {
+            print(TextPosition(textView.selectedRange, in: textView.text))
+        } else {
+            print(TextRange(textView.selectedRange, in: textView.text))
+        }
         guard let undoManager = self.undoManager else {
             fatalError()
         }
@@ -195,7 +201,7 @@ extension EditorViewController {
         var result = ""
         textStorage.string.lines(range: lineRange).forEach() {
             result.append(indent)
-            result.append(contentsOf: $0)
+            result.append($0)
         }
 
         textStorage.replaceCharacters(in: lineRange, with: result)
@@ -225,7 +231,7 @@ extension EditorViewController {
             if $0.hasPrefix(indent) {
                 result.append(contentsOf: $0.dropFirst(indent.count))
             } else {
-                result.append(contentsOf: $0)
+                result.append($0)
             }
         }
 
@@ -247,7 +253,7 @@ extension EditorViewController {
             } else {
                 onlyComment = false
                 comment.append(singleLineComment)
-                comment.append(contentsOf: $0)
+                comment.append($0)
             }
         }
 
@@ -292,13 +298,13 @@ extension EditorViewController {
     }
 
     @objc private func sendCompletion() {
-        guard let range = Range(textView.selectedRange, in: textView.text), range.isEmpty else {
+        guard textView.selectedRange.length == .zero else {
             return
         }
 
         // Generate parameters
         let textDocument = TextDocumentIdentifier(uri: uri)
-        let position = TextPosition(range, in: textView.text)
+        let position = TextPosition(textView.selectedRange, in: textView.text)
         let context = CompletionContext(triggerKind: .invoked, triggerCharacter: "a")
         let completionParams = CompletionParams(textDocument: textDocument, position: position, context: context)
 
@@ -401,13 +407,40 @@ extension EditorViewController {
 extension EditorViewController: TextDocumentMessageDelegate {
 
     func completion(id: RequestID, result: CompletionList?) {
-        guard result?.items.isEmpty == false else {
+        guard currentRequestID == id,
+                let completionList = result, !completionList.items.isEmpty,
+                let selectedTextRange = textView.selectedTextRange?.end else {
             return
         }
-        let a = CompletionViewController()
-        a.data = result
-        add(child: a)
+
+        let completion = self.completion ?? CompletionViewController()
+        let caretRect = textView.caretRect(for: selectedTextRange)
+
+        completion.view.frame = completionViewFrame(caretRect)
+        completion.completionItems.append(contentsOf: completionList.items)
+        add(child: completion)
+
+        if self.completion == nil {
+            self.completion = completion
+        }
+        if !completionList.isIncomplete {
+            currentRequestID = nil
+        }
     }
+
+    private func completionViewFrame(_ caretRect: CGRect) -> CGRect {
+        let size = CGSize(width: 200, height: 160)
+        let origin = CGPoint(x: caretRect.minX - 20, y: caretRect.maxY + 8)
+        var frame = CGRect(origin: origin, size: size)
+        frame.origin.x += max(view.bounds.maxX - frame.maxX - 10, .zero)
+        frame.origin.y = view.bounds.maxY - 10 < frame.maxY ? caretRect.minY - frame.height : frame.origin.y
+        return frame
+    }
+
+    @objc func didInputArrow(command: UIKeyCommand) {
+        completion?.didInputArrow(input: command.input ?? "")
+    }
+
     func completionResolve(id: RequestID, result: CompletionItem) {
     }
     func hover(id: RequestID, result: Hover?) {
@@ -439,18 +472,23 @@ extension EditorViewController: TextDocumentMessageDelegate {
 
 extension TextRange {
 
-    init(_ range: Range<String.Index>, in text: String) {
-        let lineRanges = text.lineRanges(range: NSRange(text.lineRange(for: range), in: text))
-        if let start = lineRanges.first, let end = lineRanges.last {
-            let startCharacter = text.utf8.distance(from: start.range.lowerBound, to: range.lowerBound)
-            self.start = TextPosition(line: start.line, character: startCharacter)
-            let endCharacter = text.utf8.distance(from: end.range.lowerBound, to: range.upperBound)
-            self.end = TextPosition(line: end.line, character: endCharacter)
-
-        } else {
+    init(_ range: NSRange, in text: String) {
+        if text.isEmpty {
             self.start = TextPosition(line: .zero, character: .zero)
             self.end = TextPosition(line: .zero, character: .zero)
-            if !text.isEmpty { fatalError() }
+
+        } else {
+            let lineRanges = text.lineRanges(range: range)
+            guard let start = lineRanges.first,
+                    let end = lineRanges.last,
+                    let startDistance = Range(NSMakeRange(start.range.lowerBound, range.lowerBound - start.range.lowerBound), in: text),
+                    let endDistance = Range(NSMakeRange(end.range.lowerBound, range.upperBound - end.range.lowerBound), in: text) else {
+                fatalError()
+            }
+            let startCharacter = text.utf8.distance(from: startDistance.lowerBound, to: startDistance.upperBound)
+            let endCharacter = text.utf8.distance(from: endDistance.lowerBound, to: endDistance.upperBound)
+            self.start = TextPosition(line: start.number, character: startCharacter)
+            self.end = TextPosition(line: end.number, character: endCharacter)
         }
     }
 
@@ -458,16 +496,18 @@ extension TextRange {
 
 extension TextPosition {
 
-    init(_ range: Range<String.Index>, in text: String) {
-        let lineRanges = text.lineRanges(range: NSRange(range, in: text))
-        if let start = lineRanges.first {
-            self.line = start.line
-            self.character = text.utf8.distance(from: start.range.lowerBound, to: range.upperBound)
-
-        } else {
+    init(_ range: NSRange, in text: String) {
+        if text.isEmpty {
             self.line = .zero
             self.character = .zero
-            if !text.isEmpty { fatalError() }
+
+        } else {
+            guard let line = text.lineRanges(range: range).last,
+                    let distance = Range(NSMakeRange(line.range.lowerBound, range.lowerBound - line.range.lowerBound), in: text) else {
+                fatalError()
+            }
+            self.line = line.number
+            self.character = text.utf8.distance(from: distance.lowerBound, to: distance.upperBound)
         }
     }
 

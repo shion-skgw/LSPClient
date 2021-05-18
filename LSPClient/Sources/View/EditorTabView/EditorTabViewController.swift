@@ -25,24 +25,21 @@ final class EditorTabViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Load CodeStyle
-        let codeStyle = CodeStyle.load()
-
         // Tab container view
         let tabContainer = EditorTabView()
-        tabContainer.backgroundColor = codeStyle.tabAreaColor.uiColor
         view.addSubview(tabContainer)
         self.tabContainer = tabContainer
 
         // Editor container view
         let editorContainer = UIView()
-        editorContainer.backgroundColor = codeStyle.backgroundColor.uiColor
         view.addSubview(editorContainer)
         self.editorContainer = editorContainer
 
         // Notification
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(refreshCodeStyle), name: .didChangeCodeStyle, object: nil)
+
+        refreshCodeStyle()
     }
 
     override func viewDidLayoutSubviews() {
@@ -181,9 +178,9 @@ final class EditorTabViewController: UIViewController {
     ///
     @objc private func refreshCodeStyle() {
         let codeStyle = CodeStyle.load()
-        tabContainer.backgroundColor = codeStyle.tabAreaColor.uiColor
+        tabContainer.backgroundColor = codeStyle.tabAreaColor
         tabContainer.tabItems.forEach({ $0.set(codeStyle: codeStyle) })
-        editorContainer.backgroundColor = codeStyle.backgroundColor.uiColor
+        editorContainer.backgroundColor = codeStyle.backgroundColor
         children.compactMap({ $0 as? EditorViewController }).forEach({ $0.set(codeStyle: codeStyle) })
     }
 

@@ -10,19 +10,19 @@ import UIKit
 
 extension UIImage {
 
-    @inlinable static var gitIcon: UIImage {
+    static var gitIcon: UIImage {
         UIImage(named: "GitIcon")!
     }
 
-    @inlinable static var triangleRight: UIImage {
+    static var triangleRight: UIImage {
         UIImage(named: "TriangleRight")!
     }
 
-    @inlinable static var triangleDown: UIImage {
+    static var triangleDown: UIImage {
         UIImage(named: "TriangleDown")!
     }
 
-    @inlinable static func closeIcon(pointSize: CGFloat, weight: UIImage.SymbolWeight) -> UIImage {
+    static func closeIcon(pointSize: CGFloat, weight: UIImage.SymbolWeight) -> UIImage {
         let config = UIImage.SymbolConfiguration(pointSize: pointSize, weight: weight)
         return UIImage(systemName: "xmark.circle.fill", withConfiguration: config)!
     }

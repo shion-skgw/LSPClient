@@ -104,8 +104,8 @@ final class EditorTabItem: UIButton {
         self.fileName.textColor = codeStyle.fontColor.text.uiColor
 
         // Set background color
-        self.activeColor = codeStyle.activeTabColor.uiColor
-        self.inactiveColor = codeStyle.inactiveTabColor.uiColor
+        self.activeColor = codeStyle.backgroundColor
+        self.inactiveColor = codeStyle.inactiveTabColor
         self.backgroundColor = self.isActive ? self.activeColor : self.inactiveColor
         self.closeButton.tintColor = self.isActive ? self.inactiveColor : self.activeColor
     }

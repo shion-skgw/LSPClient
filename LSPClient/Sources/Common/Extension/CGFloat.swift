@@ -11,7 +11,7 @@ import CoreGraphics
 extension CGFloat {
 
     @inlinable func centeringPoint(_ target: CGFloat) -> CGFloat {
-        return (self - target) / 2.0
+        return (self - target) / 2
     }
 
 }

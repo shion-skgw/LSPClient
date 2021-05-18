@@ -9,25 +9,30 @@
 import UIKit
 
 struct CompletionViewCellIdentifier {
-    let kind: CompletionItemKind
+    let kind: CompletionItemKind?
 
     var string: String {
-        return String(self.kind.rawValue)
+        return String(self.kind?.rawValue ?? 0)
     }
 
-    init(kind: CompletionItemKind) {
+    init(kind: CompletionItemKind?) {
         self.kind = kind
     }
 
     init?(identifier: String) {
-        guard let a = Int(identifier), let b = CompletionItemKind(rawValue: a) else {
+        guard let a = Int(identifier) else {
             fatalError()
         }
-        self.kind = b
+        self.kind = CompletionItemKind(rawValue: a)
     }
 
-    func icon(config: UIImage.SymbolConfiguration) -> UIImage {
+    func icon(size: CGFloat, weight: UIImage.SymbolWeight) -> UIImage {
+        let config = UIImage.SymbolConfiguration(pointSize: size, weight: weight)
         return UIImage(systemName: "a.circle.fill", withConfiguration: config)!
+    }
+
+    var iconColor: UIColor {
+        return .blue
     }
 
 }
