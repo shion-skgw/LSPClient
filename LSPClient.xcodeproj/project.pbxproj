@@ -92,6 +92,7 @@
 		059549E32648072D00935907 /* Python.plist in Resources */ = {isa = PBXBuildFile; fileRef = 059549E22648072D00935907 /* Python.plist */; };
 		059549E726480BB300935907 /* sample.gif in Resources */ = {isa = PBXBuildFile; fileRef = 059549E626480BB300935907 /* sample.gif */; };
 		059549ED2648380500935907 /* CompletionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059549EC2648380500935907 /* CompletionDetailView.swift */; };
+		059E7E8A2656B17000D169E6 /* NSRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059E7E892656B16F00D169E6 /* NSRange.swift */; };
 		05BA10AF24D2D922009A3669 /* LSPConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BA10AE24D2D922009A3669 /* LSPConnection.swift */; };
 		05BAAB1C24A3530500A3EADC /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BAAB1B24A3530500A3EADC /* Common.swift */; };
 		05BAAB1E24A3530E00A3EADC /* Initialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BAAB1D24A3530E00A3EADC /* Initialize.swift */; };
@@ -241,6 +242,7 @@
 		059549E22648072D00935907 /* Python.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Python.plist; sourceTree = "<group>"; };
 		059549E626480BB300935907 /* sample.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = sample.gif; sourceTree = "<group>"; };
 		059549EC2648380500935907 /* CompletionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionDetailView.swift; sourceTree = "<group>"; };
+		059E7E892656B16F00D169E6 /* NSRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRange.swift; sourceTree = "<group>"; };
 		05BA10AE24D2D922009A3669 /* LSPConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPConnection.swift; sourceTree = "<group>"; };
 		05BAAB1B24A3530500A3EADC /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		05BAAB1D24A3530E00A3EADC /* Initialize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Initialize.swift; sourceTree = "<group>"; };
@@ -519,6 +521,7 @@
 				0552A06C263E90E500D4B9CC /* CollectionDifference.swift */,
 				059150E925D2CE34009EB71B /* Notification.swift */,
 				051F886D25AB3F230041BE4E /* NotificationCenter.swift */,
+				059E7E892656B16F00D169E6 /* NSRange.swift */,
 				058F7EC92511BFD00063D9AF /* String.swift */,
 				05DBAEAA25DDD9FA00B028B2 /* UIAlertController.swift */,
 				0555B5D825B1727C0061CB41 /* UIApplication.swift */,
@@ -977,6 +980,7 @@
 				05BAAB3624A3538400A3EADC /* Highlight.swift in Sources */,
 				05EE6F8425CD6A4200F94B24 /* WorkspaceFoldButton.swift in Sources */,
 				0540194F24936C2300287026 /* Location.swift in Sources */,
+				059E7E8A2656B17000D169E6 /* NSRange.swift in Sources */,
 				054019592493718200287026 /* TextDocumentEdit.swift in Sources */,
 				05F419DE25F14238002C3626 /* AppearanceViewController.swift in Sources */,
 				05F419F825F1438C002C3626 /* PreferenceViewController.swift in Sources */,

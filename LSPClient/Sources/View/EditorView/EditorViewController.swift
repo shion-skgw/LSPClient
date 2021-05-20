@@ -19,13 +19,17 @@ final class EditorViewController: UIViewController {
     /// SyntaxManager
     private(set) weak var syntaxManager: SyntaxManager?
 
-    private(set) weak var completion: CompletionViewController?
+    private(set) weak var completion: CompletionViewController!
 
     static let gutterWidth: CGFloat = 40.0
     static let verticalMargin: CGFloat = 4.0
 
     override var undoManager: UndoManager? {
         self.textView.undoManager
+    }
+
+    var isShownCompletion: Bool {
+        !self.completion.view.isHidden
     }
 
     var uri: DocumentUri!
@@ -66,17 +70,20 @@ final class EditorViewController: UIViewController {
     }
 
     override func viewDidLoad() {
-        do {
-            let text = try WorkspaceManager.shared.open(uri: uri)
-            textStorage.replaceCharacters(in: textStorage.string.range, with: text)
-            beforeChangesText = text
-            sendDidOpen()
-
-        } catch {
+        guard let text = try? WorkspaceManager.shared.open(uri: uri) else {
             let title = "aaaa"
-            let message = error.localizedDescription
+            let message = ""
             present(UIAlertController.anyAlert(title: title, message: message), animated: true)
+            return
         }
+
+        textStorage.replaceCharacters(in: textStorage.string.range, with: text)
+        beforeChangesText = text
+        sendDidOpen()
+
+        let completion = CompletionViewController()
+        add(child: completion)
+        self.completion = completion
     }
 
     func set(codeStyle: CodeStyle) {
@@ -97,9 +104,9 @@ final class EditorViewController: UIViewController {
     override var keyCommands: [UIKeyCommand]? {
         [
             // Deindent
-            UIKeyCommand(input: "\t", modifierFlags: [.shift], action: #selector(deindent)),
+            UIKeyCommand(input: "\t", modifierFlags: .shift, action: #selector(deindent)),
             // Comment out
-            UIKeyCommand(input: "/", modifierFlags: [.command], action: #selector(toggleComment)),
+            UIKeyCommand(input: "/", modifierFlags: .command, action: #selector(toggleComment)),
             UIKeyCommand(input: " ", modifierFlags: .alternate, action: #selector(sendCompletion)),
         ]
     }
@@ -112,6 +119,17 @@ final class EditorViewController: UIViewController {
 extension EditorViewController: UITextViewDelegate {
 
     func textView(_: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if isShownCompletion {
+            let commitChar = ["\n", "\t"]
+            if range.length == .zero && commitChar.contains(text) {
+                commitCompletion()
+                return false
+            } else {
+                completion.willInput(text: text, range: range)
+                return true
+            }
+        }
+
         let isShouldChange = shouldChange(range, text)
         let isNeedRegisterUndo = needRegisterUndo(text)
 
@@ -134,6 +152,10 @@ extension EditorViewController: UITextViewDelegate {
         }
         guard let undoManager = self.undoManager else {
             fatalError()
+        }
+
+        if isShownCompletion && !textView.selectedRange.isInRange(completion.completionRange) {
+            completion.hide()
         }
 
         if isNeedCommitChanges || undoManager.isUndoing || undoManager.isRedoing {
@@ -311,8 +333,21 @@ extension EditorViewController {
         // Send request "textDocument/completion"
         currentRequestID = completion(params: completionParams)
 
+        completion.completionRange = textView.selectedRange
+
         // Update status
         isNeedCompletion = false
+    }
+
+    private func commitCompletion() {
+        guard let text = completion.selectedItem.insertText else {
+            fatalError()
+        }
+//        let range = NSMakeRange(completion.range.location, text.length)
+        textStorage.replaceCharacters(in: completion.completionRange, with: text)
+        let selectRange = NSMakeRange(completion.completionRange.location, text.length)
+        textView.selectedRange = NSMakeRange(selectRange.upperBound, .zero)
+        completion.hide()
     }
 
 }
@@ -413,32 +448,16 @@ extension EditorViewController: TextDocumentMessageDelegate {
             return
         }
 
-        let completion = self.completion ?? CompletionViewController()
         let caretRect = textView.caretRect(for: selectedTextRange)
+        completion.show(items: completionList.items, caretRect: caretRect)
 
-        completion.view.frame = completionViewFrame(caretRect)
-        completion.completionItems.append(contentsOf: completionList.items)
-        add(child: completion)
-
-        if self.completion == nil {
-            self.completion = completion
-        }
         if !completionList.isIncomplete {
             currentRequestID = nil
         }
     }
 
-    private func completionViewFrame(_ caretRect: CGRect) -> CGRect {
-        let size = CGSize(width: 200, height: 160)
-        let origin = CGPoint(x: caretRect.minX - 20, y: caretRect.maxY + 8)
-        var frame = CGRect(origin: origin, size: size)
-        frame.origin.x += max(view.bounds.maxX - frame.maxX - 10, .zero)
-        frame.origin.y = view.bounds.maxY - 10 < frame.maxY ? caretRect.minY - frame.height : frame.origin.y
-        return frame
-    }
-
-    @objc func didInputArrow(command: UIKeyCommand) {
-        completion?.didInputArrow(input: command.input ?? "")
+    @objc func didInput(command: UIKeyCommand) {
+        completion.didInput(command: command)
     }
 
     func completionResolve(id: RequestID, result: CompletionItem) {

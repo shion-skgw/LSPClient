@@ -238,7 +238,7 @@ extension WorkspaceViewController {
         if endIndex == .zero {
             return []
         } else {
-            return (startIndex...endIndex).compactMap({ IndexPath(row: $0, section: 0) })
+            return (startIndex...endIndex).map({ IndexPath(row: $0, section: 0) })
         }
     }
 

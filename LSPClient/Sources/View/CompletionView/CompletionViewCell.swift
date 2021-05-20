@@ -14,7 +14,7 @@ final class CompletionViewCell: UITableViewCell {
     /// Completion text label
     private(set) weak var completionLabel: UILabel!
 
-    private let symbolWidth: CGFloat = UIFont.systemFontSize * 1.4
+    private let symbolWidth: CGFloat = UIFont.systemFontSize * 1.6
     private let symbolPointSize: CGFloat = UIFont.systemFontSize
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

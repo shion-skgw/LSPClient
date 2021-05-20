@@ -10,7 +10,7 @@ import UIKit
 
 final class EditorView: UITextView {
 
-    weak var controller: EditorViewController?
+    weak var controller: EditorViewController!
     private var gutterColor: CGColor
     private var gutterEdgeColor: CGColor
     private var lineHighlightColor: CGColor
@@ -46,12 +46,12 @@ final class EditorView: UITextView {
     }
 
     override var keyCommands: [UIKeyCommand]? {
-        guard let controller = self.controller, controller.completion?.view.isHidden == false else {
+        guard controller.isShownCompletion else {
             return nil
         }
         return [
-            UIKeyCommand(input: UIKeyCommand.inputUpArrow, modifierFlags: [], action: #selector(controller.didInputArrow)),
-            UIKeyCommand(input: UIKeyCommand.inputDownArrow, modifierFlags: [], action: #selector(controller.didInputArrow)),
+            UIKeyCommand(action: #selector(controller.didInput), input: UIKeyCommand.inputUpArrow),
+            UIKeyCommand(action: #selector(controller.didInput), input: UIKeyCommand.inputDownArrow),
         ]
     }
 

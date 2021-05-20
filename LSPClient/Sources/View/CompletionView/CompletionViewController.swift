@@ -9,129 +9,298 @@
 import UIKit
 
 final class CompletionViewController: UIViewController {
-
-    private(set) weak var itemListView: UITableView!
+    /// Completion items view
+    private(set) weak var itemsView: UITableView!
+    /// Separator view
     private(set) weak var separatorView: UIView!
+    /// Completion detail view
     private(set) weak var detailView: CompletionDetailView!
 
-    var completionItems: [CompletionItem] = []
+    private let viewSize: CGSize = CGSize(width: 260, height: 180)
     private let borderWidth: CGFloat = 0.5
+    private let cornerRadius: CGFloat = 3
+    private var codeStyle: CodeStyle = CodeStyle.load()
 
-    override func viewDidLoad() {
-        self.view.layer.borderWidth = borderWidth
-        self.view.layer.cornerRadius = 3
+    var completionRange: NSRange = .zero
+    private var completionText: String = ""
+    private var completionItems: [CompletionItem] = []
+    private var displayItems: [CompletionItem] = []
 
-        let itemListView = UITableView()
-        itemListView.delegate = self
-        itemListView.dataSource = self
-        itemListView.separatorStyle = .none
-        itemListView.estimatedRowHeight = .zero
-        itemListView.tableFooterView = detailView
-        view.addSubview(itemListView)
-        self.itemListView = itemListView
+    var selectedItem: CompletionItem {
+        guard let row = itemsView.indexPathForSelectedRow?.row else {
+            fatalError()
+        }
+        return displayItems[row]
+    }
 
-        let separatorView = UIView()
-        view.addSubview(separatorView)
+    override func loadView() {
+        let view = UIView(frame: CGRect(origin: .zero, size: viewSize))
+        view.isHidden = true
+        view.layer.borderWidth = borderWidth
+        view.layer.cornerRadius = cornerRadius
+        self.view = view
+
+        let itemsView = createItemsView()
+        self.view.addSubview(itemsView)
+        self.itemsView = itemsView
+
+        let separatorView = createSeparatorView(itemsView.frame)
+        self.view.addSubview(separatorView)
         self.separatorView = separatorView
 
-        let detailView = CompletionDetailView()
-        view.addSubview(detailView)
+        let detailView = createDetailView(separatorView.frame)
+        self.view.addSubview(detailView)
         self.detailView = detailView
 
-        CompletionItemKind.allCases.map({ CompletionViewCellIdentifier(kind: $0) }).forEach() {
-            itemListView.register(CompletionViewCell.self, forCellReuseIdentifier: $0.string)
-        }
         changeCodeStyle()
     }
 
-    override func viewDidLayoutSubviews() {
-        var itemListViewFrame = CGRect(origin: .zero, size: view.bounds.size)
-        itemListViewFrame.size.height -= itemListViewFrame.height / 2
-        itemListView.frame = itemListViewFrame
+    private func createItemsView() -> UITableView {
+        var itemsViewFrame = CGRect(origin: .zero, size: viewSize)
+        itemsViewFrame.size.height = itemsViewFrame.height / 2
 
-        var separatorViewFrame = CGRect(origin: .zero, size: view.bounds.size)
-        separatorViewFrame.origin.y = itemListViewFrame.maxY
+        let itemsView = UITableView(frame: itemsViewFrame, style: .plain)
+        itemsView.delegate = self
+        itemsView.dataSource = self
+        itemsView.separatorStyle = .none
+        itemsView.estimatedRowHeight = .zero
+        return itemsView
+    }
+
+    private func createSeparatorView(_ itemsViewFrame: CGRect) -> UIView {
+        var separatorViewFrame = CGRect(origin: .zero, size: viewSize)
+        separatorViewFrame.origin.y = itemsViewFrame.maxY
         separatorViewFrame.size.height = borderWidth
-        separatorView.frame = separatorViewFrame
 
-        var detailViewFrame = CGRect(origin: .zero, size: view.bounds.size)
+        return UIView(frame: separatorViewFrame)
+    }
+
+    private func createDetailView(_ separatorViewFrame: CGRect) -> CompletionDetailView {
+        var detailViewFrame = CGRect(origin: .zero, size: viewSize)
         detailViewFrame.origin.y = separatorViewFrame.maxY
         detailViewFrame.size.height -= separatorViewFrame.maxY
-        detailView.frame = detailViewFrame
+
+        return CompletionDetailView(frame: detailViewFrame)
     }
 
-    private func changeCodeStyle() {
+    override func viewDidLoad() {
+        NotificationCenter.default.addObserver(self, selector: #selector(changeCodeStyle), name: .didChangeCodeStyle, object: nil)
+        CompletionItemKind.allCases.map({ CompletionViewCellIdentifier(kind: $0) }).forEach() {
+            itemsView.register(CompletionViewCell.self, forCellReuseIdentifier: $0.string)
+        }
+    }
+
+    @objc private func changeCodeStyle() {
         // Load code style
-        let codeStyle = CodeStyle.load()
+        codeStyle = CodeStyle.load()
 
+        // Update view border
+        view.layer.borderColor = codeStyle.edgeColor.cgColor
+
+        // Update completion items view
+        itemsView.rowHeight = codeStyle.font.size * 1.4
+        itemsView.indicatorStyle = codeStyle.backgroundColor.isBright ? .black : .white
+        itemsView.backgroundColor = codeStyle.backgroundColor
+
+        // Update separator view
         separatorView.backgroundColor = codeStyle.edgeColor
-        self.view.layer.borderColor = codeStyle.edgeColor.cgColor
 
-        // Update item list view
-        itemListView.rowHeight = codeStyle.font.size * 1.4
-        itemListView.indicatorStyle = codeStyle.backgroundColor.isBright ? .black : .white
-        itemListView.backgroundColor = codeStyle.backgroundColor
-
+        // Update completion detail view
         detailView.set(codeStyle: codeStyle)
-    }
-
-    func didInputArrow(input: String) {
-        switch input {
-        case UIKeyCommand.inputUpArrow:
-            moveSelectRow(-)
-        case UIKeyCommand.inputDownArrow:
-            moveSelectRow(+)
-        default:
-            fatalError()
-        }
-    }
-
-    private func moveSelectRow(_ direction: (Int, Int) -> Int) {
-        guard let current = itemListView.indexPathForSelectedRow?.row else {
-            let index = IndexPath(row: .zero, section: .zero)
-            itemListView.selectRow(at: index, animated: false, scrollPosition: .top)
-            return
-        }
-
-        var selectRow = direction(current, 1)
-        if selectRow < .zero {
-            selectRow = completionItems.count - 1
-        } else if completionItems.count <= selectRow {
-            selectRow = .zero
-        }
-
-        let index = IndexPath(row: selectRow, section: .zero)
-        itemListView.selectRow(at: index, animated: false, scrollPosition: .middle)
-        self.tableView(itemListView, didSelectRowAt: index)
     }
 
 }
 
+
+// MARK: - UITableViewDataSource, UITableViewDelegate
+
 extension CompletionViewController: UITableViewDataSource, UITableViewDelegate {
 
-    func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return completionItems.count
+    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
+        return displayItems.count
     }
 
     func tableView(_: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let completionItem = completionItems[indexPath.row]
-        let identifier = CompletionViewCellIdentifier(kind: completionItem.kind)
-        guard let tableCell = itemListView.dequeueReusableCell(withIdentifier: identifier.string, for: indexPath) as? CompletionViewCell else {
+        let item = displayItems[indexPath.row]
+        let identifier = CompletionViewCellIdentifier(kind: item.kind)
+        guard let tableCell = itemsView.dequeueReusableCell(withIdentifier: identifier.string, for: indexPath) as? CompletionViewCell else {
             fatalError()
         }
-        let label = completionItem.label
-        let deprecated = completionItem.deprecated ?? completionItem.tags?.contains(.deprecated) ?? false
-        tableCell.set(codeStyle: CodeStyle.load())
+        let label = item.label
+        let deprecated = item.deprecated ?? item.tags?.contains(.deprecated) ?? false
+        tableCell.set(codeStyle: codeStyle)
         tableCell.set(label: label, deprecated: deprecated)
         return tableCell
     }
 
     func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let completionItem = completionItems[indexPath.row]
-        let label = completionItem.label
-        let deprecated = completionItem.deprecated ?? completionItem.tags?.contains(.deprecated) ?? false
-        let detail = completionItem.documentation?.string.replacing(of: "(\r\n|\r|\n)+", with: "\n") ?? ""
+        let item = displayItems[indexPath.row]
+        let label = item.label
+        let deprecated = item.deprecated ?? item.tags?.contains(.deprecated) ?? false
+        let detail = item.documentation?.string.replacing(of: "(\r\n|\r|\n)+", with: "\n") ?? ""
         detailView.set(label: label, deprecated: deprecated, detail: detail)
+    }
+
+}
+
+
+// MARK: - View display control
+
+extension CompletionViewController {
+
+    func show(items: [CompletionItem], caretRect: CGRect) {
+        // Initialize
+        completionText = ""
+        completionItems = items.sorted(by: CompletionItem.compare)
+        displayItems = completionItems
+
+        // Refresh completion table
+        itemsView.reloadData()
+        selectRow(.zero, .middle)
+
+        // Setting view
+        view.frame.origin = viewOrigin(caretRect)
+        view.isHidden = false
+    }
+
+    private func viewOrigin(_ caretRect: CGRect) -> CGPoint {
+        guard let superViewBounds = parent?.view.bounds else {
+            fatalError()
+        }
+
+        // Calc view frame
+        let origin = CGPoint(x: caretRect.minX - 40, y: caretRect.maxY + 4)
+        var frame = CGRect(origin: origin, size: view.bounds.size)
+
+        // Correcting X
+        if superViewBounds.maxX - 6 < frame.maxX {
+            frame.origin.x -= frame.maxX - superViewBounds.maxX + 6
+        }
+        // Correcting Y
+        if superViewBounds.maxY - 6 < frame.maxY {
+            frame.origin.y = caretRect.minY - frame.height - 4
+        }
+
+        return frame.origin
+    }
+
+    func hide() {
+        // Hide view
+        view.isHidden = true
+
+        // Delete rows
+        if !displayItems.isEmpty {
+            displayItems.removeAll()
+            itemsView.reloadData()
+        }
+    }
+
+}
+
+
+// MARK: - List control
+
+extension CompletionViewController {
+
+    func willInput(text: String, range: NSRange) {
+        guard !text.isEmpty || completionRange.location <= range.location else {
+            return
+        }
+
+        // Get selected item
+        let selectedItem = self.selectedItem
+
+        // Calc change location
+        var location = range.location - completionRange.location
+        if text.isEmpty && range.length == .zero {
+            location -= 1
+        }
+
+        // Update completion status
+        let changeRange = Range(NSMakeRange(location, range.length), in: completionText)!
+        completionText.replaceSubrange(changeRange, with: text)
+        completionRange.length = completionText.length
+
+        // Refresh completion table
+        refreshCompletionItems()
+
+        if displayItems.isEmpty {
+            hide()
+        } else if let row = displayItems.firstIndex(where: { "\($0)" == "\(selectedItem)" }) {
+            selectRow(row, .middle)
+        } else {
+            selectRow(.zero, .middle)
+        }
+    }
+
+    func didInput(command: UIKeyCommand) {
+        guard var row = itemsView.indexPathForSelectedRow?.row else {
+            fatalError()
+        }
+
+        switch command.input {
+        case UIKeyCommand.inputUpArrow:
+            row -= 1
+        case UIKeyCommand.inputDownArrow:
+            row += 1
+        default:
+            fatalError()
+        }
+
+        if row < .zero {
+            selectRow(displayItems.count - 1, .middle)
+        } else if displayItems.count <= row {
+            selectRow(.zero, .middle)
+        } else {
+            selectRow(row, .middle)
+        }
+    }
+
+    private func selectRow(_ row: Int, _ position: UITableView.ScrollPosition) {
+        let index = IndexPath(row: row, section: .zero)
+        itemsView.selectRow(at: index, animated: false, scrollPosition: position)
+        tableView(itemsView, didSelectRowAt: index)
+    }
+
+    private func refreshCompletionItems() {
+        // Before and after items
+        let beforeItems = displayItems
+        displayItems = completionItems.filter({ $0.insertText?.hasPrefix(completionText) ?? false })
+
+        // Get the difference
+        var deleteRows: [IndexPath] = []
+        var insertRows: [IndexPath] = []
+        displayItems.enumerated().map({ $0.offset }).difference(from: beforeItems.enumerated().map({ $0.offset })).forEach() {
+            switch $0 {
+            case .remove(let offset, _, _):
+                deleteRows.append(IndexPath(row: offset, section: .zero))
+            case .insert(let offset, _, _):
+                insertRows.append(IndexPath(row: offset, section: .zero))
+            }
+        }
+
+        // Update completion list
+        UIView.performWithoutAnimation {
+            itemsView.beginUpdates()
+            itemsView.deleteRows(at: deleteRows, with: .none)
+            itemsView.insertRows(at: insertRows, with: .none)
+            itemsView.endUpdates()
+        }
+
+        // Reload visible rows
+        if let reloadRows = itemsView.indexPathsForVisibleRows {
+            itemsView.reloadRows(at: reloadRows, with: .none)
+        }
+    }
+
+}
+
+extension CompletionItem {
+
+    static func compare(aItem: CompletionItem, bItem: CompletionItem) -> Bool {
+        let aText = aItem.sortText ?? aItem.insertText ?? aItem.label
+        let bText = bItem.sortText ?? bItem.insertText ?? bItem.label
+        return aText.localizedStandardCompare(bText) == .orderedAscending
     }
 
 }

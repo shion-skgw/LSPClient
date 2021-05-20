@@ -49,16 +49,6 @@ final class CompletionDetailView: UIView {
         detailLabel.frame = detailLabelFrame
     }
 
-    func set(label: String, deprecated: Bool, detail: String) {
-        let labelAttributes: [NSAttributedString.Key: Any] = [
-            .font: self.completionLabel.font ?? .systemFont,
-            .foregroundColor: self.completionLabel.textColor ?? .black,
-            .strikethroughStyle: deprecated ? 1 : 0
-        ]
-        self.completionLabel.attributedText = NSAttributedString(string: label, attributes: labelAttributes)
-        self.detailLabel.text = detail
-    }
-
     func set(codeStyle: CodeStyle) {
         backgroundColor = codeStyle.backgroundColor
 
@@ -67,6 +57,16 @@ final class CompletionDetailView: UIView {
 
         detailLabel.font = .systemFont(ofSize: codeStyle.font.size)
         detailLabel.textColor = codeStyle.fontColor.text.uiColor
+    }
+
+    func set(label: String, deprecated: Bool, detail: String) {
+        let labelAttributes: [NSAttributedString.Key: Any] = [
+            .font: self.completionLabel.font ?? .systemFont,
+            .foregroundColor: self.completionLabel.textColor ?? .black,
+            .strikethroughStyle: deprecated ? 1 : 0
+        ]
+        self.completionLabel.attributedText = NSAttributedString(string: label, attributes: labelAttributes)
+        self.detailLabel.text = detail
     }
 
 }
