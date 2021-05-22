@@ -443,15 +443,13 @@
 		0589B58824DCF869006E0C6F /* View */ = {
 			isa = PBXGroup;
 			children = (
-				05E8A4BA264218B60013AA65 /* CompletionView */,
-				0578E6FE25D7A2C40029F28D /* ConsoleView */,
-				0578E6FF25D7A2E10029F28D /* DiagnosticView */,
-				05F45C0E25CA3AF500C96ADB /* EditorTabView */,
-				05F45C0F25CA3B0200C96ADB /* EditorView */,
-				05F419C825F13F8A002C3626 /* PreferenceView */,
+				05FCA4102658F5830072D944 /* Console */,
+				05FCA40F2658F56A0072D944 /* Diagnostic */,
+				05FCA40D2658F51A0072D944 /* Editor */,
+				05FCA4122658F5C50072D944 /* Menu */,
+				05FCA4112658F5A80072D944 /* Preference */,
 				05F45C1225CA3B6200C96ADB /* RootView */,
-				059150F325D2DDDA009EB71B /* SidebarMenuView */,
-				05F45C1125CA3B2200C96ADB /* WorkspaceView */,
+				05FCA40E2658F5490072D944 /* Workspace */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -786,6 +784,56 @@
 				05FA2244260173B4002BD02A /* Preference.strings */,
 			);
 			path = Strings;
+			sourceTree = "<group>";
+		};
+		05FCA40D2658F51A0072D944 /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				05E8A4BA264218B60013AA65 /* CompletionView */,
+				05F45C0E25CA3AF500C96ADB /* EditorTabView */,
+				05F45C0F25CA3B0200C96ADB /* EditorView */,
+			);
+			path = Editor;
+			sourceTree = "<group>";
+		};
+		05FCA40E2658F5490072D944 /* Workspace */ = {
+			isa = PBXGroup;
+			children = (
+				05F45C1125CA3B2200C96ADB /* WorkspaceView */,
+			);
+			path = Workspace;
+			sourceTree = "<group>";
+		};
+		05FCA40F2658F56A0072D944 /* Diagnostic */ = {
+			isa = PBXGroup;
+			children = (
+				0578E6FF25D7A2E10029F28D /* DiagnosticView */,
+			);
+			path = Diagnostic;
+			sourceTree = "<group>";
+		};
+		05FCA4102658F5830072D944 /* Console */ = {
+			isa = PBXGroup;
+			children = (
+				0578E6FE25D7A2C40029F28D /* ConsoleView */,
+			);
+			path = Console;
+			sourceTree = "<group>";
+		};
+		05FCA4112658F5A80072D944 /* Preference */ = {
+			isa = PBXGroup;
+			children = (
+				05F419C825F13F8A002C3626 /* PreferenceView */,
+			);
+			path = Preference;
+			sourceTree = "<group>";
+		};
+		05FCA4122658F5C50072D944 /* Menu */ = {
+			isa = PBXGroup;
+			children = (
+				059150F325D2DDDA009EB71B /* SidebarMenuView */,
+			);
+			path = Menu;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
