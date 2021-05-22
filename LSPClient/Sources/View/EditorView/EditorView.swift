@@ -10,7 +10,6 @@ import UIKit
 
 final class EditorView: UITextView {
 
-    weak var controller: EditorViewController!
     private var gutterColor: CGColor
     private var gutterEdgeColor: CGColor
     private var lineHighlightColor: CGColor
@@ -43,16 +42,6 @@ final class EditorView: UITextView {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override var keyCommands: [UIKeyCommand]? {
-        guard controller.isShownCompletion else {
-            return nil
-        }
-        return [
-            UIKeyCommand(action: #selector(controller.didInput), input: UIKeyCommand.inputUpArrow),
-            UIKeyCommand(action: #selector(controller.didInput), input: UIKeyCommand.inputDownArrow),
-        ]
     }
 
     override var selectedTextRange: UITextRange? {

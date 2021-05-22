@@ -64,7 +64,6 @@ final class EditorViewController: UIViewController {
         let textView = EditorView(frame: .zero, textContainer: textContainer)
         textView.set(codeStyle: codeStyle)
         textView.delegate = self
-        textView.controller = self
         self.textView = textView
         self.view = textView
     }
@@ -102,13 +101,35 @@ final class EditorViewController: UIViewController {
     private let otherThanIndentRegex = try! NSRegularExpression(pattern: "[^ \t]+")
 
     override var keyCommands: [UIKeyCommand]? {
-        [
-            // Deindent
-            UIKeyCommand(input: "\t", modifierFlags: .shift, action: #selector(deindent)),
-            // Comment out
-            UIKeyCommand(input: "/", modifierFlags: .command, action: #selector(toggleComment)),
-            UIKeyCommand(input: " ", modifierFlags: .alternate, action: #selector(sendCompletion)),
-        ]
+        if isShownCompletion {
+            return [
+                UIKeyCommand(action: #selector(didInput), input: UIKeyCommand.inputUpArrow),
+                UIKeyCommand(action: #selector(didInput), input: UIKeyCommand.inputDownArrow),
+            ]
+        } else {
+            return [
+                UIKeyCommand(input: "\t", modifierFlags: .shift, action: #selector(didInput)),
+                UIKeyCommand(input: "/", modifierFlags: .command, action: #selector(didInput)),
+                UIKeyCommand(input: " ", modifierFlags: .alternate, action: #selector(didInput)),
+            ]
+        }
+    }
+
+    @objc func didInput(command: UIKeyCommand) {
+        switch (command.input, command.modifierFlags) {
+        case ("\t", .shift):
+            deindent()
+        case ("/", .command):
+            toggleComment()
+        case (" ", .alternate):
+            sendCompletion(nil)
+        case (UIKeyCommand.inputUpArrow, _):
+            completion.moveSelect(direction: -)
+        case (UIKeyCommand.inputDownArrow, _):
+            completion.moveSelect(direction: +)
+        default:
+            fatalError()
+        }
     }
 
 }
@@ -154,7 +175,7 @@ extension EditorViewController: UITextViewDelegate {
             fatalError()
         }
 
-        if isShownCompletion && !textView.selectedRange.isInRange(completion.completionRange) {
+        if isShownCompletion && !completion.completionRange.inRange(textView.selectedRange) {
             completion.hide()
         }
 
@@ -163,7 +184,7 @@ extension EditorViewController: UITextViewDelegate {
         }
 
         if isNeedCompletion {
-            sendCompletion()
+            sendCompletion(beforeInputText)
         }
     }
 
@@ -319,7 +340,12 @@ extension EditorViewController {
         return "." == text
     }
 
-    @objc private func sendCompletion() {
+    @objc private func invokeCompletion() {
+        sendDidChange()
+        sendCompletion(nil)
+    }
+
+    private func sendCompletion(_ trigger: String?) {
         guard textView.selectedRange.length == .zero else {
             return
         }
@@ -327,27 +353,34 @@ extension EditorViewController {
         // Generate parameters
         let textDocument = TextDocumentIdentifier(uri: uri)
         let position = TextPosition(textView.selectedRange, in: textView.text)
-        let context = CompletionContext(triggerKind: .invoked, triggerCharacter: "a")
+        let context = CompletionContext(triggerKind: trigger == nil ? .invoked : .triggerCharacter, triggerCharacter: trigger)
         let completionParams = CompletionParams(textDocument: textDocument, position: position, context: context)
 
         // Send request "textDocument/completion"
         currentRequestID = completion(params: completionParams)
 
-        completion.completionRange = textView.selectedRange
+        if let range = syntaxManager?.wordRange(text: textView.text, range: textView.selectedRange) {
+            completion.filterText = (textView.text as NSString).substring(with: range)
+            completion.completionRange = textView.selectedRange
+        } else {
+            completion.filterText = ""
+            completion.completionRange = textView.selectedRange
+        }
 
         // Update status
         isNeedCompletion = false
     }
 
     private func commitCompletion() {
-        guard let text = completion.selectedItem.insertText else {
-            fatalError()
-        }
-//        let range = NSMakeRange(completion.range.location, text.length)
-        textStorage.replaceCharacters(in: completion.completionRange, with: text)
-        let selectRange = NSMakeRange(completion.completionRange.location, text.length)
-        textView.selectedRange = NSMakeRange(selectRange.upperBound, .zero)
         completion.hide()
+
+        let completionItem = completion.selectedItem
+        let completionRange = completion.completionRange
+        let replaceRange = syntaxManager?.wordRange(text: textStorage.string, range: completionRange) ?? completionRange
+        let replaceText = completionItem.insertText ?? ""
+
+        textStorage.replaceCharacters(in: replaceRange, with: replaceText)
+        textView.selectedRange = NSMakeRange(completionRange.location + replaceText.length, .zero)
     }
 
 }
@@ -454,10 +487,6 @@ extension EditorViewController: TextDocumentMessageDelegate {
         if !completionList.isIncomplete {
             currentRequestID = nil
         }
-    }
-
-    @objc func didInput(command: UIKeyCommand) {
-        completion.didInput(command: command)
     }
 
     func completionResolve(id: RequestID, result: CompletionItem) {

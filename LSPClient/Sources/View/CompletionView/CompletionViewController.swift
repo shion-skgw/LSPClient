@@ -22,9 +22,20 @@ final class CompletionViewController: UIViewController {
     private var codeStyle: CodeStyle = CodeStyle.load()
 
     var completionRange: NSRange = .zero
-    private var completionText: String = ""
+    private var inputText: String = ""
+    private var initialFilterText: String = ""
     private var completionItems: [CompletionItem] = []
     private var displayItems: [CompletionItem] = []
+
+    var filterText: String {
+        get {
+            self.initialFilterText.appending(self.inputText)
+        }
+        set {
+            self.initialFilterText = newValue
+            self.inputText = ""
+        }
+    }
 
     var selectedItem: CompletionItem {
         guard let row = itemsView.indexPathForSelectedRow?.row else {
@@ -137,7 +148,7 @@ extension CompletionViewController: UITableViewDataSource, UITableViewDelegate {
         let item = displayItems[indexPath.row]
         let label = item.label
         let deprecated = item.deprecated ?? item.tags?.contains(.deprecated) ?? false
-        let detail = item.documentation?.string.replacing(of: "(\r\n|\r|\n)+", with: "\n") ?? ""
+        let detail = item.documentation?.string.replacing(of: "(\r\n|\r|\n)+", with: "\n").appending("\n\n\n") ?? ""
         detailView.set(label: label, deprecated: deprecated, detail: detail)
     }
 
@@ -150,9 +161,8 @@ extension CompletionViewController {
 
     func show(items: [CompletionItem], caretRect: CGRect) {
         // Initialize
-        completionText = ""
         completionItems = items.sorted(by: CompletionItem.compare)
-        displayItems = completionItems
+        displayItems = completionItems.filter({ $0.hasPrefix(initialFilterText) })
 
         // Refresh completion table
         itemsView.reloadData()
@@ -172,11 +182,10 @@ extension CompletionViewController {
         let origin = CGPoint(x: caretRect.minX - 40, y: caretRect.maxY + 4)
         var frame = CGRect(origin: origin, size: view.bounds.size)
 
-        // Correcting X
+        // Correcting X,Y
         if superViewBounds.maxX - 6 < frame.maxX {
             frame.origin.x -= frame.maxX - superViewBounds.maxX + 6
         }
-        // Correcting Y
         if superViewBounds.maxY - 6 < frame.maxY {
             frame.origin.y = caretRect.minY - frame.height - 4
         }
@@ -185,14 +194,9 @@ extension CompletionViewController {
     }
 
     func hide() {
-        // Hide view
         view.isHidden = true
-
-        // Delete rows
-        if !displayItems.isEmpty {
-            displayItems.removeAll()
-            itemsView.reloadData()
-        }
+        completionRange = .zero
+        filterText = ""
     }
 
 }
@@ -217,9 +221,9 @@ extension CompletionViewController {
         }
 
         // Update completion status
-        let changeRange = Range(NSMakeRange(location, range.length), in: completionText)!
-        completionText.replaceSubrange(changeRange, with: text)
-        completionRange.length = completionText.length
+        let changeRange = Range(NSMakeRange(location, range.length), in: inputText)!
+        inputText.replaceSubrange(changeRange, with: text)
+        completionRange.length = inputText.length
 
         // Refresh completion table
         refreshCompletionItems()
@@ -233,19 +237,12 @@ extension CompletionViewController {
         }
     }
 
-    func didInput(command: UIKeyCommand) {
+    func moveSelect(direction: (Int, Int) -> Int) {
         guard var row = itemsView.indexPathForSelectedRow?.row else {
             fatalError()
         }
 
-        switch command.input {
-        case UIKeyCommand.inputUpArrow:
-            row -= 1
-        case UIKeyCommand.inputDownArrow:
-            row += 1
-        default:
-            fatalError()
-        }
+        row = direction(row, 1)
 
         if row < .zero {
             selectRow(displayItems.count - 1, .middle)
@@ -265,7 +262,7 @@ extension CompletionViewController {
     private func refreshCompletionItems() {
         // Before and after items
         let beforeItems = displayItems
-        displayItems = completionItems.filter({ $0.insertText?.hasPrefix(completionText) ?? false })
+        displayItems = completionItems.filter({ $0.hasPrefix(filterText) })
 
         // Get the difference
         var deleteRows: [IndexPath] = []
@@ -301,6 +298,10 @@ extension CompletionItem {
         let aText = aItem.sortText ?? aItem.insertText ?? aItem.label
         let bText = bItem.sortText ?? bItem.insertText ?? bItem.label
         return aText.localizedStandardCompare(bText) == .orderedAscending
+    }
+
+    func hasPrefix(_ text: String) -> Bool {
+        return insertText?.hasPrefix(text) ?? false
     }
 
 }

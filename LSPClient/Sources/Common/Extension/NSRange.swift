@@ -12,8 +12,8 @@ extension NSRange {
 
     static let zero = NSRange()
 
-    @inlinable func isInRange(_ target: NSRange) -> Bool {
-        return target.lowerBound <= lowerBound && upperBound <= target.upperBound
+    @inlinable func inRange(_ target: NSRange) -> Bool {
+        return lowerBound <= target.lowerBound && target.upperBound <= upperBound
     }
 
 }

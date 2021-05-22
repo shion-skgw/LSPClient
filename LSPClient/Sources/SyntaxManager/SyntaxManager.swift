@@ -20,6 +20,7 @@ final class SyntaxManager {
     let commentOpenSymbol: [String]
     let multipleLineSymbol: [String]
     let isBracketIndent: Bool
+    let wordRangeRegex: NSRegularExpression!
     let invalidRangeRegex: NSRegularExpression?
     let indentTriggerRegex: NSRegularExpression!
     let deindentTriggerRegex: NSRegularExpression!
@@ -94,6 +95,7 @@ final class SyntaxManager {
         self.commentOpenSymbol = commentOpenSymbol
         self.multipleLineSymbol = Array(multipleLineSymbol)
         self.isBracketIndent = !definition.indentTrigger.isEmpty && !definition.deindentTrigger.isEmpty
+        self.wordRangeRegex = try! NSRegularExpression(pattern: definition.wordRange)
 
         if !invalidLinePattern.isEmpty {
             let pattern = "(\(invalidLinePattern.joined(separator: "|")))"
@@ -173,6 +175,13 @@ final class SyntaxManager {
         return level >= .zero ? level : .zero
     }
 
+    func wordRange(text: String, range: NSRange) -> NSRange? {
+        let searchRange = (text as NSString).lineRange(for: range)
+        return wordRangeRegex
+            .matches(in: text, options: [], range: searchRange)
+            .first(where: { $0.range.inRange(range) })?.range
+    }
+
 }
 
 
@@ -196,6 +205,9 @@ fileprivate struct CommonDefinition: Codable {
     let deindentTrigger: [String]
     let syntaxGroups: [SyntaxGroupDefinition]
 
+    var wordRange: String {
+        "\(wordBoundaryPrefix).+?\(wordBoundarySuffix)"
+    }
     var wordBoundaryPrefix: String {
         allowTokenPattern != nil ? "(?<=[^\(allowTokenPattern!)]|^)" : "\\b"
     }
