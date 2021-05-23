@@ -22,6 +22,10 @@ final class EditorTabViewController: UIViewController {
     /// Active document URI
     private(set) var activeDocumentUri: DocumentUri?
 
+    var editorControllers: [EditorViewController] {
+        children.compactMap({ $0 as? EditorViewController })
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -61,6 +65,20 @@ final class EditorTabViewController: UIViewController {
         editorContainer.subviews.forEach({ $0.frame = editorViewFrame })
     }
 
+    func open(uri: DocumentUri) {
+        if editorControllers.contains(where: { $0.uri == uri }) {
+            showEditor(uri: uri)
+        } else {
+            append(uri)
+        }
+    }
+
+
+
+
+
+
+
     ///
     /// Add editor
     ///
@@ -99,7 +117,7 @@ final class EditorTabViewController: UIViewController {
     ///
     func showEditor(uri: DocumentUri) {
         tabContainer.tabItems.forEach({ $0.isActive = $0.uri == uri })
-        children.compactMap({ $0 as? EditorViewController }).forEach({
+        editorControllers.forEach({
             if $0.uri == uri {
                 self.activeDocumentUri = uri
                 $0.view.isHidden = false
@@ -127,7 +145,7 @@ final class EditorTabViewController: UIViewController {
     ///
     @objc private func closeEditor(_ sender: EditorTabCloseButton) {
         guard let tabItem = tabContainer.tabItems.first(where: { $0.uri == sender.uri }),
-                let controller = children.first(where: { ($0 as? EditorViewController)?.uri == sender.uri }) else {
+                let controller = editorControllers.first(where: { $0.uri == sender.uri }) else {
             fatalError()
         }
 
@@ -170,7 +188,34 @@ final class EditorTabViewController: UIViewController {
     /// - Returns      : a
     ///
     func hasEditor(uri: DocumentUri) -> Bool {
-        return children.contains(where: { ($0 as? EditorViewController)?.uri == uri })
+        return editorControllers.contains(where: { $0.uri == uri })
+    }
+
+    private func append(_ uri: DocumentUri) {
+        // Calc tab item frame
+        var tabItemFrame = CGRect(origin: .zero, size: tabContainer.bounds.size)
+        tabItemFrame.size.width = tabWidth
+        tabItemFrame.size.height -= 1
+
+        // Add tab item
+        let tabItem = EditorTabItem(frame: tabItemFrame)
+        tabItem.uri = uri
+        tabItem.set(codeStyle: CodeStyle.load())
+        tabItem.addTarget(self, action: #selector(selectTab), for: .touchUpInside)
+        tabItem.closeButton.uri = uri
+        tabItem.closeButton.addTarget(self, action: #selector(closeEditor), for: .touchUpInside)
+        tabItem.fileName.text = uri.lastPathComponent
+        tabContainer.add(item: tabItem)
+
+        // EditorViewController
+        let controller = EditorViewController()
+        controller.uri = uri
+        addChild(controller)
+        editorContainer.addSubview(controller.view)
+        controller.didMove(toParent: self)
+
+        // Select tab
+        showEditor(uri: uri)
     }
 
     ///
@@ -181,7 +226,6 @@ final class EditorTabViewController: UIViewController {
         tabContainer.backgroundColor = codeStyle.tabAreaColor
         tabContainer.tabItems.forEach({ $0.set(codeStyle: codeStyle) })
         editorContainer.backgroundColor = codeStyle.backgroundColor
-        children.compactMap({ $0 as? EditorViewController }).forEach({ $0.set(codeStyle: codeStyle) })
     }
 
 }

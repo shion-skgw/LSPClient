@@ -21,4 +21,5 @@ extension Notification.Name {
     static let didChangeCodeStyle = Notification.Name(rawValue: "didChangeCodeStyle")
     static let willOpenDocument = Notification.Name(rawValue: "willOpenDocument")
     static let didOpenDocument = Notification.Name(rawValue: "didOpenDocument")
+    static let didReceiveDiagnostics = Notification.Name(rawValue: "didReceiveDiagnostics")
 }

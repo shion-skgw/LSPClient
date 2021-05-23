@@ -55,6 +55,7 @@ extension InitializeResult {
         let textDocumentSync: TextDocumentSyncOptions?
         let completionProvider: CompletionOptions?
         let hoverProvider: HoverOptions?
+        let signatureHelpProvider: SignatureHelpOptions?
         let declarationProvider: DeclarationOptions?
         let definitionProvider: DefinitionOptions?
         let typeDefinitionProvider: TypeDefinitionOptions?
@@ -119,6 +120,11 @@ extension InitializeResult.ServerCapabilities {
             let value = try decoder.singleValueContainer().decode(AnyValue.self)
             self.isSupport = value.value as? Bool == true || !(value.value is Void)
         }
+    }
+
+    struct SignatureHelpOptions: Codable {
+        let triggerCharacters: [String]?
+        let retriggerCharacters: [String]?
     }
 
     struct DeclarationOptions: Codable {

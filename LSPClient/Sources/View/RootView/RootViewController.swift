@@ -290,7 +290,12 @@ extension RootViewController: MessageManagerDelegate {
     }
     func applyEdit(id: RequestID, params: ApplyWorkspaceEditParams) {
     }
+
     func publishDiagnostics(params: PublishDiagnosticsParams) {
+        var diagnosis = Diagnosis.load()
+        diagnosis[params.uri] = params.diagnostics
+        diagnosis.save()
+        NotificationCenter.default.post(name: .didReceiveDiagnostics, object: nil, userInfoValue: params.uri)
     }
 
 }
@@ -299,9 +304,12 @@ extension RootViewController: MessageManagerDelegate {
 extension RootViewController: WorkspaceMessageDelegate {
 
     func initialize(id: RequestID, result: InitializeResult) {
+        ServerCapability(capabilities: result.capabilities).save()
+
         let initializedParams = InitializedParams()
         initialized(params: initializedParams)
     }
+
     func shutdown(id: RequestID, result: VoidValue?) {}
     func symbol(id: RequestID, result: [SymbolInformation]?) {}
     func executeCommand(id: RequestID, result: AnyValue?) {}

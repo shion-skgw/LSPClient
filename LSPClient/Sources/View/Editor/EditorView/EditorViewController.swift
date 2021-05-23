@@ -21,6 +21,8 @@ final class EditorViewController: UIViewController {
 
     private(set) weak var completion: CompletionViewController!
 
+    private let serverCapability = ServerCapability.load()
+
     static let gutterWidth: CGFloat = 40.0
     static let verticalMargin: CGFloat = 4.0
 
@@ -83,9 +85,30 @@ final class EditorViewController: UIViewController {
         let completion = CompletionViewController()
         add(child: completion)
         self.completion = completion
+
+        // Notification
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(refreshCodeStyle), name: .didChangeCodeStyle, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(refreshDiagnostics), name: .didReceiveDiagnostics, object: nil)
+
+        let hovar = UIMenuItem(title: "情報", action: #selector(a))
+        UIMenuController.shared.menuItems = [hovar]
     }
 
-    func set(codeStyle: CodeStyle) {
+    @objc private func refreshDiagnostics(_ notification: Notification) {
+        guard self.uri == notification.userInfoValue as? DocumentUri,
+                let diagnostics = Diagnosis.load()[self.uri] else {
+            return
+        }
+        let dict: [NSRange: DiagnosticSeverity] = diagnostics.reduce(into: [:], {
+            $0[NSRange($1.range, in: self.textView.text)] = $1.severity ?? .information
+        })
+        textStorage.applyDiagnostic(diagnostic: dict)
+        textView.setNeedsDisplay()
+    }
+
+    @objc private func refreshCodeStyle() {
+        let codeStyle = CodeStyle.load()
         textView.set(codeStyle: codeStyle)
         textStorage.set(codeStyle: codeStyle)
         layoutManager.set(codeStyle: codeStyle)
@@ -95,6 +118,7 @@ final class EditorViewController: UIViewController {
     private var beforeChangesText: String = ""
     private var isNeedCommitChanges: Bool = false
     private var isNeedCompletion: Bool = false
+    private var isNeedSignatureHelp: Bool = false
     private var currentVersion: Int = 1
     private var currentRequestID: RequestID? = nil
 
@@ -122,6 +146,7 @@ final class EditorViewController: UIViewController {
         case ("/", .command):
             toggleComment()
         case (" ", .alternate):
+            sendDidChange()
             sendCompletion(nil)
         case (UIKeyCommand.inputUpArrow, _):
             completion.moveSelect(direction: -)
@@ -130,6 +155,14 @@ final class EditorViewController: UIViewController {
         default:
             fatalError()
         }
+    }
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        print(action, sender)
+        return super.canPerformAction(action, withSender: sender)
+    }
+
+    @objc private func a() {
+        aaaaaa()
     }
 
 }
@@ -141,8 +174,7 @@ extension EditorViewController: UITextViewDelegate {
 
     func textView(_: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if isShownCompletion {
-            let commitChar = ["\n", "\t"]
-            if range.length == .zero && commitChar.contains(text) {
+            if range.length == .zero && serverCapability.completion.allCommitCharacters.contains(text) {
                 commitCompletion()
                 return false
             } else {
@@ -159,6 +191,7 @@ extension EditorViewController: UITextViewDelegate {
         }
 
         self.isNeedCompletion = needCompletion(text)
+        self.isNeedSignatureHelp = needSignatureHelp(text)
         self.isNeedCommitChanges = !isShouldChange || isNeedRegisterUndo || self.isNeedCompletion
         self.beforeInputText = text
 
@@ -169,7 +202,8 @@ extension EditorViewController: UITextViewDelegate {
         if textView.selectedRange.length == .zero {
             print(TextPosition(textView.selectedRange, in: textView.text))
         } else {
-            print(TextRange(textView.selectedRange, in: textView.text))
+            let aaa = TextRange(textView.selectedRange, in: textView.text)
+            print(aaa)
         }
         guard let undoManager = self.undoManager else {
             fatalError()
@@ -185,6 +219,8 @@ extension EditorViewController: UITextViewDelegate {
 
         if isNeedCompletion {
             sendCompletion(beforeInputText)
+        } else if isNeedSignatureHelp {
+            sendSignatureHelp(beforeInputText)
         }
     }
 
@@ -337,16 +373,12 @@ extension EditorViewController {
 extension EditorViewController {
 
     private func needCompletion(_ text: String) -> Bool {
-        return "." == text
-    }
-
-    @objc private func invokeCompletion() {
-        sendDidChange()
-        sendCompletion(nil)
+        return serverCapability.completion.triggerCharacters.contains(text)
     }
 
     private func sendCompletion(_ trigger: String?) {
-        guard textView.selectedRange.length == .zero else {
+        guard serverCapability.completion.isSupport,
+                textView.selectedRange.length == .zero else {
             return
         }
 
@@ -380,7 +412,7 @@ extension EditorViewController {
         let replaceText = completionItem.insertText ?? ""
 
         textStorage.replaceCharacters(in: replaceRange, with: replaceText)
-        textView.selectedRange = NSMakeRange(completionRange.location + replaceText.length, .zero)
+        textView.selectedRange = NSMakeRange(replaceRange.location + replaceText.length, .zero)
     }
 
 }
@@ -388,7 +420,39 @@ extension EditorViewController {
 
 // MARK: - Hover support
 
-extension EditorViewController {}
+extension EditorViewController {
+
+    private func aaaaaa() {
+        let textDocument = TextDocumentIdentifier(uri: uri)
+        let position = TextPosition(textView.selectedRange, in: textView.text)
+        let hoverParams = HoverParams(textDocument: textDocument, position: position)
+
+        // Send request
+        currentRequestID = hover(params: hoverParams)
+    }
+
+}
+
+
+// MARK: - Signature help support
+
+extension EditorViewController {
+
+    private func needSignatureHelp(_ text: String) -> Bool {
+        return serverCapability.signatureHelp.triggerCharacters.contains(text)
+    }
+
+    private func sendSignatureHelp(_ trigger: String) {
+        let textDocument = TextDocumentIdentifier(uri: uri)
+        let position = TextPosition(textView.selectedRange, in: textView.text)
+        let context = SignatureHelpContext(triggerKind: .triggerCharacter, triggerCharacter: trigger, isRetrigger: false, activeSignatureHelp: nil)
+        let signatureHelpParams = SignatureHelpParams(textDocument: textDocument, position: position, context: context)
+
+        // Send request
+        currentRequestID = signatureHelp(params: signatureHelpParams)
+    }
+
+}
 
 
 // MARK: - Definition support
@@ -426,6 +490,10 @@ extension EditorViewController {}
 extension EditorViewController {
 
     private func sendDidOpen() {
+        guard serverCapability.textDocumentSync.openClose else {
+            return
+        }
+
         // Generate parameters
         let languageId = LanguageID.of(fileExtension: fileExtension)
         let textDocument = TextDocumentItem(uri: uri, languageId: languageId, version: currentVersion, text: textStorage.string)
@@ -440,6 +508,33 @@ extension EditorViewController {
             return
         }
 
+        // Send notification
+        switch serverCapability.textDocumentSync.change {
+        case .none:
+            break
+        case .full:
+            sendDidChangeFull()
+        case .incremental:
+            sendDidChangeIncremental()
+        }
+
+        // Update status
+        isNeedCommitChanges = false
+        beforeChangesText = textStorage.string
+    }
+
+    private func sendDidChangeFull() {
+        // Generate parameters
+        currentVersion += 1
+        let textDocument = VersionedTextDocumentIdentifier(uri: uri, version: currentVersion)
+        let contentChange = TextDocumentContentChangeEvent.full(textStorage.string)
+        let didChangeParams = DidChangeTextDocumentParams(textDocument: textDocument, contentChanges: [contentChange])
+
+        // Send notification "textDocument/didChange"
+        didChange(params: didChangeParams)
+    }
+
+    private func sendDidChangeIncremental() {
         // Get the changes
         let changes = textStorage.string.changes(from: beforeChangesText)
 
@@ -452,10 +547,6 @@ extension EditorViewController {
 
         // Send notification "textDocument/didChange"
         didChange(params: didChangeParams)
-
-        // Update status
-        isNeedCommitChanges = false
-        beforeChangesText = textStorage.string
     }
 
     private func sendDidSave() {
@@ -467,6 +558,17 @@ extension EditorViewController {
         didSave(params: didOpenParams)
     }
 
+    private func sendDidClose() {
+        guard serverCapability.textDocumentSync.openClose else {
+            return
+        }
+
+        // Send notification "textDocument/didClose"
+        let textDocument = TextDocumentIdentifier(uri: uri)
+        let didCloseParams = DidCloseTextDocumentParams(textDocument: textDocument)
+        didClose(params: didCloseParams)
+    }
+
 }
 
 
@@ -476,6 +578,7 @@ extension EditorViewController: TextDocumentMessageDelegate {
 
     func completion(id: RequestID, result: CompletionList?) {
         guard currentRequestID == id,
+                completion.completionRange == textView.selectedRange,
                 let completionList = result, !completionList.items.isEmpty,
                 let selectedTextRange = textView.selectedTextRange?.end else {
             return
@@ -492,6 +595,8 @@ extension EditorViewController: TextDocumentMessageDelegate {
     func completionResolve(id: RequestID, result: CompletionItem) {
     }
     func hover(id: RequestID, result: Hover?) {
+    }
+    func signatureHelp(id: RequestID, result: SignatureHelp?) {
     }
 //    func declaration(id: RequestID, result: FindLocationResult?) {}
     func definition(id: RequestID, result: FindLocationResult?) {
@@ -514,6 +619,7 @@ extension EditorViewController: TextDocumentMessageDelegate {
     func rename(id: RequestID, result: WorkspaceEdit?) {
     }
     func responseError(id: RequestID, method: MessageMethod, error: ErrorResponse) {
+        print(#function, id, method, error)
     }
 
 }

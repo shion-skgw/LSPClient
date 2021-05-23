@@ -36,6 +36,14 @@ protocol TextDocumentMessageDelegate: MessageDelegate {
     func hover(id: RequestID, result: Hover?)
 
     ///
+    /// Receive result: textDocument/signatureHelp
+    ///
+    /// - Parameter id    : Request ID
+    /// - Parameter result: Result
+    ///
+    func signatureHelp(id: RequestID, result: SignatureHelp?)
+
+    ///
     /// Receive result: textDocument/declaration
     ///
     /// - Parameter id    : Request ID
@@ -216,6 +224,19 @@ extension TextDocumentMessageDelegate {
     }
 
     ///
+    /// Send request: textDocument/signatureHelp
+    ///
+    /// - Parameter params: Parameter
+    ///
+    func signatureHelp(params: SignatureHelpParams) -> RequestID {
+        let context = MessageManager.RequestContext(method: .textDocumentSignatureHelp, source: self)
+        let id = MessageManager.shared.nextId
+        let message = Message.request(id, context.method, params)
+        MessageManager.shared.send(message: message, context: context)
+        return id
+    }
+
+    ///
     /// Send request: textDocument/declaration
     ///
     /// - Parameter params: Parameter
@@ -386,6 +407,8 @@ extension TextDocumentMessageDelegate {
             source.completionResolve(id: id, result: toResult(result))
         case .textDocumentHover:
             source.hover(id: id, result: toResult(result))
+        case .textDocumentSignatureHelp:
+            source.signatureHelp(id: id, result: toResult(result))
 //        case .textDocumentDeclaration:
 //            source.declaration(id: id, result: toResult(result)
         case .textDocumentDefinition:

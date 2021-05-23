@@ -14,6 +14,7 @@ final class EditorTextStorage: NSTextStorage {
     weak var syntaxManager: SyntaxManager?
     private(set) var textAttribute: [NSAttributedString.Key: Any]
     private(set) var highlightAttribute: [SyntaxType: [NSAttributedString.Key: Any]]
+    private(set) var diagnosticAttribute: [DiagnosticSeverity: [NSAttributedString.Key: Any]]
 
     override var string: String {
         content.string
@@ -24,6 +25,7 @@ final class EditorTextStorage: NSTextStorage {
         self.syntaxManager = nil
         self.textAttribute = [:]
         self.highlightAttribute = [:]
+        self.diagnosticAttribute = [:]
         super.init()
     }
 
@@ -65,6 +67,16 @@ final class EditorTextStorage: NSTextStorage {
         }
     }
 
+    func applyDiagnostic(diagnostic: [NSRange: DiagnosticSeverity]) {
+        self.content.removeAttribute(.underlineStyle, range: string.range)
+        diagnostic.forEach() {
+            guard let attribute = self.diagnosticAttribute[$0.value] else {
+                fatalError()
+            }
+            self.content.addAttributes(attribute, range: $0.key)
+        }
+    }
+
 }
 
 extension EditorTextStorage {
@@ -73,6 +85,7 @@ extension EditorTextStorage {
         fontSetting(codeStyle)
         tabSetting(codeStyle)
         highlightSetting(codeStyle)
+        diagnosticSetting(codeStyle)
     }
 
     private func fontSetting(_ codeStyle: CodeStyle) {
@@ -113,6 +126,26 @@ extension EditorTextStorage {
         self.highlightAttribute[.comment] = [
             .font: codeStyle.font.uiFont,
             .foregroundColor: codeStyle.fontColor.comment.uiColor,
+        ]
+    }
+
+    private func diagnosticSetting(_ codeStyle: CodeStyle) {
+        self.diagnosticAttribute.removeAll()
+        self.diagnosticAttribute[.error] = [
+            .underlineStyle: NSUnderlineStyle.double.rawValue,
+            .underlineColor: UIColor.red
+        ]
+        self.diagnosticAttribute[.warning] = [
+            .underlineStyle: NSUnderlineStyle.single.rawValue,
+            .underlineColor: UIColor.yellow
+        ]
+        self.diagnosticAttribute[.information] = [
+            .underlineStyle: NSUnderlineStyle.patternDash.rawValue,
+            .underlineColor: UIColor.green
+        ]
+        self.diagnosticAttribute[.hint] = [
+            .underlineStyle: NSUnderlineStyle.patternDot.rawValue,
+            .underlineColor: UIColor.green
         ]
     }
 

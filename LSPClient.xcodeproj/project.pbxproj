@@ -48,6 +48,8 @@
 		05601E7925A29725007B91C1 /* EditorTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05601E7825A29725007B91C1 /* EditorTabViewController.swift */; };
 		05601E7D25A2973C007B91C1 /* EditorTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05601E7C25A2973C007B91C1 /* EditorTabView.swift */; };
 		05601E8125A2974D007B91C1 /* EditorTabItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05601E8025A2974D007B91C1 /* EditorTabItem.swift */; };
+		0565AB7E265A4AB9002E5FCE /* ServerCapability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0565AB7D265A4AB9002E5FCE /* ServerCapability.swift */; };
+		0565AB84265AE4EF002E5FCE /* SignatureHelp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0565AB83265AE4EF002E5FCE /* SignatureHelp.swift */; };
 		056706A7251521AB00F9D7E7 /* Swift.plist in Resources */ = {isa = PBXBuildFile; fileRef = 056706A6251521AB00F9D7E7 /* Swift.plist */; };
 		056732C8249606C300E7650B /* WorkspaceEdit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056732C7249606C300E7650B /* WorkspaceEdit.swift */; };
 		056732CA249609FB00E7650B /* TextDocumentIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056732C9249609FB00E7650B /* TextDocumentIdentifier.swift */; };
@@ -123,6 +125,8 @@
 		05DBAEAB25DDD9FA00B028B2 /* UIAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DBAEAA25DDD9FA00B028B2 /* UIAlertController.swift */; };
 		05E7BFD5263B65A30072527A /* SyntaxType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E7BFD4263B65A30072527A /* SyntaxType.swift */; };
 		05E8A4BC264218C90013AA65 /* CompletionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05E8A4BB264218C90013AA65 /* CompletionViewController.swift */; };
+		05EBA0F32659060100A11D55 /* CacheType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EBA0F22659060100A11D55 /* CacheType.swift */; };
+		05EBA0FB265908E100A11D55 /* Diagnosis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EBA0FA265908E100A11D55 /* Diagnosis.swift */; };
 		05EE6F8425CD6A4200F94B24 /* WorkspaceFoldButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EE6F8325CD6A4200F94B24 /* WorkspaceFoldButton.swift */; };
 		05EE6F8825CD6B7400F94B24 /* WorkspaceViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05EE6F8725CD6B7400F94B24 /* WorkspaceViewCell.swift */; };
 		05F0264725168C0E003CCEA4 /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F0264625168C0E003CCEA4 /* UIViewController.swift */; };
@@ -196,6 +200,8 @@
 		05601E7825A29725007B91C1 /* EditorTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTabViewController.swift; sourceTree = "<group>"; };
 		05601E7C25A2973C007B91C1 /* EditorTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTabView.swift; sourceTree = "<group>"; };
 		05601E8025A2974D007B91C1 /* EditorTabItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTabItem.swift; sourceTree = "<group>"; };
+		0565AB7D265A4AB9002E5FCE /* ServerCapability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerCapability.swift; sourceTree = "<group>"; };
+		0565AB83265AE4EF002E5FCE /* SignatureHelp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureHelp.swift; sourceTree = "<group>"; };
 		056706A6251521AB00F9D7E7 /* Swift.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Swift.plist; sourceTree = "<group>"; };
 		056732C7249606C300E7650B /* WorkspaceEdit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceEdit.swift; sourceTree = "<group>"; };
 		056732C9249609FB00E7650B /* TextDocumentIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDocumentIdentifier.swift; sourceTree = "<group>"; };
@@ -275,6 +281,8 @@
 		05DBAEAA25DDD9FA00B028B2 /* UIAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlertController.swift; sourceTree = "<group>"; };
 		05E7BFD4263B65A30072527A /* SyntaxType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxType.swift; sourceTree = "<group>"; };
 		05E8A4BB264218C90013AA65 /* CompletionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionViewController.swift; sourceTree = "<group>"; };
+		05EBA0F22659060100A11D55 /* CacheType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheType.swift; sourceTree = "<group>"; };
+		05EBA0FA265908E100A11D55 /* Diagnosis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diagnosis.swift; sourceTree = "<group>"; };
 		05EE6F8325CD6A4200F94B24 /* WorkspaceFoldButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceFoldButton.swift; sourceTree = "<group>"; };
 		05EE6F8725CD6B7400F94B24 /* WorkspaceViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceViewCell.swift; sourceTree = "<group>"; };
 		05F0264625168C0E003CCEA4 /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
@@ -415,6 +423,7 @@
 				05BAAB1D24A3530E00A3EADC /* Initialize.swift */,
 				05BAAB2D24A3535F00A3EADC /* PublishDiagnostic.swift */,
 				05BAAB3D24A353A800A3EADC /* Rename.swift */,
+				0565AB83265AE4EF002E5FCE /* SignatureHelp.swift */,
 				05BAAB3724A3538D00A3EADC /* Symbol.swift */,
 				05BAAB1F24A3531900A3EADC /* UserMessage.swift */,
 				05BAAB2724A3534300A3EADC /* WorkspaceSymbol.swift */,
@@ -467,6 +476,7 @@
 		0589B58D24DD4C9C006E0C6F /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				05EBA0F1265905EC00A11D55 /* Cache */,
 				05182B2224DA02E2007E8832 /* Config */,
 				058F7EC82511BFC20063D9AF /* Extension */,
 				05CC821425A4362700D6F4DB /* Function */,
@@ -664,6 +674,16 @@
 				05E8A4BB264218C90013AA65 /* CompletionViewController.swift */,
 			);
 			path = CompletionView;
+			sourceTree = "<group>";
+		};
+		05EBA0F1265905EC00A11D55 /* Cache */ = {
+			isa = PBXGroup;
+			children = (
+				05EBA0F22659060100A11D55 /* CacheType.swift */,
+				05EBA0FA265908E100A11D55 /* Diagnosis.swift */,
+				0565AB7D265A4AB9002E5FCE /* ServerCapability.swift */,
+			);
+			path = Cache;
 			sourceTree = "<group>";
 		};
 		05F419C825F13F8A002C3626 /* PreferenceView */ = {
@@ -972,11 +992,13 @@
 				05F419CD25F140BE002C3626 /* LanguageServerConfigView.swift in Sources */,
 				05F8411325E0E19F006553BB /* WorkspaceError.swift in Sources */,
 				0508BF2D24C97905005488A9 /* TextDocumentMessageDelegate.swift in Sources */,
+				0565AB84265AE4EF002E5FCE /* SignatureHelp.swift in Sources */,
 				0578E6FB25D799700029F28D /* UIButton.swift in Sources */,
 				0578E70F25D7A36D0029F28D /* DiagnosticViewController.swift in Sources */,
 				0578E70725D7A3270029F28D /* ConsoleViewController.swift in Sources */,
 				05BAAB3824A3538D00A3EADC /* Symbol.swift in Sources */,
 				05114217250E77A1002A4056 /* MessageDelegate.swift in Sources */,
+				0565AB7E265A4AB9002E5FCE /* ServerCapability.swift in Sources */,
 				05E7BFD5263B65A30072527A /* SyntaxType.swift in Sources */,
 				05BAAB2E24A3535F00A3EADC /* PublishDiagnostic.swift in Sources */,
 				05436C8925E4B710002FB02E /* EditorTabCloseButton.swift in Sources */,
@@ -1017,6 +1039,7 @@
 				056732D42496433E00E7650B /* MarkupContent.swift in Sources */,
 				0541881D2490C71900C6D9A2 /* ParameterType.swift in Sources */,
 				05EE6F8825CD6B7400F94B24 /* WorkspaceViewCell.swift in Sources */,
+				05EBA0FB265908E100A11D55 /* Diagnosis.swift in Sources */,
 				05BAAB3624A3538400A3EADC /* Highlight.swift in Sources */,
 				05EE6F8425CD6A4200F94B24 /* WorkspaceFoldButton.swift in Sources */,
 				0540194F24936C2300287026 /* Location.swift in Sources */,
@@ -1046,6 +1069,7 @@
 				05F419E625F14252002C3626 /* CodeStyleViewController.swift in Sources */,
 				058F7ECC2511C0890063D9AF /* UIColor.swift in Sources */,
 				0578E70B25D7A3480029F28D /* DiagnosticView.swift in Sources */,
+				05EBA0F32659060100A11D55 /* CacheType.swift in Sources */,
 				05F419EE25F14271002C3626 /* WorkspaceConfigView.swift in Sources */,
 				05DBAEAB25DDD9FA00B028B2 /* UIAlertController.swift in Sources */,
 				05F41A0525F148A3002C3626 /* PreferenceMenuView.swift in Sources */,

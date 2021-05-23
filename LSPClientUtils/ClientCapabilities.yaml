@@ -348,58 +348,58 @@ textDocument:
       #
 #       - markdown
 
-#   #
-#   # Capabilities specific to the `textDocument/signatureHelp` request.
-#   #
-#   signatureHelp:
-#     #
-#     # Whether signature help supports dynamic registration.
-#     #
-#     dynamicRegistration:
-#       false
-#     #
-#     # The client supports the following `SignatureInformation`
-#     # specific properties.
-#     #
-#     signatureInformation:
-#       #
-#       # Client supports the follow content formats for the documentation
-#       # property. The order describes the preferred format of the client.
-#       #
-#       documentationFormat:
-#         #
-#         # Plain text is supported as a content format
-#         #
-#         - plaintext
-#
-#         #
-#         # Markdown is supported as a content format
-#         #
+  #
+  # Capabilities specific to the `textDocument/signatureHelp` request.
+  #
+  signatureHelp:
+    #
+    # Whether signature help supports dynamic registration.
+    #
+    dynamicRegistration:
+      false
+    #
+    # The client supports the following `SignatureInformation`
+    # specific properties.
+    #
+    signatureInformation:
+      #
+      # Client supports the follow content formats for the documentation
+      # property. The order describes the preferred format of the client.
+      #
+      documentationFormat:
+        #
+        # Plain text is supported as a content format
+        #
+        - plaintext
+
+        #
+        # Markdown is supported as a content format
+        #
 #         - markdown
-#
-#       #
-#       # Client capabilities specific to parameter information.
-#       #
-#       parameterInformation:
-#         #
-#         # The client supports processing label offsets instead of a
-#         # simple label string.
-#         #
-#         # @since 3.14.0
-#         #
-#         labelOffsetSupport:
-#           false
-#
-#     #
-#     # The client supports to send additional context information for a
-#     # `textDocument/signatureHelp` request. A client that opts into
-#     # contextSupport will also support the `retriggerCharacters` on
-#     # `SignatureHelpOptions`.
-#     #
-#     # @since 3.15.0
-#     #
-#     contextSupport:
-#       false
+
+      #
+      # Client capabilities specific to parameter information.
+      #
+      parameterInformation:
+        #
+        # The client supports processing label offsets instead of a
+        # simple label string.
+        #
+        # @since 3.14.0
+        #
+        labelOffsetSupport:
+          false
+
+    #
+    # The client supports to send additional context information for a
+    # `textDocument/signatureHelp` request. A client that opts into
+    # contextSupport will also support the `retriggerCharacters` on
+    # `SignatureHelpOptions`.
+    #
+    # @since 3.15.0
+    #
+    contextSupport:
+      false
 
   #
   # Capabilities specific to the `textDocument/declaration` request.

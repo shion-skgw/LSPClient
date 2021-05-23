@@ -21,7 +21,7 @@ final class CompletionViewController: UIViewController {
     private let cornerRadius: CGFloat = 3
     private var codeStyle: CodeStyle = CodeStyle.load()
 
-    var completionRange: NSRange = .zero
+    var completionRange: NSRange = .notFound
     private var inputText: String = ""
     private var initialFilterText: String = ""
     private var completionItems: [CompletionItem] = []
@@ -63,7 +63,7 @@ final class CompletionViewController: UIViewController {
         self.view.addSubview(detailView)
         self.detailView = detailView
 
-        changeCodeStyle()
+        refreshCodeStyle()
     }
 
     private func createItemsView() -> UITableView {
@@ -95,13 +95,13 @@ final class CompletionViewController: UIViewController {
     }
 
     override func viewDidLoad() {
-        NotificationCenter.default.addObserver(self, selector: #selector(changeCodeStyle), name: .didChangeCodeStyle, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshCodeStyle), name: .didChangeCodeStyle, object: nil)
         CompletionItemKind.allCases.map({ CompletionViewCellIdentifier(kind: $0) }).forEach() {
             itemsView.register(CompletionViewCell.self, forCellReuseIdentifier: $0.string)
         }
     }
 
-    @objc private func changeCodeStyle() {
+    @objc private func refreshCodeStyle() {
         // Load code style
         codeStyle = CodeStyle.load()
 
@@ -195,8 +195,6 @@ extension CompletionViewController {
 
     func hide() {
         view.isHidden = true
-        completionRange = .zero
-        filterText = ""
     }
 
 }

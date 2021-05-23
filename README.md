@@ -39,7 +39,7 @@ I want to code on my iPad!
 | Completion Request | `textDocument/completion` | ○ |
 | Completion Item Resolve Request | `completionItem/resolve` | ○ |
 | Hover Request | `textDocument/hover` | ○ |
-| Signature Help Request | `textDocument/signatureHelp` | - |
+| Signature Help Request | `textDocument/signatureHelp` | ○ |
 | Goto Declaration Request | `textDocument/declaration` | - |
 | Goto Definition Request | `textDocument/definition` | ○ |
 | Goto Type Definition Request | `textDocument/typeDefinition` | ○ |

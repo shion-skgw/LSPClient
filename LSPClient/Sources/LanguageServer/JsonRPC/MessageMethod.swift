@@ -33,6 +33,7 @@ enum MessageMethod: String, Codable {
     case textDocumentCompletion = "textDocument/completion"
     case completionItemResolve = "completionItem/resolve"
     case textDocumentHover = "textDocument/hover"
+    case textDocumentSignatureHelp = "textDocument/signatureHelp"
     case textDocumentDefinition = "textDocument/definition"
     case textDocumentTypeDefinition = "textDocument/typeDefinition"
     case textDocumentImplementation = "textDocument/implementation"
@@ -86,6 +87,7 @@ private let RESPONSE_RESULT_TYPE: [MessageMethod: ResultType.Type] = [
     .textDocumentCompletion: CompletionList?.self,
     .completionItemResolve: CompletionItem.self,
     .textDocumentHover: Hover?.self,
+    .textDocumentSignatureHelp: SignatureHelp?.self,
 //    .textDocumentDeclaration: FindLocationResult?.self,
     .textDocumentDefinition: FindLocationResult?.self,
     .textDocumentTypeDefinition: FindLocationResult?.self,

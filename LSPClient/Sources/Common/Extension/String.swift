@@ -43,6 +43,21 @@ extension String {
             .map({ ($0.offset, $0.element.range) })
     }
 
+    @inlinable func lineRanges(limit: Int) -> [(number: Int, range: NSRange)] {
+        var number = 0
+        var lineRanges: [(number: Int, range: NSRange)] = []
+        String.endOfLineRegex.enumerateMatches(in: self, range: range) {
+            result, _, stop in
+            guard number <= limit, let range = result?.range else {
+                stop.pointee = true
+                return
+            }
+            lineRanges.append((number, range))
+            number += 1
+        }
+        return lineRanges
+    }
+
     @inlinable func index(offsetBy: Int) -> Index {
         return index(startIndex, offsetBy: offsetBy)
     }
