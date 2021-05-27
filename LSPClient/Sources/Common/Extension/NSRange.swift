@@ -17,8 +17,8 @@ extension NSRange {
     }
 
     init(_ textRange: TextRange, in text: String) {
-        let lineRanges = text.lineRanges(limit: textRange.end.line)
-        guard let startNSRange = lineRanges.first(where: { $0.number == textRange.start.line })?.range,
+        let lineRanges = text.lineRanges(start: textRange.start.line, end: textRange.end.line)
+        guard let startNSRange = lineRanges.first?.range,
                 let endNSRange = lineRanges.last?.range,
                 let startRange = Range(startNSRange, in: text),
                 let endRange = Range(endNSRange, in: text),

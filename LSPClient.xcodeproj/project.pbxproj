@@ -50,6 +50,13 @@
 		05601E8125A2974D007B91C1 /* EditorTabItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05601E8025A2974D007B91C1 /* EditorTabItem.swift */; };
 		0565AB7E265A4AB9002E5FCE /* ServerCapability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0565AB7D265A4AB9002E5FCE /* ServerCapability.swift */; };
 		0565AB84265AE4EF002E5FCE /* SignatureHelp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0565AB83265AE4EF002E5FCE /* SignatureHelp.swift */; };
+		0565AB8B265B05CC002E5FCE /* SignatureHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0565AB8A265B05CC002E5FCE /* SignatureHelpView.swift */; };
+		0565AB8F265B05F9002E5FCE /* SignatureHelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0565AB8E265B05F9002E5FCE /* SignatureHelpViewController.swift */; };
+		0565AB94265B0634002E5FCE /* HoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0565AB93265B0634002E5FCE /* HoverView.swift */; };
+		0565AB9A265B063C002E5FCE /* HoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0565AB99265B063C002E5FCE /* HoverViewController.swift */; };
+		0565ABA3265B29FC002E5FCE /* Menu.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0565ABA5265B29FC002E5FCE /* Menu.strings */; };
+		0565ABAB265B2A99002E5FCE /* MenuStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0565ABAA265B2A99002E5FCE /* MenuStrings.swift */; };
+		0565ABAF265B2E9E002E5FCE /* UIKeyCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0565ABAE265B2E9E002E5FCE /* UIKeyCommand.swift */; };
 		056706A7251521AB00F9D7E7 /* Swift.plist in Resources */ = {isa = PBXBuildFile; fileRef = 056706A6251521AB00F9D7E7 /* Swift.plist */; };
 		056732C8249606C300E7650B /* WorkspaceEdit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056732C7249606C300E7650B /* WorkspaceEdit.swift */; };
 		056732CA249609FB00E7650B /* TextDocumentIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 056732C9249609FB00E7650B /* TextDocumentIdentifier.swift */; };
@@ -93,6 +100,7 @@
 		059549E726480BB300935907 /* sample.gif in Resources */ = {isa = PBXBuildFile; fileRef = 059549E626480BB300935907 /* sample.gif */; };
 		059549ED2648380500935907 /* CompletionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059549EC2648380500935907 /* CompletionDetailView.swift */; };
 		059E7E8A2656B17000D169E6 /* NSRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059E7E892656B16F00D169E6 /* NSRange.swift */; };
+		05A6E3CA265EC9300054EDA5 /* SyntaxDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A6E3C9265EC9300054EDA5 /* SyntaxDefinition.swift */; };
 		05BA10AF24D2D922009A3669 /* LSPConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BA10AE24D2D922009A3669 /* LSPConnection.swift */; };
 		05BAAB1C24A3530500A3EADC /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BAAB1B24A3530500A3EADC /* Common.swift */; };
 		05BAAB1E24A3530E00A3EADC /* Initialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BAAB1D24A3530E00A3EADC /* Initialize.swift */; };
@@ -202,6 +210,14 @@
 		05601E8025A2974D007B91C1 /* EditorTabItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTabItem.swift; sourceTree = "<group>"; };
 		0565AB7D265A4AB9002E5FCE /* ServerCapability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerCapability.swift; sourceTree = "<group>"; };
 		0565AB83265AE4EF002E5FCE /* SignatureHelp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureHelp.swift; sourceTree = "<group>"; };
+		0565AB8A265B05CC002E5FCE /* SignatureHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureHelpView.swift; sourceTree = "<group>"; };
+		0565AB8E265B05F9002E5FCE /* SignatureHelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureHelpViewController.swift; sourceTree = "<group>"; };
+		0565AB93265B0634002E5FCE /* HoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoverView.swift; sourceTree = "<group>"; };
+		0565AB99265B063C002E5FCE /* HoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoverViewController.swift; sourceTree = "<group>"; };
+		0565ABA4265B29FC002E5FCE /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Menu.strings; sourceTree = "<group>"; };
+		0565ABA8265B2A00002E5FCE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Menu.strings; sourceTree = "<group>"; };
+		0565ABAA265B2A99002E5FCE /* MenuStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuStrings.swift; sourceTree = "<group>"; };
+		0565ABAE265B2E9E002E5FCE /* UIKeyCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIKeyCommand.swift; sourceTree = "<group>"; };
 		056706A6251521AB00F9D7E7 /* Swift.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Swift.plist; sourceTree = "<group>"; };
 		056732C7249606C300E7650B /* WorkspaceEdit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceEdit.swift; sourceTree = "<group>"; };
 		056732C9249609FB00E7650B /* TextDocumentIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDocumentIdentifier.swift; sourceTree = "<group>"; };
@@ -245,6 +261,7 @@
 		059549E626480BB300935907 /* sample.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = sample.gif; sourceTree = "<group>"; };
 		059549EC2648380500935907 /* CompletionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionDetailView.swift; sourceTree = "<group>"; };
 		059E7E892656B16F00D169E6 /* NSRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSRange.swift; sourceTree = "<group>"; };
+		05A6E3C9265EC9300054EDA5 /* SyntaxDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxDefinition.swift; sourceTree = "<group>"; };
 		05BA10AE24D2D922009A3669 /* LSPConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPConnection.swift; sourceTree = "<group>"; };
 		05BAAB1B24A3530500A3EADC /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		05BAAB1D24A3530E00A3EADC /* Initialize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Initialize.swift; sourceTree = "<group>"; };
@@ -388,6 +405,32 @@
 			path = Structures;
 			sourceTree = "<group>";
 		};
+		0565AB89265B05B8002E5FCE /* SignatureHelpView */ = {
+			isa = PBXGroup;
+			children = (
+				0565AB8A265B05CC002E5FCE /* SignatureHelpView.swift */,
+				0565AB8E265B05F9002E5FCE /* SignatureHelpViewController.swift */,
+			);
+			path = SignatureHelpView;
+			sourceTree = "<group>";
+		};
+		0565AB92265B0628002E5FCE /* HoverView */ = {
+			isa = PBXGroup;
+			children = (
+				0565AB93265B0634002E5FCE /* HoverView.swift */,
+				0565AB99265B063C002E5FCE /* HoverViewController.swift */,
+			);
+			path = HoverView;
+			sourceTree = "<group>";
+		};
+		0565ABA9265B2A77002E5FCE /* Strings */ = {
+			isa = PBXGroup;
+			children = (
+				0565ABAA265B2A99002E5FCE /* MenuStrings.swift */,
+			);
+			path = Strings;
+			sourceTree = "<group>";
+		};
 		056706A5251512DE00F9D7E7 /* Syntaxes */ = {
 			isa = PBXGroup;
 			children = (
@@ -480,6 +523,7 @@
 				05182B2224DA02E2007E8832 /* Config */,
 				058F7EC82511BFC20063D9AF /* Extension */,
 				05CC821425A4362700D6F4DB /* Function */,
+				0565ABA9265B2A77002E5FCE /* Strings */,
 				05D4D4A924D6AA0800A76239 /* Properties */,
 			);
 			path = Common;
@@ -533,6 +577,7 @@
 				058F7ECB2511C0890063D9AF /* UIColor.swift */,
 				0567AD9325CA9BCB0055F3AF /* UIFont.swift */,
 				051F886E25AB3F230041BE4E /* UIImage.swift */,
+				0565ABAE265B2E9E002E5FCE /* UIKeyCommand.swift */,
 				05CE9E0B26522F35006F8550 /* UInt8.swift */,
 				05F0264625168C0E003CCEA4 /* UIViewController.swift */,
 				0585E77725CB18FB009BA2C3 /* URL.swift */,
@@ -650,6 +695,7 @@
 		05CD0090263A1EE100F0937E /* SyntaxManager */ = {
 			isa = PBXGroup;
 			children = (
+				05A6E3C9265EC9300054EDA5 /* SyntaxDefinition.swift */,
 				05CD0091263A1EF200F0937E /* SyntaxManager.swift */,
 				05E7BFD4263B65A30072527A /* SyntaxType.swift */,
 			);
@@ -802,6 +848,7 @@
 			isa = PBXGroup;
 			children = (
 				05FA2244260173B4002BD02A /* Preference.strings */,
+				0565ABA5265B29FC002E5FCE /* Menu.strings */,
 			);
 			path = Strings;
 			sourceTree = "<group>";
@@ -812,6 +859,8 @@
 				05E8A4BA264218B60013AA65 /* CompletionView */,
 				05F45C0E25CA3AF500C96ADB /* EditorTabView */,
 				05F45C0F25CA3B0200C96ADB /* EditorView */,
+				0565AB92265B0628002E5FCE /* HoverView */,
+				0565AB89265B05B8002E5FCE /* SignatureHelpView */,
 			);
 			path = Editor;
 			sourceTree = "<group>";
@@ -941,6 +990,7 @@
 				05CA5D03248C5F1900582319 /* LaunchScreen.storyboard in Resources */,
 				05FA2242260173B4002BD02A /* Preference.strings in Resources */,
 				05182B1D24D9DFE6007E8832 /* ClientCapabilities.yaml in Resources */,
+				0565ABA3265B29FC002E5FCE /* Menu.strings in Resources */,
 				059549E32648072D00935907 /* Python.plist in Resources */,
 				059549E726480BB300935907 /* sample.gif in Resources */,
 				05182B2124D9F362007E8832 /* ClientCapabilities.plist in Resources */,
@@ -986,6 +1036,7 @@
 				05BAAB3424A3537B00A3EADC /* FindLocation.swift in Sources */,
 				05BAAB1E24A3530E00A3EADC /* Initialize.swift in Sources */,
 				05F419D125F140F0002C3626 /* LanguageServerConfigViewController.swift in Sources */,
+				0565AB9A265B063C002E5FCE /* HoverViewController.swift in Sources */,
 				05BAAB2224A3532300A3EADC /* Configuration.swift in Sources */,
 				058B6A19248CF9DD0099B32F /* RequestID.swift in Sources */,
 				05F0264725168C0E003CCEA4 /* UIViewController.swift in Sources */,
@@ -1039,6 +1090,7 @@
 				056732D42496433E00E7650B /* MarkupContent.swift in Sources */,
 				0541881D2490C71900C6D9A2 /* ParameterType.swift in Sources */,
 				05EE6F8825CD6B7400F94B24 /* WorkspaceViewCell.swift in Sources */,
+				0565AB8F265B05F9002E5FCE /* SignatureHelpViewController.swift in Sources */,
 				05EBA0FB265908E100A11D55 /* Diagnosis.swift in Sources */,
 				05BAAB3624A3538400A3EADC /* Highlight.swift in Sources */,
 				05EE6F8425CD6A4200F94B24 /* WorkspaceFoldButton.swift in Sources */,
@@ -1066,20 +1118,25 @@
 				05BAAB2024A3531900A3EADC /* UserMessage.swift in Sources */,
 				0514099A24B120920015BBDC /* VoidValue.swift in Sources */,
 				05F419E225F1424A002C3626 /* CodeStyleView.swift in Sources */,
+				0565ABAB265B2A99002E5FCE /* MenuStrings.swift in Sources */,
 				05F419E625F14252002C3626 /* CodeStyleViewController.swift in Sources */,
 				058F7ECC2511C0890063D9AF /* UIColor.swift in Sources */,
 				0578E70B25D7A3480029F28D /* DiagnosticView.swift in Sources */,
 				05EBA0F32659060100A11D55 /* CacheType.swift in Sources */,
 				05F419EE25F14271002C3626 /* WorkspaceConfigView.swift in Sources */,
 				05DBAEAB25DDD9FA00B028B2 /* UIAlertController.swift in Sources */,
+				0565AB8B265B05CC002E5FCE /* SignatureHelpView.swift in Sources */,
+				05A6E3CA265EC9300054EDA5 /* SyntaxDefinition.swift in Sources */,
 				05F41A0525F148A3002C3626 /* PreferenceMenuView.swift in Sources */,
 				05F41A0125F1466C002C3626 /* WorkspaceSelectViewController.swift in Sources */,
 				056732D224960D4600E7650B /* DocumentFilter.swift in Sources */,
 				05F419D825F14230002C3626 /* AppearanceView.swift in Sources */,
+				0565ABAF265B2E9E002E5FCE /* UIKeyCommand.swift in Sources */,
 				0540191C24929D2100287026 /* RequiredValue.swift in Sources */,
 				059150FB25D2DE04009EB71B /* SidebarMenuViewController.swift in Sources */,
 				05828D7B249B6C7F008D2DA0 /* CodingError.swift in Sources */,
 				058F7EC3251084890063D9AF /* CodeStyle.swift in Sources */,
+				0565AB94265B0634002E5FCE /* HoverView.swift in Sources */,
 				05182B2824DA0E03007E8832 /* Workspaces.swift in Sources */,
 				05601E7925A29725007B91C1 /* EditorTabViewController.swift in Sources */,
 				05CE9E0C26522F35006F8550 /* UInt8.swift in Sources */,
@@ -1115,6 +1172,15 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		0565ABA5265B29FC002E5FCE /* Menu.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0565ABA4265B29FC002E5FCE /* ja */,
+				0565ABA8265B2A00002E5FCE /* en */,
+			);
+			name = Menu.strings;
+			sourceTree = "<group>";
+		};
 		05CA5D01248C5F1900582319 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

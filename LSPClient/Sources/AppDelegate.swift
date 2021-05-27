@@ -12,7 +12,6 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    weak var rootViewController: RootViewController!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         CodeStyle.remove()
@@ -28,15 +27,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         codeStyle.editorBaseColor.uiColor = UIColor(red: 0.1137, green: 0.1255, blue: 0.1686, alpha: 1.0)
         codeStyle.save()
 
-        let rootViewController = RootViewController()
-        self.rootViewController = rootViewController
-
-        let window = UIWindow()
-        window.rootViewController = rootViewController
-        window.makeKeyAndVisible()
-
-        self.window = window
         NotificationCenter.default.addObserver(self, selector: #selector(aaa), name: .willOpenDocument, object: nil)
+
+        setupWindow()
+        setupMenuItems()
 
         return true
     }
@@ -52,6 +46,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
+    }
+
+    private func setupWindow() {
+        let window = UIWindow()
+        window.rootViewController = RootViewController()
+        window.makeKeyAndVisible()
+        self.window = window
+    }
+
+    private func setupMenuItems() {
+        if UIMenuController.shared.menuItems == nil {
+            UIMenuController.shared.menuItems = []
+        }
+
+        UIMenuController.shared.menuItems?.append(contentsOf: [
+            UIMenuItem(title: MenuStrings.hover, action: #selector(EditorViewController.invokeHover)),
+        ])
     }
 
 }

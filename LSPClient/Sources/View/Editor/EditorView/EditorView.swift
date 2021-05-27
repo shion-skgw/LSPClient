@@ -116,7 +116,7 @@ extension EditorView {
     }
 
     private func drawLineHighlight(_ cgContext: CGContext) {
-        let lineRange = (text as NSString).lineRange(for: selectedRange)
+        let lineRange = text.lineRange(for: selectedRange)
         var lineRect = layoutManager.boundingRect(forGlyphRange: lineRange, in: textContainer)
         lineRect.origin.x = textContainerInset.left + 2.0
         lineRect.origin.y += textContainerInset.top - 1.0

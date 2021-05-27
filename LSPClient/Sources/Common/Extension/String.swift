@@ -26,6 +26,14 @@ extension String {
         self.utf16.count
     }
 
+    @inlinable func lineRange(for range: NSRange) -> NSRange {
+        return (self as NSString).lineRange(for: range)
+    }
+
+    @inlinable func contains(characterSet: CharacterSet) -> Bool {
+        return self.unicodeScalars.contains(where: { characterSet.contains($0) })
+    }
+
     @inlinable func replacing(of target: String, with replacement: String) -> String {
         return self.replacingOccurrences(of: target, with: replacement, options: .regularExpression)
     }
@@ -43,16 +51,18 @@ extension String {
             .map({ ($0.offset, $0.element.range) })
     }
 
-    @inlinable func lineRanges(limit: Int) -> [(number: Int, range: NSRange)] {
+    @inlinable func lineRanges(start: Int, end: Int) -> [(number: Int, range: NSRange)] {
         var number = 0
         var lineRanges: [(number: Int, range: NSRange)] = []
         String.endOfLineRegex.enumerateMatches(in: self, range: range) {
             result, _, stop in
-            guard number <= limit, let range = result?.range else {
+            guard number <= end, let range = result?.range else {
                 stop.pointee = true
                 return
             }
-            lineRanges.append((number, range))
+            if start <= number {
+                lineRanges.append((number, range))
+            }
             number += 1
         }
         return lineRanges

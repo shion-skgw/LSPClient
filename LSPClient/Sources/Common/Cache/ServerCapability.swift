@@ -6,6 +6,8 @@
 //  Copyright © 2021 Shion. All rights reserved.
 //
 
+import Foundation
+
 struct ServerCapability: CacheType {
 
     static var cache: ServerCapability?
@@ -68,30 +70,27 @@ extension ServerCapability {
 
     struct Completion {
         let isSupport: Bool
-        let triggerCharacters: [String]
-        let allCommitCharacters: [String]
+        let triggerCharacters: CharacterSet
+        let allCommitCharacters: CharacterSet
         let resolveProvider: Bool
 
         init(_ option: InitializeResult.ServerCapabilities.CompletionOptions?) {
-            var allCommitCharacters: Set<String> = ["\n", "\t"]
-            option?.allCommitCharacters?.forEach({ allCommitCharacters.insert($0) })
-
             self.isSupport = option != nil
-            self.triggerCharacters = option?.triggerCharacters ?? []
-            self.allCommitCharacters = Array(allCommitCharacters)
+            self.triggerCharacters = CharacterSet(charactersIn: option?.triggerCharacters?.joined() ?? "")
+            self.allCommitCharacters = CharacterSet(charactersIn: (option?.allCommitCharacters?.joined() ?? "") + "\n\t")
             self.resolveProvider = option?.resolveProvider ?? false
         }
     }
 
     struct SignatureHelp {
         let isSupport: Bool
-        let triggerCharacters: [String]
-        let retriggerCharacters: [String]
+        let triggerCharacters: CharacterSet
+        let retriggerCharacters: CharacterSet
 
         init(_ option: InitializeResult.ServerCapabilities.SignatureHelpOptions?) {
             self.isSupport = option != nil
-            self.triggerCharacters = option?.triggerCharacters ?? []
-            self.retriggerCharacters = option?.retriggerCharacters ?? []
+            self.triggerCharacters = CharacterSet(charactersIn: option?.triggerCharacters?.joined() ?? "")
+            self.retriggerCharacters = CharacterSet(charactersIn: option?.retriggerCharacters?.joined() ?? "")
         }
     }
 
