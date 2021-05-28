@@ -16,6 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         CodeStyle.remove()
         var codeStyle = CodeStyle.load()
+        codeStyle.tabSize = 4
+        codeStyle.useHardTab = false
         codeStyle.font.uiFont = UIFont.monospacedSystemFont(ofSize: 14, weight: .regular)
         codeStyle.fontColor.text.uiColor = UIColor.white
         codeStyle.fontColor.keyword.uiColor = UIColor(red: 0.8078, green: 0.1686, blue: 0.6392, alpha: 1.0)

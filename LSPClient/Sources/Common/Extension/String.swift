@@ -10,13 +10,16 @@ import Foundation
 
 extension String {
 
-    @usableFromInline static let endOfLineRegex = try! NSRegularExpression(pattern: "^.*(\n|$)", options: .anchorsMatchLines)
+    @usableFromInline typealias LineRange = (number: Int, range: NSRange)
+    @usableFromInline typealias TextChanges = (range: NSRange, text: String)
 
-//    @inlinable var monospaceCount: Int {
-//        let double = (utf8.count - utf16.count) / 2
-//        let single = count - double
-//        return single + double * 2
-//    }
+    @usableFromInline static let linesRegex      = try! NSRegularExpression(pattern:   "^.*(?:\n|\\z)", options: .anchorsMatchLines)
+    @usableFromInline static let lineRangesRegex = try! NSRegularExpression(pattern: "\\G.*(?:\n|\\z)", options: .anchorsMatchLines)
+
+    static let blank = ""
+    static let space = " "
+    static let lineFeed = "\n"
+    static let tab = "\t"
 
     @inlinable var range: NSRange {
         NSMakeRange(.zero, self.utf16.count)
@@ -26,53 +29,84 @@ extension String {
         self.utf16.count
     }
 
+    @inlinable var monospaceCount: Int {
+        let double = (utf8.count - utf16.count) / 2
+        let single = count - double
+        return single + double * 2
+    }
+
+    @inlinable subscript(_ range: NSRange) -> String {
+        return (self as NSString).substring(with: range)
+    }
+
     @inlinable func lineRange(for range: NSRange) -> NSRange {
         return (self as NSString).lineRange(for: range)
     }
 
-    @inlinable func contains(characterSet: CharacterSet) -> Bool {
-        return self.unicodeScalars.contains(where: { characterSet.contains($0) })
+    @inlinable func index(offsetBy offset: Int) -> Index {
+        return self.index(startIndex, offsetBy: offset)
     }
 
-    @inlinable func replacing(of target: String, with replacement: String) -> String {
-        return self.replacingOccurrences(of: target, with: replacement, options: .regularExpression)
+    @inlinable func count(characterSet set: CharacterSet) -> Int {
+        return self.unicodeScalars.filter({ set.contains($0) }).count
+    }
+
+    @inlinable func contains(characterSet set: CharacterSet) -> Bool {
+        return self.unicodeScalars.contains(where: { set.contains($0) })
+    }
+
+    @inlinable func isOnly(characterSet set: CharacterSet) -> Bool {
+        return !self.unicodeScalars.contains(where: { !set.contains($0) })
     }
 
     @inlinable func lines(range: NSRange) -> [String] {
-        let string = self as NSString
-        return String.endOfLineRegex.matches(in: self, range: range).map({ string.substring(with: $0.range) })
+        var lines: [String] = []
+        String.linesRegex.enumerateMatches(in: self, range: range) {
+            result, _, _ in
+            guard let lineRange = result?.range else {
+                fatalError()
+            }
+            lines.append(self[lineRange])
+        }
+        return lines
     }
 
-    @inlinable func lineRanges(range: NSRange) -> [(number: Int, range: NSRange)] {
-        let upperBound = range.length != .zero ? range.upperBound : min(range.upperBound + 1, self.length)
-        return String.endOfLineRegex.matches(in: self, range: NSMakeRange(.zero, upperBound))
-            .enumerated()
-            .filter({ range.lowerBound <= $0.element.range.upperBound })
-            .map({ ($0.offset, $0.element.range) })
+    @inlinable func lineRanges(range: NSRange) -> [LineRange] {
+        if self.range.inRange(range) == false {
+            fatalError()
+        }
+        if range.length == .zero {
+            return lineRanges(exit: { $0.range.upperBound > range.upperBound }).filter({ $0.range.upperBound >= range.lowerBound })
+        } else {
+            return lineRanges(exit: { $0.range.upperBound >= range.upperBound }).filter({ $0.range.upperBound > range.lowerBound })
+        }
     }
 
-    @inlinable func lineRanges(start: Int, end: Int) -> [(number: Int, range: NSRange)] {
+    @inlinable func lineRanges(start: Int, end: Int) -> [LineRange] {
+        let result = lineRanges(exit: { $0.number >= end }).filter({ $0.number >= start })
+        guard let s = result.first, let e = result.last, s.number == start, e.number == end else {
+            fatalError()
+        }
+        return result
+    }
+
+    @inlinable func lineRanges(exit block: (LineRange) -> (Bool)) -> [LineRange] {
         var number = 0
-        var lineRanges: [(number: Int, range: NSRange)] = []
-        String.endOfLineRegex.enumerateMatches(in: self, range: range) {
+        var lineRanges: [LineRange] = []
+        String.lineRangesRegex.enumerateMatches(in: self, range: self.range) {
             result, _, stop in
-            guard number <= end, let range = result?.range else {
-                stop.pointee = true
-                return
+            guard let range = result?.range else {
+                fatalError()
             }
-            if start <= number {
-                lineRanges.append((number, range))
-            }
+            let lineRange: LineRange = (number, range)
             number += 1
+            lineRanges.append(lineRange)
+            stop.pointee = ObjCBool(block(lineRange))
         }
         return lineRanges
     }
 
-    @inlinable func index(offsetBy: Int) -> Index {
-        return index(startIndex, offsetBy: offsetBy)
-    }
-
-    @inlinable func changes(from: String) -> (range: NSRange, text: String) {
+    @inlinable func changes(from: String) -> TextChanges {
         let difference = self.difference(from: from)
 
         guard !difference.isEmpty, difference.isSequential else {

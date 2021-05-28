@@ -52,16 +52,17 @@ final class EditorTextStorage: NSTextStorage {
     }
 
     override func processEditing() {
-        setAttributes(textAttribute, range: string.range)
-        applySyntaxHighlight()
+        let lineRange = string.lineRange(for: editedRange)
+        setAttributes(textAttribute, range: lineRange)
+        applySyntaxHighlight(lineRange)
         super.processEditing()
     }
 
-    private func applySyntaxHighlight() {
+    private func applySyntaxHighlight(_ range: NSRange) {
         guard let syntaxManager = self.syntaxManager else {
             return
         }
-        syntaxManager.highlight(text: string).forEach() {
+        syntaxManager.highlight(text: string, range: range).forEach() {
             guard let attribute = self.highlightAttribute[$0.type] else {
                 fatalError()
             }

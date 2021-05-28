@@ -148,7 +148,8 @@ extension CompletionViewController: UITableViewDataSource, UITableViewDelegate {
         let item = displayItems[indexPath.row]
         let label = item.label
         let deprecated = item.deprecated ?? item.tags?.contains(.deprecated) ?? false
-        let detail = item.documentation?.string.replacing(of: "(\r\n|\r|\n)+", with: "\n").appending("\n\n\n") ?? ""
+        let detail = item.documentation?.string
+            .replacingOccurrences(of: "(\r\n|\r|\n)+", with: "\n", options: .regularExpression).appending("\n\n\n") ?? ""
         detailView.set(label: label, deprecated: deprecated, detail: detail)
     }
 
@@ -205,21 +206,15 @@ extension CompletionViewController {
 extension CompletionViewController {
 
     func willInput(text: String, range: NSRange) {
-        guard !text.isEmpty || completionRange.location <= range.location else {
+        guard completionRange.location <= range.location else {
             return
         }
 
         // Get selected item
         let selectedItem = self.selectedItem
 
-        // Calc change location
-        var location = range.location - completionRange.location
-        if text.isEmpty && range.length == .zero {
-            location -= 1
-        }
-
         // Update completion status
-        let changeRange = Range(NSMakeRange(location, range.length), in: inputText)!
+        let changeRange = Range(NSMakeRange(range.location - completionRange.location, range.length), in: inputText)!
         inputText.replaceSubrange(changeRange, with: text)
         completionRange.length = inputText.length
 

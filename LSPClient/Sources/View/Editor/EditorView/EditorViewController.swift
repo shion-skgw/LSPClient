@@ -21,8 +21,34 @@ final class EditorViewController: UIViewController {
 
     /// CompletionViewController
     private(set) weak var completion: CompletionViewController!
+    private var isShownCompletion: Bool {
+        self.completion?.view.isHidden == false
+    }
+
     /// HoverViewController
     private(set) weak var hover: HoverViewController!
+    private var isShownHover: Bool {
+        self.hover?.view.isHidden == false
+    }
+
+    /// SignatureHelpViewController
+    private(set) weak var signatureHelp: SignatureHelpViewController!
+    private var isShownSignatureHelp: Bool {
+        self.signatureHelp?.view.isHidden == false
+    }
+
+    private var contentText: String {
+        self.textView.text
+    }
+    private var selectedRange: NSRange {
+        get {
+            self.textView.selectedRange
+        }
+        set {
+            self.textView.selectedRange = newValue
+        }
+    }
+
 
     private let serverCapability = ServerCapability.load()
 
@@ -33,25 +59,18 @@ final class EditorViewController: UIViewController {
         self.textView.undoManager
     }
 
-    var isShownCompletion: Bool {
-        self.completion?.view.isHidden == false
-    }
-
     var uri: DocumentUri!
     var fileExtension: String {
         uri?.pathExtension ?? ""
     }
 
     override func loadView() {
-        let codeStyle = CodeStyle.load()
-
         // TextContainer
         let textContainer = NSTextContainer()
 
         // LayoutManager
         let layoutManager = EditorLayoutManager()
         layoutManager.addTextContainer(textContainer)
-        layoutManager.set(codeStyle: codeStyle)
         self.layoutManager = layoutManager
 
         // SyntaxManager
@@ -62,15 +81,15 @@ final class EditorViewController: UIViewController {
         let textStorage = EditorTextStorage()
         textStorage.syntaxManager = syntaxManager
         textStorage.addLayoutManager(layoutManager)
-        textStorage.set(codeStyle: codeStyle)
         self.textStorage = textStorage
 
         // EditorView
         let textView = EditorView(frame: .zero, textContainer: textContainer)
-        textView.set(codeStyle: codeStyle)
         textView.delegate = self
         self.textView = textView
         self.view = textView
+
+        refreshCodeStyle()
     }
 
     override func viewDidLoad() {
@@ -81,7 +100,7 @@ final class EditorViewController: UIViewController {
             return
         }
 
-        textStorage.replaceCharacters(in: textStorage.string.range, with: text)
+        textStorage.replaceCharacters(in: contentText.range, with: text)
         beforeChangesText = text
         sendDidOpen()
 
@@ -97,7 +116,7 @@ final class EditorViewController: UIViewController {
             return
         }
         let dict: [NSRange: DiagnosticSeverity] = diagnostics.reduce(into: [:], {
-            $0[NSRange($1.range, in: self.textView.text)] = $1.severity ?? .information
+            $0[NSRange($1.range, in: self.contentText)] = $1.severity ?? .information
         })
         textStorage.applyDiagnostic(diagnostic: dict)
         textView.setNeedsDisplay()
@@ -105,9 +124,17 @@ final class EditorViewController: UIViewController {
 
     @objc private func refreshCodeStyle() {
         let codeStyle = CodeStyle.load()
-        textView.set(codeStyle: codeStyle)
-        textStorage.set(codeStyle: codeStyle)
-        layoutManager.set(codeStyle: codeStyle)
+        self.tabSize = codeStyle.tabSize
+        self.indentCharacter = codeStyle.useHardTab ? .tab : .space
+        self.textView.set(codeStyle: codeStyle)
+        self.textStorage.set(codeStyle: codeStyle)
+        self.layoutManager.set(codeStyle: codeStyle)
+    }
+
+    private var tabSize: Int = 0
+    private var indentCharacter: String = ""
+    private var indent: String {
+        self.indentCharacter == .tab ? .tab : String(repeating: self.indentCharacter, count: self.tabSize)
     }
 
     private var beforeInputText: String = ""
@@ -145,7 +172,7 @@ final class EditorViewController: UIViewController {
 
         case (UIKeyCommand.inputSpace, .alternate):
             sendDidChange()
-            initializeCompilation(textView.text, textView.selectedRange)
+            initializeCompilation()
             sendCompletion(nil)
 
         case (UIKeyCommand.inputUpArrow, _):
@@ -161,7 +188,7 @@ final class EditorViewController: UIViewController {
 
     @objc func invokeHover() {
         sendDidChange()
-        initializeHover(textView.selectedRange)
+        initializeHover(selectedRange)
         sendHover()
     }
 
@@ -172,48 +199,44 @@ final class EditorViewController: UIViewController {
 
 extension EditorViewController: UITextViewDelegate {
 
-    func textView(_: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+    func textView(_: UITextView, shouldChangeTextIn range: NSRange, replacementText inputText: String) -> Bool {
         if isShownCompletion {
-            return shouldChangeCompletion(text, range)
+            return shouldChangeCompletion(range, inputText)
+
+        } else {
+            if needRegisterUndo(inputText) {
+                registerUndo()
+            }
+            isNeedCompletion = needCompletion(inputText)
+            isNeedSignatureHelp = needSignatureHelp(inputText)
+            isNeedCommitChanges = isNeedCompletion || isNeedSignatureHelp || needCommitChanges(inputText)
+            beforeInputText = inputText
+            return shouldChange(range, inputText)
         }
-
-        if needRegisterUndo(text) {
-            registerUndo()
-        }
-
-        self.isNeedCompletion = needCompletion(text)
-        self.isNeedSignatureHelp = needSignatureHelp(text)
-        self.isNeedCommitChanges = self.isNeedCompletion || self.isNeedSignatureHelp || needCommitChanges(text)
-        self.beforeInputText = text
-
-        return shouldChange(range, text)
     }
 
     func textViewDidChangeSelection(_: UITextView) {
-        if textView.selectedRange.length == .zero {
-            print(TextPosition(textView.selectedRange, in: textView.text))
-        } else {
-            let aaa = TextRange(textView.selectedRange, in: textView.text)
-            print(aaa)
-        }
         guard let undoManager = self.undoManager else {
             fatalError()
         }
-
-        if isShownCompletion && !completion.completionRange.inRange(textView.selectedRange) {
+        if isShownCompletion && !completion.completionRange.inRange(selectedRange) {
             completion.hide()
         }
-
+        if isShownHover {
+            hover.hide()
+        }
+        if isShownSignatureHelp {
+            signatureHelp.hide()
+        }
         if isNeedCommitChanges || undoManager.isUndoing || undoManager.isRedoing {
             sendDidChange()
         }
-
         if isNeedCompletion {
-            initializeCompilation(textView.text, textView.selectedRange)
+            initializeCompilation()
             sendCompletion(beforeInputText)
-
-        } else if isNeedSignatureHelp {
-            initializeSignatureHelp(textView.selectedRange)
+        }
+        if isNeedSignatureHelp {
+            initializeSignatureHelp()
             sendSignatureHelp(beforeInputText)
         }
     }
@@ -225,15 +248,15 @@ extension EditorViewController: UITextViewDelegate {
 
 extension EditorViewController {
 
-    private func shouldChange(_ range: NSRange, _ text: String) -> Bool {
-        switch (text, range.length == .zero) {
-        case ("\t", true):
+    private func shouldChange(_ range: NSRange, _ inputText: String) -> Bool {
+        switch (inputText, range.length == .zero) {
+        case (.tab, true):
             return tab(range)
-        case ("\t", false):
+        case (.tab, false):
             return indent(range)
-        case ("\n", true):
+        case (.lineFeed, true):
             return newLine(range)
-        case ("", true):
+        case (.blank, _):
             return delete(range)
         default:
             return true
@@ -241,88 +264,110 @@ extension EditorViewController {
     }
 
     private func tab(_ range: NSRange) -> Bool {
-//        let indent = "    "
-//        textStorage.replaceCharacters(in: range, with: indent)
-        return true
-    }
-
-    private func newLine(_ range: NSRange) -> Bool {
-        guard let level = syntaxManager?.indent(text: textStorage.string, range: range), level > .zero else {
+        guard indentCharacter == .space else {
             return true
         }
 
-        var result = "\n"
-        result.append(String(repeating: "    ", count: level))
-        textStorage.replaceCharacters(in: range, with: result)
-        textView.selectedRange = NSMakeRange(range.location + result.length, 0)
+        // Get text up to the cursor
+        let lineRange = contentText.lineRange(for: range)
+        let beforeCursorRange = NSMakeRange(lineRange.location, range.upperBound - lineRange.lowerBound)
+        let beforeCursorText = contentText[beforeCursorRange]
 
+        // Calculate the number of spaces to insert
+        let tabCount = beforeCursorText.count(characterSet: .tab)
+        let modulus = (beforeCursorText.monospaceCount + (tabCount - tabCount * tabSize)) % tabSize
+        let insertment = String(repeating: .space, count: tabSize - modulus)
+
+        textStorage.replaceCharacters(in: range, with: insertment)
+        selectedRange = NSMakeRange(range.location + insertment.length, 0)
+        return false
+    }
+
+    private func newLine(_ range: NSRange) -> Bool {
+        guard let syntaxManager = self.syntaxManager else {
+            return true
+        }
+
+        // Calculate indent level
+        let indentLevel = syntaxManager.indent(text: contentText, range: range)
+        var insertment = "\n"
+        insertment.append(String(repeating: indent, count: indentLevel))
+
+        textStorage.replaceCharacters(in: range, with: insertment)
+        selectedRange = NSMakeRange(range.location + insertment.length, 0)
         return false
     }
 
     private func indent(_ range: NSRange) -> Bool {
-        let lineRange = textStorage.string.lineRange(for: range)
-        let indent = "    "
+        let lineRange = contentText.lineRange(for: range)
 
-        var result = ""
-        textStorage.string.lines(range: lineRange).forEach() {
-            result.append(indent)
-            result.append($0)
+        var replacement = ""
+        contentText.lines(range: lineRange).forEach() {
+            replacement.append(indent)
+            replacement.append($0)
         }
 
-        textStorage.replaceCharacters(in: lineRange, with: result)
-        textView.selectedRange = NSMakeRange(lineRange.location, result.length)
+        textStorage.replaceCharacters(in: lineRange, with: replacement)
+        selectedRange = NSMakeRange(lineRange.location, replacement.length)
         return false
     }
 
     private func delete(_ range: NSRange) -> Bool {
-        let lineRange = textStorage.string.lineRange(for: range)
-
-        let beforeCursor = NSMakeRange(lineRange.location, range.location - lineRange.location)
-        if otherThanIndentRegex.firstMatch(in: textStorage.string, range: beforeCursor) != nil {
+        guard selectedRange.length == .zero else {
             return true
         }
 
-        textStorage.replaceCharacters(in: beforeCursor, with: "")
-        return false
+        let lineRange = contentText.lineRange(for: range)
+        let beforeCursor = NSMakeRange(lineRange.location, range.upperBound - lineRange.lowerBound)
+
+        if contentText[beforeCursor].isOnly(characterSet: .indent) {
+            textStorage.replaceCharacters(in: beforeCursor, with: "")
+            selectedRange = NSMakeRange(lineRange.location, .zero)
+            return false
+        } else {
+            return true
+        }
     }
 
     private func deindent() {
-        let lineRange = textStorage.string.lineRange(for: textView.selectedRange)
-        let indent = "    "
+        let lineRange = contentText.lineRange(for: selectedRange)
 
-        var result = ""
-        textStorage.string.lines(range: lineRange).forEach() {
+        var replacement = ""
+        contentText.lines(range: lineRange).forEach() {
             if $0.hasPrefix(indent) {
-                result.append(contentsOf: $0.dropFirst(indent.count))
+                replacement.append(contentsOf: $0.dropFirst(indent.count))
             } else {
-                result.append($0)
+                replacement.append($0)
             }
         }
 
-        textStorage.replaceCharacters(in: lineRange, with: result)
-        textView.selectedRange = NSMakeRange(lineRange.location, result.length)
+        textStorage.replaceCharacters(in: lineRange, with: replacement)
+        selectedRange = NSMakeRange(lineRange.location, replacement.length)
     }
 
     private func toggleComment() {
-        let lineRange = textStorage.string.lineRange(for: textView.selectedRange)
-        let singleLineComment = "//"
+        guard let commentOut = syntaxManager?.commentOut else {
+            return
+        }
+
+        let lineRange = contentText.lineRange(for: selectedRange)
 
         var onlyComment = true
         var uncomment = ""
         var comment = ""
-        textStorage.string.lines(range: lineRange).forEach() {
-            if onlyComment && $0.hasPrefix(singleLineComment) {
-                uncomment.append(contentsOf: $0.dropFirst(singleLineComment.count))
+        contentText.lines(range: lineRange).forEach() {
+            if onlyComment && $0.hasPrefix(commentOut) {
+                uncomment.append(contentsOf: $0.dropFirst(commentOut.count))
             } else {
                 onlyComment = false
-                comment.append(singleLineComment)
+                comment.append(commentOut)
                 comment.append($0)
             }
         }
 
-        let result = onlyComment ? uncomment : comment
-        textStorage.replaceCharacters(in: lineRange, with: result)
-        textView.selectedRange = NSMakeRange(lineRange.location, result.length)
+        let replacement = onlyComment ? uncomment : comment
+        textStorage.replaceCharacters(in: lineRange, with: replacement)
+        selectedRange = NSMakeRange(lineRange.location, replacement.length)
     }
 
 }
@@ -332,10 +377,10 @@ extension EditorViewController {
 
 extension EditorViewController {
 
-    private func needRegisterUndo(_ text: String) -> Bool {
-        switch text {
+    private func needRegisterUndo(_ inputText: String) -> Bool {
+        switch inputText {
         case "\n":
-            return text != beforeInputText
+            return inputText != beforeInputText
         default:
             return false
         }
@@ -356,40 +401,40 @@ extension EditorViewController {
 
 extension EditorViewController {
 
-    private func needCompletion(_ text: String) -> Bool {
-        return text.contains(characterSet: serverCapability.completion.triggerCharacters)
+    private func needCompletion(_ inputText: String) -> Bool {
+        return inputText.contains(characterSet: serverCapability.completion.triggerCharacters)
     }
 
-    private func shouldChangeCompletion(_ text: String, _ range: NSRange) -> Bool {
-        if text.contains(characterSet: serverCapability.completion.allCommitCharacters) {
+    private func shouldChangeCompletion(_ range: NSRange, _ inputText: String) -> Bool {
+        if inputText.contains(characterSet: serverCapability.completion.allCommitCharacters) {
             commitCompletion()
             return false
         } else {
-            completion.willInput(text: text, range: range)
+            completion.willInput(text: inputText, range: range)
             return true
         }
     }
 
-    private func initializeCompilation(_ text: String, _ range: NSRange) {
+    private func initializeCompilation() {
         guard let syntaxManager = self.syntaxManager else {
             return
         }
 
         // Get filter text
         var filterText = ""
-        if let range = syntaxManager.wordRanges(text: text, range: range).first {
-            filterText = (text as NSString).substring(with: range)
+        if let range = syntaxManager.wordRanges(text: contentText, range: selectedRange).first {
+            filterText = contentText[range]
         }
 
         // Compilation initialization
         if let completion = self.completion {
             completion.filterText = filterText
-            completion.completionRange = range
+            completion.completionRange = selectedRange
 
         } else {
             let completion = CompletionViewController()
             completion.filterText = filterText
-            completion.completionRange = range
+            completion.completionRange = selectedRange
             add(child: completion)
             self.completion = completion
         }
@@ -397,13 +442,13 @@ extension EditorViewController {
 
     private func sendCompletion(_ trigger: String?) {
         guard serverCapability.completion.isSupport,
-                textView.selectedRange.length == .zero else {
+                selectedRange.length == .zero else {
             return
         }
 
         // Generate parameters
         let textDocument = TextDocumentIdentifier(uri: uri)
-        let position = TextPosition(textView.selectedRange, in: textView.text)
+        let position = TextPosition(selectedRange, in: contentText)
         let context = CompletionContext(triggerKind: trigger == nil ? .invoked : .triggerCharacter, triggerCharacter: trigger)
         let completionParams = CompletionParams(textDocument: textDocument, position: position, context: context)
 
@@ -424,10 +469,10 @@ extension EditorViewController {
         let completionItem = completion.selectedItem
         let completionRange = completion.completionRange
         let replaceText = completionItem.insertText ?? ""
-        let replaceRange = syntaxManager.wordRanges(text: textStorage.string, range: completionRange).first ?? completionRange
+        let replaceRange = syntaxManager.wordRanges(text: contentText, range: completionRange).first ?? completionRange
 
         textStorage.replaceCharacters(in: replaceRange, with: replaceText)
-        textView.selectedRange = NSMakeRange(replaceRange.location + replaceText.length, .zero)
+        selectedRange = NSMakeRange(replaceRange.location + replaceText.length, .zero)
     }
 
 }
@@ -455,7 +500,7 @@ extension EditorViewController {
 
         // Generate parameters
         let textDocument = TextDocumentIdentifier(uri: uri)
-        let position = TextPosition(textView.selectedRange, in: textView.text)
+        let position = TextPosition(selectedRange, in: contentText)
         let hoverParams = HoverParams(textDocument: textDocument, position: position)
 
         // Send request
@@ -469,22 +514,22 @@ extension EditorViewController {
 
 extension EditorViewController {
 
-    private func needSignatureHelp(_ text: String) -> Bool {
-        return text.contains(characterSet: serverCapability.signatureHelp.triggerCharacters)
+    private func needSignatureHelp(_ inputText: String) -> Bool {
+        return inputText.contains(characterSet: serverCapability.signatureHelp.triggerCharacters)
     }
 
-    private func initializeSignatureHelp(_ range: NSRange) {
+    private func initializeSignatureHelp() {
     }
 
     private func sendSignatureHelp(_ trigger: String) {
         guard serverCapability.signatureHelp.isSupport,
-                textView.selectedRange.length == .zero else {
+                selectedRange.length == .zero else {
             return
         }
 
         // Generate parameters
         let textDocument = TextDocumentIdentifier(uri: uri)
-        let position = TextPosition(textView.selectedRange, in: textView.text)
+        let position = TextPosition(selectedRange, in: contentText)
         let context = SignatureHelpContext(triggerKind: .triggerCharacter, triggerCharacter: trigger, isRetrigger: false, activeSignatureHelp: nil)
         let signatureHelpParams = SignatureHelpParams(textDocument: textDocument, position: position, context: context)
 
@@ -529,8 +574,8 @@ extension EditorViewController {}
 
 extension EditorViewController {
 
-    private func needCommitChanges(_ text: String) -> Bool {
-        return beforeInputText != text && syntaxManager?.word(text: text) ?? false
+    private func needCommitChanges(_ inputText: String) -> Bool {
+        return beforeInputText != inputText && syntaxManager?.word(text: inputText) ?? false
     }
 
     private func sendDidOpen() {
@@ -540,7 +585,7 @@ extension EditorViewController {
 
         // Generate parameters
         let languageId = LanguageID.of(fileExtension: fileExtension)
-        let textDocument = TextDocumentItem(uri: uri, languageId: languageId, version: currentVersion, text: textStorage.string)
+        let textDocument = TextDocumentItem(uri: uri, languageId: languageId, version: currentVersion, text: contentText)
         let didOpenParams = DidOpenTextDocumentParams(textDocument: textDocument)
 
         // Send notification "textDocument/didOpen"
@@ -548,7 +593,7 @@ extension EditorViewController {
     }
 
     private func sendDidChange() {
-        guard textStorage.string != beforeChangesText else {
+        guard contentText != beforeChangesText else {
             return
         }
 
@@ -564,14 +609,14 @@ extension EditorViewController {
 
         // Update status
         isNeedCommitChanges = false
-        beforeChangesText = textStorage.string
+        beforeChangesText = contentText
     }
 
     private func sendDidChangeFull() {
         // Generate parameters
         currentVersion += 1
         let textDocument = VersionedTextDocumentIdentifier(uri: uri, version: currentVersion)
-        let contentChange = TextDocumentContentChangeEvent.full(textStorage.string)
+        let contentChange = TextDocumentContentChangeEvent.full(contentText)
         let didChangeParams = DidChangeTextDocumentParams(textDocument: textDocument, contentChanges: [contentChange])
 
         // Send notification "textDocument/didChange"
@@ -580,7 +625,7 @@ extension EditorViewController {
 
     private func sendDidChangeIncremental() {
         // Get the changes
-        let changes = textStorage.string.changes(from: beforeChangesText)
+        let changes = contentText.changes(from: beforeChangesText)
 
         // Generate parameters
         currentVersion += 1
@@ -596,7 +641,7 @@ extension EditorViewController {
     private func sendDidSave() {
         // Generate parameters
         let textDocument = TextDocumentIdentifier(uri: uri)
-        let didOpenParams = DidSaveTextDocumentParams(textDocument: textDocument, text: textStorage.string)
+        let didOpenParams = DidSaveTextDocumentParams(textDocument: textDocument, text: contentText)
 
         // Send notification "textDocument/didSave"
         didSave(params: didOpenParams)
@@ -622,7 +667,7 @@ extension EditorViewController: TextDocumentMessageDelegate {
 
     func completion(id: RequestID, result: CompletionList?) {
         guard currentRequestID == id,
-                completion.completionRange == textView.selectedRange,
+                completion.completionRange == selectedRange,
                 let completionList = result, !completionList.items.isEmpty,
                 let selectedTextRange = textView.selectedTextRange?.end else {
             return
@@ -681,7 +726,7 @@ extension TextRange {
                     let end = lineRanges.last,
                     let startDistance = Range(NSMakeRange(start.range.lowerBound, range.lowerBound - start.range.lowerBound), in: text),
                     let endDistance = Range(NSMakeRange(end.range.lowerBound, range.upperBound - end.range.lowerBound), in: text) else {
-                fatalError()
+                fatalError("\(#function) -> in:\(range), \(lineRanges)")
             }
             let startCharacter = text.utf8.distance(from: startDistance.lowerBound, to: startDistance.upperBound)
             let endCharacter = text.utf8.distance(from: endDistance.lowerBound, to: endDistance.upperBound)
@@ -702,7 +747,7 @@ extension TextPosition {
         } else {
             guard let line = text.lineRanges(range: range).last,
                     let distance = Range(NSMakeRange(line.range.lowerBound, range.lowerBound - line.range.lowerBound), in: text) else {
-                fatalError()
+                fatalError("\(#function) -> in:\(range), \(text.lineRanges(range: range))")
             }
             self.line = line.number
             self.character = text.utf8.distance(from: distance.lowerBound, to: distance.upperBound)

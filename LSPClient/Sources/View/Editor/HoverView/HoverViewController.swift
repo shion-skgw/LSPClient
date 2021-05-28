@@ -9,5 +9,7 @@
 import UIKit
 
 final class HoverViewController: UIViewController {
-    
+    func hide() {
+        view.isHidden = true
+    }
 }

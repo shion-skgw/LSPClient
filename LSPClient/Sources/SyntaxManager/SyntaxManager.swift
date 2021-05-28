@@ -17,6 +17,9 @@ final class SyntaxManager {
         "py"    : "Python",
     ]
 
+    /// Comment out string
+    let commentOut: String?
+
     /// Syntax type and regex
     private let syntaxes: Set<SyntaxRegex>
     /// Comment start string
@@ -87,6 +90,11 @@ final class SyntaxManager {
         }
         self.syntaxes = Set(syntaxes)
 
+        // Initialize commentOut
+        self.commentOut = definition.syntaxGroups
+            .filter({ $0.type == .comment && !$0.isMultiple }).first?
+            .syntaxes.first?.open
+
         // Initialize commentOpen
         let commentOpen = definition.syntaxGroups
             .filter({ $0.type == .comment })
@@ -142,7 +150,7 @@ extension SyntaxManager {
 
     // MARK: - Highlighting management
 
-    func highlight(text: String) -> [HighlightRange] {
+    func highlight(text: String, range: NSRange) -> [HighlightRange] {
         // Get comment and string range
         var highlightRanges: [HighlightRange] = invalidRange.matches(in: text, range: text.range).map() {
             guard let range = Range($0.range, in: text) else {
@@ -155,14 +163,14 @@ extension SyntaxManager {
 
         // Get other syntax range
         for syntax in syntaxes {
-            syntax.regex.matches(in: text, range: text.range).forEach() {
+            let ranges: [HighlightRange] = syntax.regex.matches(in: text, range: range).compactMap() {
                 result in
                 guard !highlightRanges.contains(where: { $0.range.inRange(result.range) }) else {
-                    return
+                    return nil
                 }
-                let result = HighlightRange(type: syntax.type, range: result.range)
-                highlightRanges.append(result)
+                return HighlightRange(type: syntax.type, range: result.range)
             }
+            highlightRanges.append(contentsOf: ranges)
         }
 
         return highlightRanges

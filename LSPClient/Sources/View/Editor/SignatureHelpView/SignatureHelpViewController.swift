@@ -9,5 +9,7 @@
 import UIKit
 
 final class SignatureHelpViewController: UIViewController {
-    
+    func hide() {
+        view.isHidden = true
+    }
 }
