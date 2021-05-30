@@ -78,6 +78,10 @@ extension CodeStyle {
             let font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
             self.init(name: font.familyName, size: font.pointSize)
         }
+
+        func withSize(_ fontSize: CGFloat) -> UIFont {
+            self.uiFont.withSize(fontSize)
+        }
     }
 
     struct Color: Codable {

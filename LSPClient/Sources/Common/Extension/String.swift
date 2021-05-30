@@ -10,29 +10,20 @@ import Foundation
 
 extension String {
 
-    @usableFromInline typealias LineRange = (number: Int, range: NSRange)
-    @usableFromInline typealias TextChanges = (range: NSRange, text: String)
-
-    @usableFromInline static let linesRegex      = try! NSRegularExpression(pattern:   "^.*(?:\n|\\z)", options: .anchorsMatchLines)
-    @usableFromInline static let lineRangesRegex = try! NSRegularExpression(pattern: "\\G.*(?:\n|\\z)", options: .anchorsMatchLines)
-
-    static let blank = ""
-    static let space = " "
+    static let blank    = ""
+    static let space    = " "
     static let lineFeed = "\n"
-    static let tab = "\t"
+    static let tab      = "\t"
+
+
+    // MARK: - Support for NSString
 
     @inlinable var range: NSRange {
-        NSMakeRange(.zero, self.utf16.count)
+        NSMakeRange(.zero, self.length)
     }
 
     @inlinable var length: Int {
         self.utf16.count
-    }
-
-    @inlinable var monospaceCount: Int {
-        let double = (utf8.count - utf16.count) / 2
-        let single = count - double
-        return single + double * 2
     }
 
     @inlinable subscript(_ range: NSRange) -> String {
@@ -41,6 +32,13 @@ extension String {
 
     @inlinable func lineRange(for range: NSRange) -> NSRange {
         return (self as NSString).lineRange(for: range)
+    }
+
+
+    // MARK: - For a concise description
+
+    @inlinable var isNotEmpty: Bool {
+        !self.isEmpty
     }
 
     @inlinable func index(offsetBy offset: Int) -> Index {
@@ -59,6 +57,17 @@ extension String {
         return !self.unicodeScalars.contains(where: { !set.contains($0) })
     }
 
+
+    // MARK: - For text editors
+
+    @inlinable var monospaceCount: Int {
+        let double = (utf8.count - utf16.count) / 2
+        let single = count - double
+        return single + double * 2
+    }
+
+    @usableFromInline static let linesRegex = try! NSRegularExpression(pattern: "^.*(?:\n|$)", options: .anchorsMatchLines)
+
     @inlinable func lines(range: NSRange) -> [String] {
         var lines: [String] = []
         String.linesRegex.enumerateMatches(in: self, range: range) {
@@ -71,26 +80,31 @@ extension String {
         return lines
     }
 
+    @usableFromInline typealias LineRange = (number: Int, range: NSRange)
+
+    /// Match each line (if the line ends with a newline, match from the last newline to the end of text)
+    @usableFromInline static let lineRangesRegex = try! NSRegularExpression(pattern: "^.*(?:\n|$)|(?<=\n)$", options: .anchorsMatchLines)
+
     @inlinable func lineRanges(range: NSRange) -> [LineRange] {
         if self.range.inRange(range) == false {
             fatalError()
         }
         if range.length == .zero {
-            return lineRanges(exit: { $0.range.upperBound > range.upperBound }).filter({ $0.range.upperBound >= range.lowerBound })
+            return lineRanges({ range.lowerBound <= $0.range.upperBound }, { range.upperBound < $0.range.upperBound })
         } else {
-            return lineRanges(exit: { $0.range.upperBound >= range.upperBound }).filter({ $0.range.upperBound > range.lowerBound })
+            return lineRanges({ range.lowerBound < $0.range.upperBound }, { range.upperBound <= $0.range.upperBound })
         }
     }
 
     @inlinable func lineRanges(start: Int, end: Int) -> [LineRange] {
-        let result = lineRanges(exit: { $0.number >= end }).filter({ $0.number >= start })
+        let result = lineRanges({ start <= $0.number }, { end <= $0.number })
         guard let s = result.first, let e = result.last, s.number == start, e.number == end else {
-            fatalError()
+            fatalError("\(result), \(start), \(end)")
         }
         return result
     }
 
-    @inlinable func lineRanges(exit block: (LineRange) -> (Bool)) -> [LineRange] {
+    @inlinable func lineRanges(_ start: (LineRange) -> (Bool), _ end: (LineRange) -> (Bool)) -> [LineRange] {
         var number = 0
         var lineRanges: [LineRange] = []
         String.lineRangesRegex.enumerateMatches(in: self, range: self.range) {
@@ -98,13 +112,17 @@ extension String {
             guard let range = result?.range else {
                 fatalError()
             }
-            let lineRange: LineRange = (number, range)
+            let lineRange = (number, range)
+            if start(lineRange) {
+                lineRanges.append(lineRange)
+                stop.pointee = ObjCBool(end(lineRange))
+            }
             number += 1
-            lineRanges.append(lineRange)
-            stop.pointee = ObjCBool(block(lineRange))
         }
         return lineRanges
     }
+
+    @usableFromInline typealias TextChanges = (range: NSRange, text: String)
 
     @inlinable func changes(from: String) -> TextChanges {
         let difference = self.difference(from: from)

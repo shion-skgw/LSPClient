@@ -49,7 +49,7 @@ final class EditorLayoutManager: NSLayoutManager {
                     return
                 }
 
-                let position = range.upperBound - 1
+                let position = range.location
                 let rect = lineFragmentRect(forGlyphAt: position, effectiveRange: nil)
                 var point = location(forGlyphAt: position)
                 point.x += rect.origin.x + self.gutterWidth

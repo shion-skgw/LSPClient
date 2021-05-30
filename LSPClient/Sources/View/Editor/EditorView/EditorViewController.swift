@@ -59,14 +59,12 @@ final class EditorViewController: UIViewController {
         self.textView.undoManager
     }
 
-    var uri: DocumentUri!
-    var fileExtension: String {
-        uri?.pathExtension ?? ""
-    }
+    var uri: DocumentUri = .bluff
 
     override func loadView() {
         // TextContainer
         let textContainer = NSTextContainer()
+        textContainer.lineBreakMode = .byCharWrapping
 
         // LayoutManager
         let layoutManager = EditorLayoutManager()
@@ -74,7 +72,7 @@ final class EditorViewController: UIViewController {
         self.layoutManager = layoutManager
 
         // SyntaxManager
-        let syntaxManager = SyntaxManager.load(fileExtension: fileExtension)
+        let syntaxManager = SyntaxManager.load(fileExtension: uri.pathExtension)
         self.syntaxManager = syntaxManager
 
         // TextStorage
@@ -111,14 +109,12 @@ final class EditorViewController: UIViewController {
     }
 
     @objc private func refreshDiagnostics(_ notification: Notification) {
-        guard self.uri == notification.userInfoValue as? DocumentUri,
-                let diagnostics = Diagnosis.load()[self.uri] else {
+        guard uri == notification.userInfoValue as? DocumentUri,
+                let diagnostics = Diagnosis.load()[uri], diagnostics.isNotEmpty else {
             return
         }
-        let dict: [NSRange: DiagnosticSeverity] = diagnostics.reduce(into: [:], {
-            $0[NSRange($1.range, in: self.contentText)] = $1.severity ?? .information
-        })
-        textStorage.applyDiagnostic(diagnostic: dict)
+        let aa = diagnostics.map({ (NSRange($0.range, in: contentText), $0.severity ?? .information) })
+        textStorage.applyDiagnostic(diagnostic: aa)
         textView.setNeedsDisplay()
     }
 
@@ -143,23 +139,37 @@ final class EditorViewController: UIViewController {
     private var isNeedCompletion: Bool = false
     private var isNeedSignatureHelp: Bool = false
     private var currentVersion: Int = 1
-    private var currentRequestID: RequestID? = nil
-
-    private let otherThanIndentRegex = try! NSRegularExpression(pattern: "[^ \t]+")
+    var currentRequestID: RequestID? = nil
 
     override var keyCommands: [UIKeyCommand]? {
-        if isShownCompletion {
-            return [
-                UIKeyCommand(action: #selector(didInputCommand), input: UIKeyCommand.inputUpArrow),
-                UIKeyCommand(action: #selector(didInputCommand), input: UIKeyCommand.inputDownArrow),
-            ]
-        } else {
-            return [
-                UIKeyCommand(input: UIKeyCommand.inputTab, modifierFlags: .shift, action: #selector(didInputCommand)),
+        var commands: [UIKeyCommand] = [
+            // Deindent
+            UIKeyCommand(input: UIKeyCommand.inputTab, modifierFlags: .shift, action: #selector(didInputCommand)),
+        ]
+        if syntaxManager != nil {
+            commands.append(contentsOf: [
+                // Compilation
                 UIKeyCommand(input: UIKeyCommand.inputSlash, modifierFlags: .command, action: #selector(didInputCommand)),
-                UIKeyCommand(input: UIKeyCommand.inputSpace, modifierFlags: .alternate, action: #selector(didInputCommand)),
-            ]
+                // Move caret to previous
+                UIKeyCommand(input: UIKeyCommand.inputRightArrow, modifierFlags: .alternate, action: #selector(didInputCommand)),
+                // Move caret to next
+                UIKeyCommand(input: UIKeyCommand.inputLeftArrow, modifierFlags: .alternate, action: #selector(didInputCommand)),
+            ])
         }
+        if isShownCompletion {
+            commands.append(contentsOf: [
+                // Move completion item to previous
+                UIKeyCommand(input: UIKeyCommand.inputUpArrow, modifierFlags: [], action: #selector(didInputCommand)),
+                // Move completion item to next
+                UIKeyCommand(input: UIKeyCommand.inputDownArrow, modifierFlags: [], action: #selector(didInputCommand)),
+            ])
+        } else if serverCapability.completion.isSupport {
+            commands.append(contentsOf: [
+                // Invoke completion
+                UIKeyCommand(input: UIKeyCommand.inputSpace, modifierFlags: .alternate, action: #selector(didInputCommand)),
+            ])
+        }
+        return commands
     }
 
     @objc private func didInputCommand(_ command: UIKeyCommand) {
@@ -174,6 +184,12 @@ final class EditorViewController: UIViewController {
             sendDidChange()
             initializeCompilation()
             sendCompletion(nil)
+
+        case (UIKeyCommand.inputLeftArrow, _):
+            moveCaretPrevious()
+
+        case (UIKeyCommand.inputRightArrow, _):
+            moveCaretNext()
 
         case (UIKeyCommand.inputUpArrow, _):
             completion.moveSelect(direction: -)
@@ -190,6 +206,34 @@ final class EditorViewController: UIViewController {
         sendDidChange()
         initializeHover(selectedRange)
         sendHover()
+    }
+
+    private func moveCaretPrevious() {
+        guard let syntaxManager = self.syntaxManager else {
+            fatalError()
+        }
+        let lineRange = contentText.lineRange(for: selectedRange)
+        if let previousWordRange = syntaxManager
+                .wordRanges(text: contentText, range: lineRange)
+                .last(where: { $0.lowerBound < selectedRange.lowerBound }) {
+            selectedRange = NSMakeRange(previousWordRange.lowerBound, .zero)
+        } else {
+            selectedRange = NSMakeRange(max(lineRange.lowerBound - 1, 0), .zero)
+        }
+    }
+
+    private func moveCaretNext() {
+        guard let syntaxManager = self.syntaxManager else {
+            fatalError()
+        }
+        let lineRange = contentText.lineRange(for: selectedRange)
+        if let nextWordRange = syntaxManager
+                .wordRanges(text: contentText, range: lineRange)
+                .first(where: { selectedRange.upperBound < $0.upperBound }) {
+            selectedRange = NSMakeRange(nextWordRange.upperBound, .zero)
+        } else {
+            selectedRange = NSMakeRange(lineRange.upperBound, .zero)
+        }
     }
 
 }
@@ -216,6 +260,11 @@ extension EditorViewController: UITextViewDelegate {
     }
 
     func textViewDidChangeSelection(_: UITextView) {
+        if selectedRange.length == .zero {
+            print(TextPosition(selectedRange, in: contentText))
+        } else {
+            print(TextRange(selectedRange, in: contentText))
+        }
         guard let undoManager = self.undoManager else {
             fatalError()
         }
@@ -422,7 +471,7 @@ extension EditorViewController {
 
         // Get filter text
         var filterText = ""
-        if let range = syntaxManager.wordRanges(text: contentText, range: selectedRange).first {
+        if let range = syntaxManager.wordRange(text: contentText, range: selectedRange) {
             filterText = contentText[range]
         }
 
@@ -459,7 +508,7 @@ extension EditorViewController {
         isNeedCompletion = false
     }
 
-    private func commitCompletion() {
+    func commitCompletion() {
         guard let syntaxManager = self.syntaxManager else {
             return
         }
@@ -469,7 +518,7 @@ extension EditorViewController {
         let completionItem = completion.selectedItem
         let completionRange = completion.completionRange
         let replaceText = completionItem.insertText ?? ""
-        let replaceRange = syntaxManager.wordRanges(text: contentText, range: completionRange).first ?? completionRange
+        let replaceRange = syntaxManager.wordRange(text: contentText, range: selectedRange) ?? completionRange
 
         textStorage.replaceCharacters(in: replaceRange, with: replaceText)
         selectedRange = NSMakeRange(replaceRange.location + replaceText.length, .zero)
@@ -485,9 +534,11 @@ extension EditorViewController {
     private func initializeHover(_ range: NSRange) {
         // Hover initialization
         if let hover = self.hover {
+            hover.invokedRange = selectedRange
 
         } else {
             let hover = HoverViewController()
+            hover.invokedRange = selectedRange
             add(child: hover)
             self.hover = hover
         }
@@ -519,6 +570,16 @@ extension EditorViewController {
     }
 
     private func initializeSignatureHelp() {
+        // Hover initialization
+        if let signatureHelp = self.signatureHelp {
+            signatureHelp.invokedRange = selectedRange
+
+        } else {
+            let signatureHelp = SignatureHelpViewController()
+            signatureHelp.invokedRange = selectedRange
+            add(child: signatureHelp)
+            self.signatureHelp = signatureHelp
+        }
     }
 
     private func sendSignatureHelp(_ trigger: String) {
@@ -535,6 +596,9 @@ extension EditorViewController {
 
         // Send request
         currentRequestID = signatureHelp(params: signatureHelpParams)
+
+        // Update status
+        isNeedSignatureHelp = false
     }
 
 }
@@ -575,7 +639,10 @@ extension EditorViewController {}
 extension EditorViewController {
 
     private func needCommitChanges(_ inputText: String) -> Bool {
-        return beforeInputText != inputText && syntaxManager?.word(text: inputText) ?? false
+        guard let syntaxManager = self.syntaxManager else {
+            return false
+        }
+        return beforeInputText != inputText && !syntaxManager.word(text: inputText)
     }
 
     private func sendDidOpen() {
@@ -584,7 +651,7 @@ extension EditorViewController {
         }
 
         // Generate parameters
-        let languageId = LanguageID.of(fileExtension: fileExtension)
+        let languageId = LanguageID.of(fileExtension: uri.pathExtension)
         let textDocument = TextDocumentItem(uri: uri, languageId: languageId, version: currentVersion, text: contentText)
         let didOpenParams = DidOpenTextDocumentParams(textDocument: textDocument)
 
@@ -666,28 +733,46 @@ extension EditorViewController {
 extension EditorViewController: TextDocumentMessageDelegate {
 
     func completion(id: RequestID, result: CompletionList?) {
-        guard currentRequestID == id,
-                completion.completionRange == selectedRange,
-                let completionList = result, !completionList.items.isEmpty,
-                let selectedTextRange = textView.selectedTextRange?.end else {
+        guard completion.completionRange == selectedRange,
+                let selectedTextRange = textView.selectedTextRange?.end,
+                let result = result, result.items.isNotEmpty else {
             return
         }
 
         let caretRect = textView.caretRect(for: selectedTextRange)
-        completion.show(items: completionList.items, caretRect: caretRect)
+        completion.show(list: result, caretRect: caretRect)
 
-        if !completionList.isIncomplete {
+        if !result.isIncomplete {
             currentRequestID = nil
         }
     }
 
     func completionResolve(id: RequestID, result: CompletionItem) {
     }
+
     func hover(id: RequestID, result: Hover?) {
+        guard hover.invokedRange == selectedRange,
+                let selectedTextRange = textView.selectedTextRange?.end,
+                let result = result, result.contents.value.isNotEmpty else {
+            return
+        }
+
+        let caretRect = textView.caretRect(for: selectedTextRange)
+        hover.show(hover: result, caretRect: caretRect)
     }
+
     func signatureHelp(id: RequestID, result: SignatureHelp?) {
+        guard signatureHelp.invokedRange == selectedRange,
+                let selectedTextRange = textView.selectedTextRange?.end,
+                let result = result, result.signatures.isNotEmpty else {
+            return
+        }
+
+        let caretRect = textView.caretRect(for: selectedTextRange)
+        signatureHelp.show(signatures: result, caretRect: caretRect)
     }
-//    func declaration(id: RequestID, result: FindLocationResult?) {}
+
+    //    func declaration(id: RequestID, result: FindLocationResult?) {}
     func definition(id: RequestID, result: FindLocationResult?) {
     }
     func typeDefinition(id: RequestID, result: FindLocationResult?) {
@@ -722,16 +807,11 @@ extension TextRange {
 
         } else {
             let lineRanges = text.lineRanges(range: range)
-            guard let start = lineRanges.first,
-                    let end = lineRanges.last,
-                    let startDistance = Range(NSMakeRange(start.range.lowerBound, range.lowerBound - start.range.lowerBound), in: text),
-                    let endDistance = Range(NSMakeRange(end.range.lowerBound, range.upperBound - end.range.lowerBound), in: text) else {
+            guard let start = lineRanges.first, let end = lineRanges.last else {
                 fatalError("\(#function) -> in:\(range), \(lineRanges)")
             }
-            let startCharacter = text.utf8.distance(from: startDistance.lowerBound, to: startDistance.upperBound)
-            let endCharacter = text.utf8.distance(from: endDistance.lowerBound, to: endDistance.upperBound)
-            self.start = TextPosition(line: start.number, character: startCharacter)
-            self.end = TextPosition(line: end.number, character: endCharacter)
+            self.start = TextPosition(line: start.number, character: range.lowerBound - start.range.lowerBound)
+            self.end = TextPosition(line: end.number, character: range.upperBound - end.range.lowerBound)
         }
     }
 
@@ -745,12 +825,11 @@ extension TextPosition {
             self.character = .zero
 
         } else {
-            guard let line = text.lineRanges(range: range).last,
-                    let distance = Range(NSMakeRange(line.range.lowerBound, range.lowerBound - line.range.lowerBound), in: text) else {
+            guard let line = text.lineRanges(range: range).last else {
                 fatalError("\(#function) -> in:\(range), \(text.lineRanges(range: range))")
             }
             self.line = line.number
-            self.character = text.utf8.distance(from: distance.lowerBound, to: distance.upperBound)
+            self.character = range.upperBound - line.range.lowerBound
         }
     }
 

@@ -80,7 +80,11 @@ extension ParameterInformation {
             if let value = try? container.decode(String.self) {
                 self = .string(value)
             } else {
-                self = .number(.zero, .zero)
+                let value = try container.decode([Int].self)
+                if value.count != 2 {
+                    throw DecodingError.dataCorruptedError(container.codingPath, "TODO")
+                }
+                self = .number(value[0], value[1])
             }
         }
 
@@ -89,10 +93,8 @@ extension ParameterInformation {
             switch self {
             case .string(let value):
                 try container.encode(value)
-//            case .number(let value):
-//                try container.encode(value)
-            default:
-                break
+            case .number(let start, let end):
+                try container.encode([start, end])
             }
         }
     }

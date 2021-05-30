@@ -9,13 +9,20 @@
 import Foundation
 
 final class SyntaxManager {
-    /// Store the generated manager
-    private static var storage: NSMutableDictionary = [:]
+
+    private struct SyntaxRegex: Hashable {
+        let type: SyntaxType
+        let regex: NSRegularExpression
+    }
+
     /// Definition file correspondence table
     private static let languageTable: [String: String] = [
         "swift" : "Swift",
         "py"    : "Python",
     ]
+
+    /// Store the generated manager
+    private static var storage: NSMutableDictionary = [:]
 
     /// Comment out string
     let commentOut: String?
@@ -92,13 +99,11 @@ final class SyntaxManager {
 
         // Initialize commentOut
         self.commentOut = definition.syntaxGroups
-            .filter({ $0.type == .comment && !$0.isMultiple }).first?
-            .syntaxes.first?.open
+            .first(where: { $0.type == .comment && !$0.isMultiple })?.syntaxes.first?.open
 
         // Initialize commentOpen
         let commentOpen = definition.syntaxGroups
-            .filter({ $0.type == .comment })
-            .flatMap({ $0.syntaxes.compactMap({ $0.open }) })
+            .filter({ $0.type == .comment }).flatMap({ $0.syntaxes.compactMap({ $0.open }) })
         self.commentOpen = Set(commentOpen)
 
         // Initialize multilineSyntax
@@ -111,7 +116,8 @@ final class SyntaxManager {
         self.symbolicCharacter = CharacterSet(charactersIn: definition.symbolicCharacter)
 
         // Initialize wordRange
-        let wordRangePattern = "\(definition.wordBoundaryPrefix).+?\(definition.wordBoundarySuffix)"
+        let allowTokenPattern = definition.allowTokenPattern ?? "\\w"
+        let wordRangePattern = "\(definition.wordBoundaryPrefix)[\(allowTokenPattern)]+?\(definition.wordBoundarySuffix)"
         self.wordRange = try! NSRegularExpression(pattern: wordRangePattern)
 
         // Initialize invalidRange
@@ -121,7 +127,7 @@ final class SyntaxManager {
         let single = definition.syntaxGroups
             .filter({ !$0.isMultiple && ($0.type == .comment || $0.type == .string) })
             .flatMap({ $0.syntaxes.filter({ $0.open != nil }).map({ "\($0.escapedOpen!)[^\n]*?\($0.escapedClose ?? "$")" }) })
-        let invalidRangePattern = "\((multiple + single).joined(separator: "|"))"
+        let invalidRangePattern = "\((multiple.appending(single)).joined(separator: "|"))"
         self.invalidRange = try! NSRegularExpression(pattern: invalidRangePattern, options: [.dotMatchesLineSeparators, .anchorsMatchLines])
 
         // Initialize indentTrigger
@@ -137,18 +143,9 @@ final class SyntaxManager {
 
 extension SyntaxManager {
 
-    private struct SyntaxRegex: Hashable {
-        let type: SyntaxType
-        let regex: NSRegularExpression
-    }
-
-    struct HighlightRange {
-        let type: SyntaxType
-        let range: NSRange
-    }
-
-
     // MARK: - Highlighting management
+
+    typealias HighlightRange = (type: SyntaxType, range: NSRange)
 
     func highlight(text: String, range: NSRange) -> [HighlightRange] {
         // Get comment and string range
@@ -158,7 +155,7 @@ extension SyntaxManager {
             }
             let matcheString = text[range]
             let isComment = commentOpen.contains(where: { matcheString.hasPrefix($0) })
-            return HighlightRange(type: isComment ? .comment : .string, range: $0.range)
+            return (isComment ? .comment : .string, $0.range)
         }
 
         // Get other syntax range
@@ -168,7 +165,7 @@ extension SyntaxManager {
                 guard !highlightRanges.contains(where: { $0.range.inRange(result.range) }) else {
                     return nil
                 }
-                return HighlightRange(type: syntax.type, range: result.range)
+                return (syntax.type, result.range)
             }
             highlightRanges.append(contentsOf: ranges)
         }
@@ -183,15 +180,25 @@ extension SyntaxManager {
         return !text.unicodeScalars.contains(where: { symbolicCharacter.contains($0) })
     }
 
-    func wordRanges(text: String, range: NSRange) -> [NSRange] {
+    func wordRange(text: String, range: NSRange) -> NSRange? {
         return wordRange
             .matches(in: text, range: text.lineRange(for: range))
-            .filter({ $0.range.inRange(range) })
+            .first(where: { $0.range.inRange(range) })
+            .map({ $0.range })
+    }
+
+    func wordRanges(text: String, range: NSRange) -> [NSRange] {
+        return wordRange
+            .matches(in: text, range: range)
             .map({ $0.range })
     }
 
 
     // MARK: - Indent management
+
+    var isBracketIndent: Bool {
+        self.indentTrigger != nil && self.deindentTrigger != nil
+    }
 
     func indent(text: String, range: NSRange) -> Int {
         guard let indentTrigger = self.indentTrigger, let deindentTrigger = self.deindentTrigger else {

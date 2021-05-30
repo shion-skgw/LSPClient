@@ -18,18 +18,12 @@ extension NSRange {
 
     init(_ textRange: TextRange, in text: String) {
         let lineRanges = text.lineRanges(start: textRange.start.line, end: textRange.end.line)
-        guard let startNSRange = lineRanges.first?.range,
-                let endNSRange = lineRanges.last?.range,
-                let startRange = Range(startNSRange, in: text),
-                let endRange = Range(endNSRange, in: text),
-                let startIndex = text.utf8.index(startRange.lowerBound, offsetBy: textRange.start.character, limitedBy: text.endIndex),
-                let endIndex = text.utf8.index(endRange.lowerBound, offsetBy: textRange.end.character, limitedBy: text.endIndex) else {
-            self = .notFound
-            print(textRange, self)
-            return
-//            fatalError("\(textRange)")
+        guard let startRange = lineRanges.first?.range, let endRange = lineRanges.last?.range else {
+            fatalError("\(textRange)")
         }
-        self.init(startIndex..<endIndex, in: text)
+        let location = startRange.location + textRange.start.character
+        let length = endRange.location + textRange.end.character - location
+        self.init(location: location, length: length)
         print(textRange, self)
     }
 

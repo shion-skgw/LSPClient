@@ -40,7 +40,7 @@ final class EditorTextStorage: NSTextStorage {
     override func replaceCharacters(in range: NSRange, with str: String) {
         beginEditing()
         content.replaceCharacters(in: range, with: str)
-        edited([.editedCharacters, .editedAttributes], range: range, changeInLength: str.count - range.length)
+        edited([.editedCharacters, .editedAttributes], range: range, changeInLength: str.length - range.length)
         endEditing()
     }
 
@@ -76,6 +76,10 @@ final class EditorTextStorage: NSTextStorage {
             guard let attribute = self.diagnosticAttribute[$0.value] else {
                 fatalError()
             }
+            guard string.range.inRange($0.key) else {
+                print("\(string.range) vs \($0.key) aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+                return
+            }
             self.content.addAttributes(attribute, range: $0.key)
         }
     }
@@ -85,49 +89,39 @@ final class EditorTextStorage: NSTextStorage {
 extension EditorTextStorage {
 
     func set(codeStyle: CodeStyle) {
-        fontSetting(codeStyle)
-        tabSetting(codeStyle)
+        textSetting(codeStyle)
         highlightSetting(codeStyle)
         diagnosticSetting(codeStyle)
     }
 
-    private func fontSetting(_ codeStyle: CodeStyle) {
+    private func textSetting(_ codeStyle: CodeStyle) {
+        // Text attribute setting
         self.textAttribute.removeAll()
         self.textAttribute[.font] = codeStyle.font.uiFont
         self.textAttribute[.foregroundColor] = codeStyle.fontColor.text.uiColor
-    }
 
-    private func tabSetting(_ codeStyle: CodeStyle) {
+        // Tab setting
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.tabStops?.removeAll()
-        let baseTabWidth = " ".size(withAttributes: self.textAttribute).width * CGFloat(codeStyle.tabSize)
-        for i in 1 ... 100 {
-            let textTab = NSTextTab(textAlignment: .left, location: baseTabWidth * CGFloat(i))
-            paragraphStyle.addTabStop(textTab)
-        }
+        paragraphStyle.defaultTabInterval = " ".size(withAttributes: self.textAttribute).width * CGFloat(codeStyle.tabSize)
         self.textAttribute[.paragraphStyle] = paragraphStyle
     }
 
     private func highlightSetting(_ codeStyle: CodeStyle) {
         self.highlightAttribute.removeAll()
         self.highlightAttribute[.keyword] = [
-            .font: codeStyle.font.uiFont,
             .foregroundColor: codeStyle.fontColor.keyword.uiColor,
         ]
         self.highlightAttribute[.function] = [
-            .font: codeStyle.font.uiFont,
             .foregroundColor: codeStyle.fontColor.function.uiColor,
         ]
         self.highlightAttribute[.number] = [
-            .font: codeStyle.font.uiFont,
             .foregroundColor: codeStyle.fontColor.number.uiColor,
         ]
         self.highlightAttribute[.string] = [
-            .font: codeStyle.font.uiFont,
             .foregroundColor: codeStyle.fontColor.string.uiColor,
         ]
         self.highlightAttribute[.comment] = [
-            .font: codeStyle.font.uiFont,
             .foregroundColor: codeStyle.fontColor.comment.uiColor,
         ]
     }

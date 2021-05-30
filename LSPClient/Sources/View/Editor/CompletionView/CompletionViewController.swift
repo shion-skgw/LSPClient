@@ -8,18 +8,20 @@
 
 import UIKit
 
-final class CompletionViewController: UIViewController {
+final class CompletionViewController: UIViewController, FloatingViewType {
     /// Completion items view
     private(set) weak var itemsView: UITableView!
     /// Separator view
     private(set) weak var separatorView: UIView!
     /// Completion detail view
-    private(set) weak var detailView: CompletionDetailView!
+    private(set) weak var detailView: UITextView!
 
-    private let viewSize: CGSize = CGSize(width: 260, height: 180)
-    private let borderWidth: CGFloat = 0.5
-    private let cornerRadius: CGFloat = 3
-    private var codeStyle: CodeStyle = CodeStyle.load()
+    let viewSize: CGSize = CGSize(width: 260, height: 180)
+    private var codeStyle: CodeStyle!
+
+    private var headlineAttribute: [NSAttributedString.Key: Any] = [:]
+    private var signatureAttribute: [NSAttributedString.Key: Any] = [:]
+    private var descriptionAttribute: [NSAttributedString.Key: Any] = [:]
 
     var completionRange: NSRange = .notFound
     private var inputText: String = ""
@@ -47,8 +49,6 @@ final class CompletionViewController: UIViewController {
     override func loadView() {
         let view = UIView(frame: CGRect(origin: .zero, size: viewSize))
         view.isHidden = true
-        view.layer.borderWidth = borderWidth
-        view.layer.cornerRadius = cornerRadius
         self.view = view
 
         let itemsView = createItemsView()
@@ -86,15 +86,16 @@ final class CompletionViewController: UIViewController {
         return UIView(frame: separatorViewFrame)
     }
 
-    private func createDetailView(_ separatorViewFrame: CGRect) -> CompletionDetailView {
+    private func createDetailView(_ separatorViewFrame: CGRect) -> UITextView {
         var detailViewFrame = CGRect(origin: .zero, size: viewSize)
         detailViewFrame.origin.y = separatorViewFrame.maxY
         detailViewFrame.size.height -= separatorViewFrame.maxY
 
-        return CompletionDetailView(frame: detailViewFrame)
+        return UITextView(frame: detailViewFrame)
     }
 
     override func viewDidLoad() {
+        borderSetting()
         NotificationCenter.default.addObserver(self, selector: #selector(refreshCodeStyle), name: .didChangeCodeStyle, object: nil)
         CompletionItemKind.allCases.map({ CompletionViewCellIdentifier(kind: $0) }).forEach() {
             itemsView.register(CompletionViewCell.self, forCellReuseIdentifier: $0.string)
@@ -117,7 +118,27 @@ final class CompletionViewController: UIViewController {
         separatorView.backgroundColor = codeStyle.edgeColor
 
         // Update completion detail view
-        detailView.set(codeStyle: codeStyle)
+        detailView.backgroundColor = codeStyle.backgroundColor
+
+        let fontSize = UIFont.smallSystemFontSize
+        let indentSize = UIFont.smallSystemFontSize
+
+        self.headlineAttribute = [
+            .font: UIFont.smallBoldSystemFont,
+            .foregroundColor: codeStyle.fontColor.text.uiColor
+        ]
+
+        self.signatureAttribute = [
+            .font: codeStyle.font.withSize(fontSize),
+            .foregroundColor: codeStyle.fontColor.text.uiColor,
+            .paragraphStyle: IndentParagraphStyle(head: indentSize)
+        ]
+
+        self.descriptionAttribute = [
+            .font: UIFont.smallSystemFont,
+            .foregroundColor: codeStyle.fontColor.text.uiColor,
+            .paragraphStyle: IndentParagraphStyle(head: indentSize)
+        ]
     }
 
 }
@@ -137,6 +158,13 @@ extension CompletionViewController: UITableViewDataSource, UITableViewDelegate {
         guard let tableCell = itemsView.dequeueReusableCell(withIdentifier: identifier.string, for: indexPath) as? CompletionViewCell else {
             fatalError()
         }
+
+        if tableCell.gestureRecognizers?.isEmpty ?? true {
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(selectItem))
+            tapGesture.cancelsTouchesInView = false
+            tableCell.addGestureRecognizer(tapGesture)
+        }
+
         let label = item.label
         let deprecated = item.deprecated ?? item.tags?.contains(.deprecated) ?? false
         tableCell.set(codeStyle: codeStyle)
@@ -145,12 +173,54 @@ extension CompletionViewController: UITableViewDataSource, UITableViewDelegate {
     }
 
     func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = displayItems[indexPath.row]
-        let label = item.label
-        let deprecated = item.deprecated ?? item.tags?.contains(.deprecated) ?? false
-        let detail = item.documentation?.string
-            .replacingOccurrences(of: "(\r\n|\r|\n)+", with: "\n", options: .regularExpression).appending("\n\n\n") ?? ""
-        detailView.set(label: label, deprecated: deprecated, detail: detail)
+        detailView.attributedText = information(displayItems[indexPath.row])
+        detailView.contentOffset = .zero
+    }
+
+    @objc private func selectItem(_ sender: UIGestureRecognizer) {
+        guard let tableCell = sender.view as? CompletionViewCell,
+                let indexPath = itemsView.indexPath(for: tableCell),
+                let controller = parent as? EditorViewController else {
+            fatalError()
+        }
+        selectRow(indexPath.row, .middle)
+        controller.commitCompletion()
+    }
+
+    private func information(_ item: CompletionItem) -> NSAttributedString {
+        let body = NSMutableAttributedString()
+        if let signature = signature(item) {
+            body.append(signature)
+        }
+        if let description = description(item) {
+            body.append(description)
+        }
+        if body.length != .zero {
+            body.replaceCharacters(in: NSMakeRange(body.length - 1, 1), with: "")
+        }
+        return body
+    }
+
+    private func signature(_ item: CompletionItem) -> NSAttributedString? {
+        guard item.label.isNotEmpty else {
+            return nil
+        }
+        // Deprecated
+        var attributes = signatureAttribute
+        attributes[.strikethroughStyle] = item.deprecated ?? item.tags?.contains(.deprecated) ?? false ? 1 : 0
+
+        let body = NSMutableAttributedString(string: "Signature\n", attributes: headlineAttribute)
+        body.append(NSAttributedString(string: "\(item.label)\n\n", attributes: attributes))
+        return body
+    }
+
+    private func description(_ item: CompletionItem) -> NSAttributedString? {
+        guard let description = item.documentation?.string else {
+            return nil
+        }
+        let body = NSMutableAttributedString(string: "Documentation\n", attributes: headlineAttribute)
+        body.append(NSAttributedString(string: "\(description)\n\n", attributes: descriptionAttribute))
+        return body
     }
 
 }
@@ -160,9 +230,9 @@ extension CompletionViewController: UITableViewDataSource, UITableViewDelegate {
 
 extension CompletionViewController {
 
-    func show(items: [CompletionItem], caretRect: CGRect) {
+    func show(list: CompletionList, caretRect: CGRect) {
         // Initialize
-        completionItems = items.sorted(by: CompletionItem.compare)
+        completionItems = list.items.sorted(by: CompletionItem.compare)
         displayItems = completionItems.filter({ $0.hasPrefix(initialFilterText) })
 
         // Refresh completion table
@@ -170,32 +240,7 @@ extension CompletionViewController {
         selectRow(.zero, .middle)
 
         // Setting view
-        view.frame.origin = viewOrigin(caretRect)
-        view.isHidden = false
-    }
-
-    private func viewOrigin(_ caretRect: CGRect) -> CGPoint {
-        guard let superViewBounds = parent?.view.bounds else {
-            fatalError()
-        }
-
-        // Calc view frame
-        let origin = CGPoint(x: caretRect.minX - 40, y: caretRect.maxY + 4)
-        var frame = CGRect(origin: origin, size: view.bounds.size)
-
-        // Correcting X,Y
-        if superViewBounds.maxX - 6 < frame.maxX {
-            frame.origin.x -= frame.maxX - superViewBounds.maxX + 6
-        }
-        if superViewBounds.maxY - 6 < frame.maxY {
-            frame.origin.y = caretRect.minY - frame.height - 4
-        }
-
-        return frame.origin
-    }
-
-    func hide() {
-        view.isHidden = true
+        show(caretRect: caretRect)
     }
 
 }
@@ -301,12 +346,12 @@ extension CompletionItem {
 
 extension CompletionItem.Documentation {
 
-    var string: String {
+    var string: String? {
         switch self {
         case .string(let text):
             return text
         case .markup(let content):
-            return content.kind == .plaintext ? content.value : ""
+            return content.kind == .plaintext ? content.value : nil
         }
     }
 

@@ -11,6 +11,8 @@
 ///
 protocol TextDocumentMessageDelegate: MessageDelegate {
 
+    var currentRequestID: RequestID? { get set }
+
     ///
     /// Receive result: textDocument/completion
     ///
@@ -396,6 +398,8 @@ extension TextDocumentMessageDelegate {
 
         if let error = error {
             source.responseError(id: id, method: context.method, error: error)
+            return true
+        } else if currentRequestID != id {
             return true
         }
 
