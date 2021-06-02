@@ -96,27 +96,6 @@ extension CompletionViewController: FloatingViewType {
 
 extension CompletionViewController: UITableViewDelegate {
 
-    @objc func tapItem(sender: UIGestureRecognizer) {
-        guard let cell = sender.view as? CompletionViewCell,
-                let indexPath = completionView.itemList.indexPath(for: cell),
-                let editor = parent as? EditorViewController else {
-            fatalError()
-        }
-
-        // Select and commit item
-        select(row: indexPath.row, scroll: .none)
-        editor.commitCompletion()
-    }
-
-    private func select(row: Int, scroll: UITableView.ScrollPosition) {
-        // Select table cell
-        let indexPath = IndexPath(row: row, section: .zero)
-        completionView.itemList.selectRow(at: indexPath, animated: false, scrollPosition: scroll)
-
-        // Invoke delegate
-        tableView(completionView.itemList, didSelectRowAt: indexPath)
-    }
-
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // Create documentation text
         let selectItem = viewModel.completionItem(at: indexPath)
@@ -127,6 +106,27 @@ extension CompletionViewController: UITableViewDelegate {
         // Set documentation text
         completionView.documentation.contentOffset = .zero
         completionView.documentation.attributedText = documentation
+    }
+
+    @objc func tapItem(_ sender: UIGestureRecognizer) {
+        guard let cell = sender.view as? CompletionViewCell,
+                let indexPath = completionView.itemList.indexPath(for: cell),
+                let editor = parent as? EditorViewController else {
+            fatalError()
+        }
+
+        // Select and commit item
+        completionView.itemList.selectRow(at: indexPath, animated: false, scrollPosition: .none)
+        editor.commitCompletion()
+    }
+
+    private func select(row: Int, scroll: UITableView.ScrollPosition) {
+        // Select table cell
+        let indexPath = IndexPath(row: row, section: .zero)
+        completionView.itemList.selectRow(at: indexPath, animated: false, scrollPosition: scroll)
+
+        // Invoke delegate
+        tableView(completionView.itemList, didSelectRowAt: indexPath)
     }
 
 }
