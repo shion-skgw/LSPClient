@@ -10,26 +10,22 @@ import UIKit
 
 protocol FloatingViewType: UIViewController {
 
-    var viewSize: CGSize { get }
+    associatedtype LSPResultType: ResultType
+
+    func willShow(_ result: LSPResultType) -> Bool
 
 }
 
 extension FloatingViewType {
 
-    var borderWidth: CGFloat {
-        0.5
+    var viewSize: CGSize {
+        CGSize(width: 260, height: 180)
     }
 
-    var cornerRadius: CGFloat {
-        3
-    }
-
-    func borderSetting() {
-        view.layer.borderWidth = borderWidth
-        view.layer.cornerRadius = cornerRadius
-    }
-
-    func show(caretRect: CGRect) {
+    func show(with result: LSPResultType, caretRect: CGRect) {
+        guard willShow(result) else {
+            return
+        }
         view.frame.origin = viewOrigin(caretRect)
         view.isHidden = false
     }

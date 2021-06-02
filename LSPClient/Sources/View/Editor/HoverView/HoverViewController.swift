@@ -9,48 +9,40 @@
 import UIKit
 
 final class HoverViewController: UIViewController, FloatingViewType {
+    private(set) weak var hoverView: HoverView!
+    private var documentationText: DocumentationText!
 
-    private(set) weak var detailView: UITextView!
-
-    let viewSize: CGSize = CGSize(width: 260, height: 180)
-    private var codeStyle: CodeStyle!
+    typealias LSPResultType = Hover
     var invokedRange: NSRange = .notFound
 
     override func loadView() {
-        let detailView = UITextView(frame: CGRect(origin: .zero, size: viewSize))
-        detailView.isHidden = true
-        detailView.isEditable = false
-        detailView.isSelectable = false
-        detailView.textContainer.lineBreakMode = .byCharWrapping
-        self.detailView = detailView
-        self.view = detailView
+        let hoverView = HoverView(frame: CGRect(origin: .zero, size: viewSize))
+        hoverView.isHidden = true
+        self.hoverView = hoverView
+        self.view = hoverView
 
         refreshCodeStyle()
     }
 
     override func viewDidLoad() {
-        borderSetting()
+        // NotificationCenter
         NotificationCenter.default.addObserver(self, selector: #selector(refreshCodeStyle), name: .didChangeCodeStyle, object: nil)
     }
 
     @objc private func refreshCodeStyle() {
-        // Load code style
-        codeStyle = CodeStyle.load()
+        let codeStyle = CodeStyle.load()
 
-        // Update view border
-
-        // Update completion detail view
-        detailView.font = .systemFont(ofSize: codeStyle.font.size)
-        detailView.textColor = codeStyle.fontColor.text.uiColor
-        detailView.backgroundColor = codeStyle.backgroundColor
-        detailView.indicatorStyle = codeStyle.backgroundColor.isBright ? .black : .white
-        detailView.layer.borderColor = codeStyle.edgeColor.cgColor
+        hoverView.set(codeStyle)
+        documentationText = DocumentationText(codeStyle: codeStyle)
     }
 
-    func show(hover: Hover, caretRect: CGRect) {
-        // Initialize
-        detailView.text = hover.contents.value
-        show(caretRect: caretRect)
+    func willShow(_ result: Hover) -> Bool {
+        guard result.contents.kind == .plaintext else {
+            return false
+        }
+        let documentation = documentationText.create(signature: nil, description: result.contents.value, parameters: nil)
+        hoverView.attributedText = documentation
+        return true
     }
 
 }

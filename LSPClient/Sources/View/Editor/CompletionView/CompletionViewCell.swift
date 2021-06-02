@@ -10,10 +10,12 @@ import UIKit
 
 final class CompletionViewCell: UITableViewCell {
     /// Icon image view
-    private(set) weak var symbolIcon: UIImageView!
+    private(set) weak var icon: UIImageView!
     /// Completion text label
-    private(set) weak var completionLabel: UILabel!
+    private(set) weak var label: UILabel!
 
+    /// Item row height
+    private let rowHeight: CGFloat = CompletionViewController.rowHeight
     private let symbolWidth: CGFloat = UIFont.systemFontSize * 1.6
     private let symbolPointSize: CGFloat = UIFont.systemFontSize
 
@@ -25,78 +27,65 @@ final class CompletionViewCell: UITableViewCell {
         // Initialize
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .clear
+        self.selectedBackgroundView = UIView()
         self.contentView.subviews.forEach({ $0.removeFromSuperview() })
 
         // Icon image view
-        let symbolIcon = createSymbolIcon(identifier)
-        self.contentView.addSubview(symbolIcon)
-        self.symbolIcon = symbolIcon
+        let icon = Icon(identifier)
+        self.contentView.addSubview(icon)
+        self.icon = icon
 
         // File name label
-        let completionLabel = createCompletionLabel(identifier)
-        self.contentView.addSubview(completionLabel)
-        self.completionLabel = completionLabel
+        let label = Label(identifier)
+        self.contentView.addSubview(label)
+        self.label = label
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func createSymbolIcon(_ identifier: CompletionViewCellIdentifier) -> UIImageView {
+    private func Icon(_ identifier: CompletionViewCellIdentifier) -> UIImageView {
         // Get icon image
         let icon = identifier.icon(size: symbolPointSize, weight: .medium)
 
         // Calc frame
-        var symbolIconFrame = CGRect(origin: .zero, size: icon.size)
-        symbolIconFrame.origin.x = symbolWidth.centeringPoint(symbolIconFrame.width)
+        var frame = CGRect(origin: .zero, size: icon.size)
+        frame.origin.x = symbolWidth.centeringPoint(frame.width)
+        frame.origin.y = rowHeight.centeringPoint(frame.height)
 
-        // Create icon image view
-        let symbolIcon = UIImageView(frame: symbolIconFrame)
-        symbolIcon.tintColor = identifier.iconColor
-        symbolIcon.image = icon
-        return symbolIcon
+        // Create view
+        let view = UIImageView(frame: frame)
+        view.tintColor = identifier.iconColor
+        view.image = icon
+        return view
     }
 
-    private func createCompletionLabel(_ identifier: CompletionViewCellIdentifier) -> UILabel {
+    private func Label(_ identifier: CompletionViewCellIdentifier) -> UILabel {
         // Calc frame
-        var completionLabelFrame = CGRect.zero
-        completionLabelFrame.origin.x = symbolWidth
+        var frame = CGRect.zero
+        frame.origin.x = symbolWidth
+        frame.size.height = rowHeight
 
-        // Create file name label
-        return UILabel(frame: completionLabelFrame)
+        // Create view
+        return UILabel(frame: frame)
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        // Calc symbol icon frame
-        var symbolIconFrame = symbolIcon.frame
-        symbolIconFrame.origin.y = bounds.height.centeringPoint(symbolIconFrame.height)
-        symbolIcon.frame = symbolIconFrame
-
         // Calc completion label frame
-        var completionLabelFrame = completionLabel.frame
-        completionLabelFrame.size.width = bounds.width - symbolWidth
-        completionLabelFrame.size.height = bounds.height
-        completionLabel.frame = completionLabelFrame
+        var labelFrame = CGRect(origin: .zero, size: bounds.size)
+        labelFrame.origin.x = symbolWidth
+        labelFrame.size.width -= symbolWidth
+        label.frame = labelFrame
     }
 
-    func set(codeStyle: CodeStyle) {
-        self.completionLabel.font = codeStyle.font.uiFont
-        self.completionLabel.textColor = codeStyle.fontColor.text.uiColor
+    func set(_ codeStyle: CodeStyle) {
+        self.label.font = codeStyle.font.uiFont
+        self.label.textColor = codeStyle.fontColor.text.uiColor
 
-        let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = codeStyle.highlightColor
-        self.selectedBackgroundView = selectedBackgroundView
-    }
-
-    func set(label: String, deprecated: Bool) {
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: self.completionLabel.font ?? .systemFont,
-            .foregroundColor: self.completionLabel.textColor ?? .black,
-            .strikethroughStyle: deprecated ? 1 : 0
-        ]
-        self.completionLabel.attributedText = NSAttributedString(string: label, attributes: attributes)
+        self.selectedBackgroundView?.backgroundColor = codeStyle.highlightColor
     }
 
 }

@@ -34,6 +34,12 @@ extension String {
         return (self as NSString).lineRange(for: range)
     }
 
+    @inlinable mutating func replaceSubrange(_ range: NSRange, with replacement: String) {
+        guard let range = Range(range, in: self) else {
+            fatalError()
+        }
+        self.replaceSubrange(range, with: replacement)
+    }
 
     // MARK: - For a concise description
 
@@ -99,7 +105,8 @@ extension String {
     @inlinable func lineRanges(start: Int, end: Int) -> [LineRange] {
         let result = lineRanges({ start <= $0.number }, { end <= $0.number })
         guard let s = result.first, let e = result.last, s.number == start, e.number == end else {
-            fatalError("\(result), \(start), \(end)")
+            return result
+//            fatalError("\(result), \(start), \(end)")
         }
         return result
     }

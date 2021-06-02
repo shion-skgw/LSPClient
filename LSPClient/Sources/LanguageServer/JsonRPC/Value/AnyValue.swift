@@ -62,3 +62,26 @@ extension AnyValue: ResultType {
         }
     }
 }
+
+extension AnyValue: Equatable {
+    static func == (lhs: AnyValue, rhs: AnyValue) -> Bool {
+        switch (lhs.value, rhs.value) {
+        case is (Void, Void):
+            return true
+        case let (lhs as Bool, rhs as Bool):
+            return lhs == rhs
+        case let (lhs as Int, rhs as Int):
+            return lhs == rhs
+        case let (lhs as Double, rhs as Double):
+            return lhs == rhs
+        case let (lhs as String, rhs as String):
+            return lhs == rhs
+        case let (lhs as [AnyValue], rhs as [AnyValue]):
+            return lhs == rhs
+        case let (lhs as [String: AnyValue], rhs as [String: AnyValue]):
+            return lhs == rhs
+        default:
+            return false
+        }
+    }
+}

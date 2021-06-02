@@ -192,10 +192,10 @@ final class EditorViewController: UIViewController {
             moveCaretNext()
 
         case (UIKeyCommand.inputUpArrow, _):
-            completion.moveSelect(direction: -)
+            completion.moveSelection(direction: -)
 
         case (UIKeyCommand.inputDownArrow, _):
-            completion.moveSelect(direction: +)
+            completion.moveSelection(direction: +)
 
         default:
             fatalError()
@@ -459,7 +459,7 @@ extension EditorViewController {
             commitCompletion()
             return false
         } else {
-            completion.willInput(text: inputText, range: range)
+            completion.willInput(range: range, text: inputText)
             return true
         }
     }
@@ -740,7 +740,7 @@ extension EditorViewController: TextDocumentMessageDelegate {
         }
 
         let caretRect = textView.caretRect(for: selectedTextRange)
-        completion.show(list: result, caretRect: caretRect)
+        completion.show(with: result, caretRect: caretRect)
 
         if !result.isIncomplete {
             currentRequestID = nil
@@ -758,7 +758,7 @@ extension EditorViewController: TextDocumentMessageDelegate {
         }
 
         let caretRect = textView.caretRect(for: selectedTextRange)
-        hover.show(hover: result, caretRect: caretRect)
+        hover.show(with: result, caretRect: caretRect)
     }
 
     func signatureHelp(id: RequestID, result: SignatureHelp?) {
@@ -769,7 +769,7 @@ extension EditorViewController: TextDocumentMessageDelegate {
         }
 
         let caretRect = textView.caretRect(for: selectedTextRange)
-        signatureHelp.show(signatures: result, caretRect: caretRect)
+        signatureHelp.show(with: result, caretRect: caretRect)
     }
 
     //    func declaration(id: RequestID, result: FindLocationResult?) {}

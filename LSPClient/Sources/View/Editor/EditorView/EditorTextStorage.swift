@@ -10,11 +10,11 @@ import UIKit.NSTextStorage
 
 final class EditorTextStorage: NSTextStorage {
 
-    let content: NSMutableAttributedString
     weak var syntaxManager: SyntaxManager?
-    private(set) var textAttribute: [NSAttributedString.Key: Any]
-    private(set) var highlightAttribute: [SyntaxType: [NSAttributedString.Key: Any]]
-    private(set) var diagnosticAttribute: [DiagnosticSeverity: [NSAttributedString.Key: Any]]
+    private let content: NSMutableAttributedString
+    private var textAttribute: [NSAttributedString.Key: Any]
+    private var highlightAttribute: [SyntaxType: [NSAttributedString.Key: Any]]
+    private var diagnosticAttribute: [DiagnosticSeverity: [NSAttributedString.Key: Any]]
 
     override var string: String {
         content.string
@@ -130,7 +130,7 @@ extension EditorTextStorage {
         self.diagnosticAttribute.removeAll()
         self.diagnosticAttribute[.error] = [
             .underlineStyle: NSUnderlineStyle.double.rawValue,
-            .underlineColor: UIColor.red
+            .underlineColor: UIColor.red,
         ]
         self.diagnosticAttribute[.warning] = [
             .underlineStyle: NSUnderlineStyle.single.rawValue,
