@@ -9,9 +9,9 @@
 import UIKit
 
 final class EditorViewController: UIViewController {
-
+    private var viewModel: EditorViewModel!
     /// EditorView
-    private(set) weak var textView: EditorView!
+    private(set) weak var editorView: EditorView!
     /// EditorTextStorage
     private(set) weak var textStorage: EditorTextStorage!
     /// EditorLayoutManager
@@ -38,14 +38,14 @@ final class EditorViewController: UIViewController {
     }
 
     private var contentText: String {
-        self.textView.text
+        self.editorView.text
     }
     private var selectedRange: NSRange {
         get {
-            self.textView.selectedRange
+            self.editorView.selectedRange
         }
         set {
-            self.textView.selectedRange = newValue
+            self.editorView.selectedRange = newValue
         }
     }
 
@@ -56,12 +56,22 @@ final class EditorViewController: UIViewController {
     static let verticalMargin: CGFloat = 4.0
 
     override var undoManager: UndoManager? {
-        self.textView.undoManager
+        self.editorView.undoManager
     }
 
     var uri: DocumentUri = .bluff
 
     override func loadView() {
+        // SyntaxManager
+        let syntaxManager = SyntaxManager.load(fileExtension: uri.pathExtension)
+        self.syntaxManager = syntaxManager
+
+        // EditorViewModel
+        let viewModel = EditorViewModel()
+        viewModel.controller = self
+        viewModel.syntaxManager = syntaxManager
+        self.viewModel = viewModel
+
         // TextContainer
         let textContainer = NSTextContainer()
         textContainer.lineBreakMode = .byCharWrapping
@@ -71,10 +81,6 @@ final class EditorViewController: UIViewController {
         layoutManager.addTextContainer(textContainer)
         self.layoutManager = layoutManager
 
-        // SyntaxManager
-        let syntaxManager = SyntaxManager.load(fileExtension: uri.pathExtension)
-        self.syntaxManager = syntaxManager
-
         // TextStorage
         let textStorage = EditorTextStorage()
         textStorage.syntaxManager = syntaxManager
@@ -82,10 +88,10 @@ final class EditorViewController: UIViewController {
         self.textStorage = textStorage
 
         // EditorView
-        let textView = EditorView(frame: .zero, textContainer: textContainer)
-        textView.delegate = self
-        self.textView = textView
-        self.view = textView
+        let editorView = EditorView(frame: .zero, textContainer: textContainer)
+        editorView.delegate = self
+        self.editorView = editorView
+        self.view = editorView
 
         refreshCodeStyle()
     }
@@ -99,8 +105,7 @@ final class EditorViewController: UIViewController {
         }
 
         textStorage.replaceCharacters(in: contentText.range, with: text)
-        beforeChangesText = text
-        sendDidOpen()
+        viewModel.sendDidOpen(editorView)
 
         // Notification
         let notificationCenter = NotificationCenter.default
@@ -115,14 +120,14 @@ final class EditorViewController: UIViewController {
         }
         let aa = diagnostics.map({ (NSRange($0.range, in: contentText), $0.severity ?? .information) })
         textStorage.applyDiagnostic(diagnostic: aa)
-        textView.setNeedsDisplay()
+        editorView.setNeedsDisplay()
     }
 
     @objc private func refreshCodeStyle() {
         let codeStyle = CodeStyle.load()
         self.tabSize = codeStyle.tabSize
         self.indentCharacter = codeStyle.useHardTab ? .tab : .space
-        self.textView.set(codeStyle: codeStyle)
+        self.editorView.set(codeStyle: codeStyle)
         self.textStorage.set(codeStyle: codeStyle)
         self.layoutManager.set(codeStyle: codeStyle)
     }
@@ -134,12 +139,9 @@ final class EditorViewController: UIViewController {
     }
 
     private var beforeInputText: String = ""
-    private var beforeChangesText: String = ""
     private var isNeedCommitChanges: Bool = false
     private var isNeedCompletion: Bool = false
     private var isNeedSignatureHelp: Bool = false
-    private var currentVersion: Int = 1
-    var currentRequestID: RequestID? = nil
 
     override var keyCommands: [UIKeyCommand]? {
         var commands: [UIKeyCommand] = [
@@ -181,9 +183,8 @@ final class EditorViewController: UIViewController {
             toggleComment()
 
         case (UIKeyCommand.inputSpace, .alternate):
-            sendDidChange()
-            initializeCompilation()
-            sendCompletion(nil)
+            viewModel.sendDidChange(editorView)
+            viewModel.sendCompletion(editorView, trigger: nil)
 
         case (UIKeyCommand.inputLeftArrow, _):
             moveCaretPrevious()
@@ -203,9 +204,8 @@ final class EditorViewController: UIViewController {
     }
 
     @objc func invokeHover() {
-        sendDidChange()
-        initializeHover(selectedRange)
-        sendHover()
+        viewModel.sendDidChange(editorView)
+        viewModel.sendHover(editorView)
     }
 
     private func moveCaretPrevious() {
@@ -245,26 +245,29 @@ extension EditorViewController: UITextViewDelegate {
 
     func textView(_: UITextView, shouldChangeTextIn range: NSRange, replacementText inputText: String) -> Bool {
         if isShownCompletion {
-            return shouldChangeCompletion(range, inputText)
+            if viewModel.needCommitCompletion(inputText) {
+                commitCompletion()
+                return false
+            } else {
+                completion.willInput(range: range, text: inputText)
+                return true
+            }
 
         } else {
             if needRegisterUndo(inputText) {
                 registerUndo()
             }
-            isNeedCompletion = needCompletion(inputText)
-            isNeedSignatureHelp = needSignatureHelp(inputText)
-            isNeedCommitChanges = isNeedCompletion || isNeedSignatureHelp || needCommitChanges(inputText)
+            isNeedCompletion = viewModel.needCompletion(inputText)
+            isNeedSignatureHelp = viewModel.needSignatureHelp(inputText)
+            isNeedCommitChanges = isNeedCompletion
+                || isNeedSignatureHelp
+                || viewModel.needCommitChanges(current: inputText, last: beforeInputText)
             beforeInputText = inputText
             return shouldChange(range, inputText)
         }
     }
 
     func textViewDidChangeSelection(_: UITextView) {
-        if selectedRange.length == .zero {
-            print(TextPosition(selectedRange, in: contentText))
-        } else {
-            print(TextRange(selectedRange, in: contentText))
-        }
         guard let undoManager = self.undoManager else {
             fatalError()
         }
@@ -278,15 +281,12 @@ extension EditorViewController: UITextViewDelegate {
             signatureHelp.hide()
         }
         if isNeedCommitChanges || undoManager.isUndoing || undoManager.isRedoing {
-            sendDidChange()
+            viewModel.sendDidChange(editorView)
         }
         if isNeedCompletion {
-            initializeCompilation()
-            sendCompletion(beforeInputText)
-        }
-        if isNeedSignatureHelp {
-            initializeSignatureHelp()
-            sendSignatureHelp(beforeInputText)
+            viewModel.sendCompletion(editorView, trigger: beforeInputText)
+        } else if isNeedSignatureHelp {
+            viewModel.sendSignatureHelp(editorView, trigger: beforeInputText)
         }
     }
 
@@ -446,79 +446,55 @@ extension EditorViewController {
 }
 
 
+// MARK: - File change event support
+
+extension EditorViewController {
+
+    func didSendDidChange() {
+        isNeedCommitChanges = false
+    }
+
+}
+
+
 // MARK: - Completion support
 
 extension EditorViewController {
 
-    private func needCompletion(_ inputText: String) -> Bool {
-        return inputText.contains(characterSet: serverCapability.completion.triggerCharacters)
-    }
-
-    private func shouldChangeCompletion(_ range: NSRange, _ inputText: String) -> Bool {
-        if inputText.contains(characterSet: serverCapability.completion.allCommitCharacters) {
-            commitCompletion()
-            return false
-        } else {
-            completion.willInput(range: range, text: inputText)
-            return true
-        }
-    }
-
-    private func initializeCompilation() {
-        guard let syntaxManager = self.syntaxManager else {
-            return
-        }
-
-        // Get filter text
-        var filterText = ""
-        if let range = syntaxManager.wordRange(text: contentText, range: selectedRange) {
-            filterText = contentText[range]
-        }
-
-        // Compilation initialization
+    func willSendCompletion(invoke range: NSRange, filter text: String) {
         if let completion = self.completion {
-            completion.filterText = filterText
-            completion.completionRange = selectedRange
+            completion.completionRange = range
+            completion.filterText = text
 
         } else {
             let completion = CompletionViewController()
-            completion.filterText = filterText
-            completion.completionRange = selectedRange
+            completion.completionRange = range
+            completion.filterText = text
             add(child: completion)
             self.completion = completion
         }
     }
 
-    private func sendCompletion(_ trigger: String?) {
-        guard serverCapability.completion.isSupport,
-                selectedRange.length == .zero else {
-            return
-        }
-
-        // Generate parameters
-        let textDocument = TextDocumentIdentifier(uri: uri)
-        let position = TextPosition(selectedRange, in: contentText)
-        let context = CompletionContext(triggerKind: trigger == nil ? .invoked : .triggerCharacter, triggerCharacter: trigger)
-        let completionParams = CompletionParams(textDocument: textDocument, position: position, context: context)
-
-        // Send request "textDocument/completion"
-        currentRequestID = completion(params: completionParams)
-
-        // Update status
+    func didSendCompletion() {
         isNeedCompletion = false
     }
 
-    func commitCompletion() {
-        guard let syntaxManager = self.syntaxManager else {
+    func showCompletion(result: CompletionList) {
+        guard completion.completionRange == editorView.selectedRange,
+              let textPosition = editorView.selectedTextRange?.end else {
             return
         }
+        let caretRect = editorView.caretRect(for: textPosition)
+        completion.show(with: result, caretRect: caretRect)
+    }
 
+    func commitCompletion() {
         completion.hide()
 
         let completionItem = completion.selectedItem
         let completionRange = completion.completionRange
-        let replaceText = completionItem.insertText ?? ""
-        let replaceRange = syntaxManager.wordRange(text: contentText, range: selectedRange) ?? completionRange
+        let replaceText = completionItem.insertText ?? completionItem.label
+        let replaceRange = syntaxManager?.wordRange(text: contentText, range: completionRange) ?? completionRange
 
         textStorage.replaceCharacters(in: replaceRange, with: replaceText)
         selectedRange = NSMakeRange(replaceRange.location + replaceText.length, .zero)
@@ -531,31 +507,25 @@ extension EditorViewController {
 
 extension EditorViewController {
 
-    private func initializeHover(_ range: NSRange) {
-        // Hover initialization
+    func willSendHover(invoke range: NSRange) {
         if let hover = self.hover {
-            hover.invokedRange = selectedRange
+            hover.invokedRange = range
 
         } else {
             let hover = HoverViewController()
-            hover.invokedRange = selectedRange
+            hover.invokedRange = range
             add(child: hover)
             self.hover = hover
         }
     }
 
-    private func sendHover() {
-        guard serverCapability.hover.isSupport else {
+    func showHover(result: Hover) {
+        guard hover.invokedRange == editorView.selectedRange,
+              let textPosition = editorView.selectedTextRange?.end else {
             return
         }
-
-        // Generate parameters
-        let textDocument = TextDocumentIdentifier(uri: uri)
-        let position = TextPosition(selectedRange, in: contentText)
-        let hoverParams = HoverParams(textDocument: textDocument, position: position)
-
-        // Send request
-        currentRequestID = hover(params: hoverParams)
+        let caretRect = editorView.caretRect(for: textPosition)
+        hover.show(with: result, caretRect: caretRect)
     }
 
 }
@@ -565,238 +535,75 @@ extension EditorViewController {
 
 extension EditorViewController {
 
-    private func needSignatureHelp(_ inputText: String) -> Bool {
-        return inputText.contains(characterSet: serverCapability.signatureHelp.triggerCharacters)
-    }
-
-    private func initializeSignatureHelp() {
-        // Hover initialization
+    func willSendSignatureHelp(invoke range: NSRange) {
         if let signatureHelp = self.signatureHelp {
-            signatureHelp.invokedRange = selectedRange
+            signatureHelp.invokedRange = range
 
         } else {
             let signatureHelp = SignatureHelpViewController()
-            signatureHelp.invokedRange = selectedRange
+            signatureHelp.invokedRange = range
             add(child: signatureHelp)
             self.signatureHelp = signatureHelp
         }
     }
 
-    private func sendSignatureHelp(_ trigger: String) {
-        guard serverCapability.signatureHelp.isSupport,
-                selectedRange.length == .zero else {
+    func didSendSignatureHelp() {
+        isNeedSignatureHelp = false
+    }
+
+    func showSignatureHelp(result: SignatureHelp) {
+        guard signatureHelp.invokedRange == editorView.selectedRange,
+              let textPosition = editorView.selectedTextRange?.end else {
             return
         }
-
-        // Generate parameters
-        let textDocument = TextDocumentIdentifier(uri: uri)
-        let position = TextPosition(selectedRange, in: contentText)
-        let context = SignatureHelpContext(triggerKind: .triggerCharacter, triggerCharacter: trigger, isRetrigger: false, activeSignatureHelp: nil)
-        let signatureHelpParams = SignatureHelpParams(textDocument: textDocument, position: position, context: context)
-
-        // Send request
-        currentRequestID = signatureHelp(params: signatureHelpParams)
-
-        // Update status
-        isNeedSignatureHelp = false
+        let caretRect = editorView.caretRect(for: textPosition)
+        signatureHelp.show(with: result, caretRect: caretRect)
     }
 
 }
 
 
-// MARK: - Definition support
+// MARK: - Find location support
 
-extension EditorViewController {}
+extension EditorViewController {
+
+}
 
 
 // MARK: - Document highlight support
 
-extension EditorViewController {}
+extension EditorViewController {
+
+}
 
 
 // MARK: - Document symbol support
 
-extension EditorViewController {}
+extension EditorViewController {
+
+}
 
 
 // MARK: - Code action support
 
-extension EditorViewController {}
+extension EditorViewController {
+
+}
 
 
-// MARK: - Code formatting support
-
-extension EditorViewController {}
-
-
-// MARK: - Symbol rename support
-
-extension EditorViewController {}
-
-
-// MARK: - File change event support
+// MARK: - Formatting support
 
 extension EditorViewController {
 
-    private func needCommitChanges(_ inputText: String) -> Bool {
-        guard let syntaxManager = self.syntaxManager else {
-            return false
-        }
-        return beforeInputText != inputText && !syntaxManager.word(text: inputText)
-    }
-
-    private func sendDidOpen() {
-        guard serverCapability.textDocumentSync.openClose else {
-            return
-        }
-
-        // Generate parameters
-        let languageId = LanguageID.of(fileExtension: uri.pathExtension)
-        let textDocument = TextDocumentItem(uri: uri, languageId: languageId, version: currentVersion, text: contentText)
-        let didOpenParams = DidOpenTextDocumentParams(textDocument: textDocument)
-
-        // Send notification "textDocument/didOpen"
-        didOpen(params: didOpenParams)
-    }
-
-    private func sendDidChange() {
-        guard contentText != beforeChangesText else {
-            return
-        }
-
-        // Send notification
-        switch serverCapability.textDocumentSync.change {
-        case .none:
-            break
-        case .full:
-            sendDidChangeFull()
-        case .incremental:
-            sendDidChangeIncremental()
-        }
-
-        // Update status
-        isNeedCommitChanges = false
-        beforeChangesText = contentText
-    }
-
-    private func sendDidChangeFull() {
-        // Generate parameters
-        currentVersion += 1
-        let textDocument = VersionedTextDocumentIdentifier(uri: uri, version: currentVersion)
-        let contentChange = TextDocumentContentChangeEvent.full(contentText)
-        let didChangeParams = DidChangeTextDocumentParams(textDocument: textDocument, contentChanges: [contentChange])
-
-        // Send notification "textDocument/didChange"
-        didChange(params: didChangeParams)
-    }
-
-    private func sendDidChangeIncremental() {
-        // Get the changes
-        let changes = contentText.changes(from: beforeChangesText)
-
-        // Generate parameters
-        currentVersion += 1
-        let textDocument = VersionedTextDocumentIdentifier(uri: uri, version: currentVersion)
-        let range = TextRange(changes.range, in: beforeChangesText)
-        let contentChange = TextDocumentContentChangeEvent.incremental(range, changes.text)
-        let didChangeParams = DidChangeTextDocumentParams(textDocument: textDocument, contentChanges: [contentChange])
-
-        // Send notification "textDocument/didChange"
-        didChange(params: didChangeParams)
-    }
-
-    private func sendDidSave() {
-        // Generate parameters
-        let textDocument = TextDocumentIdentifier(uri: uri)
-        let didOpenParams = DidSaveTextDocumentParams(textDocument: textDocument, text: contentText)
-
-        // Send notification "textDocument/didSave"
-        didSave(params: didOpenParams)
-    }
-
-    private func sendDidClose() {
-        guard serverCapability.textDocumentSync.openClose else {
-            return
-        }
-
-        // Send notification "textDocument/didClose"
-        let textDocument = TextDocumentIdentifier(uri: uri)
-        let didCloseParams = DidCloseTextDocumentParams(textDocument: textDocument)
-        didClose(params: didCloseParams)
-    }
-
 }
 
 
-// MARK: - Language server support
+// MARK: - Rename support
 
-extension EditorViewController: TextDocumentMessageDelegate {
-
-    func completion(id: RequestID, result: CompletionList?) {
-        guard completion.completionRange == selectedRange,
-                let selectedTextRange = textView.selectedTextRange?.end,
-                let result = result, result.items.isNotEmpty else {
-            return
-        }
-
-        let caretRect = textView.caretRect(for: selectedTextRange)
-        completion.show(with: result, caretRect: caretRect)
-
-        if !result.isIncomplete {
-            currentRequestID = nil
-        }
-    }
-
-    func completionResolve(id: RequestID, result: CompletionItem) {
-    }
-
-    func hover(id: RequestID, result: Hover?) {
-        guard hover.invokedRange == selectedRange,
-                let selectedTextRange = textView.selectedTextRange?.end,
-                let result = result, result.contents.value.isNotEmpty else {
-            return
-        }
-
-        let caretRect = textView.caretRect(for: selectedTextRange)
-        hover.show(with: result, caretRect: caretRect)
-    }
-
-    func signatureHelp(id: RequestID, result: SignatureHelp?) {
-        guard signatureHelp.invokedRange == selectedRange,
-                let selectedTextRange = textView.selectedTextRange?.end,
-                let result = result, result.signatures.isNotEmpty else {
-            return
-        }
-
-        let caretRect = textView.caretRect(for: selectedTextRange)
-        signatureHelp.show(with: result, caretRect: caretRect)
-    }
-
-    //    func declaration(id: RequestID, result: FindLocationResult?) {}
-    func definition(id: RequestID, result: FindLocationResult?) {
-    }
-    func typeDefinition(id: RequestID, result: FindLocationResult?) {
-    }
-    func implementation(id: RequestID, result: FindLocationResult?) {
-    }
-    func references(id: RequestID, result: [Location]?) {
-    }
-    func documentHighlight(id: RequestID, result: [DocumentHighlight]?) {
-    }
-    func documentSymbol(id: RequestID, result: [SymbolInformation]?) {
-    }
-    func codeAction(id: RequestID, result: CodeActionResult?) {
-    }
-//    func formatting(id: RequestID, result: [TextEdit]?) {}
-    func rangeFormatting(id: RequestID, result: [TextEdit]?) {
-    }
-    func rename(id: RequestID, result: WorkspaceEdit?) {
-    }
-    func responseError(id: RequestID, method: MessageMethod, error: ErrorResponse) {
-        print(#function, id, method, error)
-    }
+extension EditorViewController {
 
 }
+
 
 extension TextRange {
 

@@ -66,6 +66,15 @@ final class EditorView: UITextView {
         setNeedsDisplay()
     }
 
+    func replaceText(in range: NSRange, with replacement: String, selected: Bool) {
+        textStorage.replaceCharacters(in: range, with: replacement)
+        if selected {
+            selectedRange = NSMakeRange(range.location, replacement.length)
+        } else {
+            selectedRange = NSMakeRange(range.location + replacement.length, .zero)
+        }
+    }
+
 }
 
 

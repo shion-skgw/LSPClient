@@ -107,6 +107,7 @@
 		05A6E3CA265EC9300054EDA5 /* SyntaxDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05A6E3C9265EC9300054EDA5 /* SyntaxDefinition.swift */; };
 		05B5ED362667DACF00D5C718 /* SignatureHelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B5ED352667DACF00D5C718 /* SignatureHelpView.swift */; };
 		05B5ED3C2667DF6B00D5C718 /* HoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B5ED3B2667DF6B00D5C718 /* HoverView.swift */; };
+		05B5ED442667E78600D5C718 /* EditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B5ED432667E78600D5C718 /* EditorViewModel.swift */; };
 		05BA10AF24D2D922009A3669 /* LSPConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BA10AE24D2D922009A3669 /* LSPConnection.swift */; };
 		05BAAB1C24A3530500A3EADC /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BAAB1B24A3530500A3EADC /* Common.swift */; };
 		05BAAB1E24A3530E00A3EADC /* Initialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05BAAB1D24A3530E00A3EADC /* Initialize.swift */; };
@@ -274,6 +275,7 @@
 		05A6E3C9265EC9300054EDA5 /* SyntaxDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxDefinition.swift; sourceTree = "<group>"; };
 		05B5ED352667DACF00D5C718 /* SignatureHelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureHelpView.swift; sourceTree = "<group>"; };
 		05B5ED3B2667DF6B00D5C718 /* HoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HoverView.swift; sourceTree = "<group>"; };
+		05B5ED432667E78600D5C718 /* EditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorViewModel.swift; sourceTree = "<group>"; };
 		05BA10AE24D2D922009A3669 /* LSPConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSPConnection.swift; sourceTree = "<group>"; };
 		05BAAB1B24A3530500A3EADC /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		05BAAB1D24A3530E00A3EADC /* Initialize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Initialize.swift; sourceTree = "<group>"; };
@@ -827,6 +829,7 @@
 				056B5C2524E30E2900797D95 /* EditorTextStorage.swift */,
 				056B5C2324E30DFB00797D95 /* EditorView.swift */,
 				056B5C2A24E30EEC00797D95 /* EditorViewController.swift */,
+				05B5ED432667E78600D5C718 /* EditorViewModel.swift */,
 			);
 			path = EditorView;
 			sourceTree = "<group>";
@@ -1164,6 +1167,7 @@
 				05601E7925A29725007B91C1 /* EditorTabViewController.swift in Sources */,
 				05CE9E0C26522F35006F8550 /* UInt8.swift in Sources */,
 				05D4D4AD24D6AB8600A76239 /* ClientCapabilities.swift in Sources */,
+				05B5ED442667E78600D5C718 /* EditorViewModel.swift in Sources */,
 				056732CE24960A8800E7650B /* VersionedTextDocumentIdentifier.swift in Sources */,
 				05717DD42665747C005A5655 /* CompletionViewModel.swift in Sources */,
 				0540194D24936BE700287026 /* TextRange.swift in Sources */,
