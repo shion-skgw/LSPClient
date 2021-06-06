@@ -50,7 +50,7 @@ final class CompletionViewModel: NSObject, UITableViewDataSource {
 
     private func labelText(_ item: CompletionItem) -> NSAttributedString {
         var attributes = NSAttributedString.makeAttributes(font: codeStyle.font.uiFont, color: codeStyle.fontColor.text.uiColor)
-        if item.isDeprecated {
+        if item.deprecated ?? item.tags?.contains(.deprecated) ?? false {
             attributes.merge(NSAttributedString.makeStrikeThrough(style: .single), uniquingKeysWith: { $1 })
         }
         return NSAttributedString(string: item.label, attributes: attributes)
@@ -99,10 +99,6 @@ final class CompletionViewModel: NSObject, UITableViewDataSource {
 }
 
 extension CompletionItem: Comparable {
-
-    var isDeprecated: Bool {
-        self.deprecated ?? self.tags?.contains(.deprecated) ?? false
-    }
 
     static func < (lhs: CompletionItem, rhs: CompletionItem) -> Bool {
         if lhs.preselect ?? false == rhs.preselect ?? false {

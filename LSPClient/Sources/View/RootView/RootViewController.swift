@@ -256,15 +256,7 @@ extension RootViewController {
     }
 
     private func openEditor(_ file: WorkspaceFile) {
-        if editor.hasEditor(uri: file.uri) {
-            editor.showEditor(uri: file.uri)
-
-        } else {
-            let editorViewController = EditorViewController()
-            editorViewController.uri = file.uri
-            editor.add(editor: editorViewController)
-        }
-
+        editor.open(uri: file.uri)
         closeWorkspace()
     }
 

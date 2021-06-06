@@ -20,7 +20,12 @@ final class EditorTabItem: UIButton {
     private(set) var inactiveColor: UIColor
 
     /// Document URI
-    var uri: DocumentUri
+    var uri: DocumentUri {
+        didSet {
+            self.closeButton.uri = self.uri
+            self.fileName.text = self.uri.lastPathComponent
+        }
+    }
     /// Active state
     var isActive: Bool {
         didSet {

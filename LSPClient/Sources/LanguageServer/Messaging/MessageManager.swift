@@ -94,8 +94,8 @@ final class MessageManager: LSPConnectionDelegate {
     /// - Parameter data: Received data
     ///
     func didReceive(data: Data) {
-        print("<====================================================== receive")
-        print(String(data: data, encoding: .utf8)!)
+//        print("<====================================================== receive")
+//        print(String(data: data, encoding: .utf8)!)
         do {
             let message = try decode(data)
             switch message {
@@ -185,8 +185,8 @@ final class MessageManager: LSPConnectionDelegate {
         let message = try encoder.encode(message)
         var content = String(format: REQUEST_HEADERS, message.count).data(using: .utf8)!
         content.append(message)
-        print("send ======================================================>")
-        print(String(data: content, encoding: .utf8)!)
+//        print("send ======================================================>")
+//        print(String(data: content, encoding: .utf8)!)
         return content
     }
 

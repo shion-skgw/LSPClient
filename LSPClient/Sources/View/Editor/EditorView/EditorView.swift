@@ -119,7 +119,7 @@ extension EditorView {
     private func drawLineNumber(_ lineNumber: Int, _ usedRect: CGRect) {
         let number = NSAttributedString(string: "\(lineNumber)", attributes: lineNumberAttribute)
         let size = number.size()
-        let x = textContainerInset.left - size.width - 4.0
+        let x = textContainerInset.left - size.width - 4
         let y = textContainerInset.top + usedRect.origin.y + font!.lineHeight.centeringPoint(size.height)
         number.draw(at: CGPoint(x: x, y: y))
     }
@@ -127,10 +127,10 @@ extension EditorView {
     private func drawLineHighlight(_ cgContext: CGContext) {
         let lineRange = text.lineRange(for: selectedRange)
         var lineRect = layoutManager.boundingRect(forGlyphRange: lineRange, in: textContainer)
-        lineRect.origin.x = textContainerInset.left + 2.0
-        lineRect.origin.y += textContainerInset.top - 1.0
-        lineRect.size.width = textContainer.size.width - 4.0
-        lineRect.size.height += 2.0
+        lineRect.origin.x = textContainerInset.left + 2
+        lineRect.origin.y += textContainerInset.top - 1
+        lineRect.size.width = textContainer.size.width - 4
+        lineRect.size.height += 2
         cgContext.setFillColor(lineHighlightColor)
         cgContext.fill(lineRect)
     }
@@ -147,7 +147,7 @@ extension EditorView {
         self.gutterColor = codeStyle.backgroundColor.cgColor
         self.gutterEdgeColor = codeStyle.edgeColor.cgColor
         self.lineNumberAttribute.removeAll()
-        self.lineNumberAttribute[.font] = codeStyle.font.uiFont.withSize(codeStyle.lineNumberSize)
+        self.lineNumberAttribute[.font] = codeStyle.font.withSize(codeStyle.lineNumberSize)
         self.lineNumberAttribute[.foregroundColor] = codeStyle.edgeColor
 
         // Line highlight setting

@@ -146,35 +146,35 @@ final class EditorViewController: UIViewController {
     override var keyCommands: [UIKeyCommand]? {
         var commands: [UIKeyCommand] = [
             // Deindent
-            UIKeyCommand(input: UIKeyCommand.inputTab, modifierFlags: .shift, action: #selector(didInputCommand)),
+            UIKeyCommand(input: UIKeyCommand.inputTab, modifierFlags: .shift, action: #selector(didInput)),
         ]
         if syntaxManager != nil {
             commands.append(contentsOf: [
                 // Compilation
-                UIKeyCommand(input: UIKeyCommand.inputSlash, modifierFlags: .command, action: #selector(didInputCommand)),
+                UIKeyCommand(input: UIKeyCommand.inputSlash, modifierFlags: .command, action: #selector(didInput)),
                 // Move caret to previous
-                UIKeyCommand(input: UIKeyCommand.inputRightArrow, modifierFlags: .alternate, action: #selector(didInputCommand)),
+                UIKeyCommand(input: UIKeyCommand.inputRightArrow, modifierFlags: .alternate, action: #selector(didInput)),
                 // Move caret to next
-                UIKeyCommand(input: UIKeyCommand.inputLeftArrow, modifierFlags: .alternate, action: #selector(didInputCommand)),
+                UIKeyCommand(input: UIKeyCommand.inputLeftArrow, modifierFlags: .alternate, action: #selector(didInput)),
             ])
         }
         if isShownCompletion {
             commands.append(contentsOf: [
                 // Move completion item to previous
-                UIKeyCommand(input: UIKeyCommand.inputUpArrow, modifierFlags: [], action: #selector(didInputCommand)),
+                UIKeyCommand(input: UIKeyCommand.inputUpArrow, modifierFlags: [], action: #selector(didInput)),
                 // Move completion item to next
-                UIKeyCommand(input: UIKeyCommand.inputDownArrow, modifierFlags: [], action: #selector(didInputCommand)),
+                UIKeyCommand(input: UIKeyCommand.inputDownArrow, modifierFlags: [], action: #selector(didInput)),
             ])
         } else if serverCapability.completion.isSupport {
             commands.append(contentsOf: [
                 // Invoke completion
-                UIKeyCommand(input: UIKeyCommand.inputSpace, modifierFlags: .alternate, action: #selector(didInputCommand)),
+                UIKeyCommand(input: UIKeyCommand.inputSpace, modifierFlags: .alternate, action: #selector(didInput)),
             ])
         }
         return commands
     }
 
-    @objc private func didInputCommand(_ command: UIKeyCommand) {
+    @objc private func didInput(command: UIKeyCommand) {
         switch (command.input, command.modifierFlags) {
         case (UIKeyCommand.inputTab, .shift):
             deindent()
@@ -201,11 +201,6 @@ final class EditorViewController: UIViewController {
         default:
             fatalError()
         }
-    }
-
-    @objc func invokeHover() {
-        viewModel.sendDidChange(editorView)
-        viewModel.sendHover(editorView)
     }
 
     private func moveCaretPrevious() {
@@ -327,8 +322,20 @@ extension EditorViewController {
         let modulus = (beforeCursorText.monospaceCount + (tabCount - tabCount * tabSize)) % tabSize
         let insertment = String(repeating: .space, count: tabSize - modulus)
 
-        textStorage.replaceCharacters(in: range, with: insertment)
-        selectedRange = NSMakeRange(range.location + insertment.length, 0)
+        editorView.replaceText(in: range, with: insertment, selected: false)
+        return false
+    }
+
+    private func indent(_ range: NSRange) -> Bool {
+        let lineRange = contentText.lineRange(for: range)
+
+        var replacement = ""
+        contentText.lines(range: lineRange).forEach() {
+            replacement.append(indent)
+            replacement.append($0)
+        }
+
+        editorView.replaceText(in: lineRange, with: replacement, selected: true)
         return false
     }
 
@@ -342,22 +349,7 @@ extension EditorViewController {
         var insertment = "\n"
         insertment.append(String(repeating: indent, count: indentLevel))
 
-        textStorage.replaceCharacters(in: range, with: insertment)
-        selectedRange = NSMakeRange(range.location + insertment.length, 0)
-        return false
-    }
-
-    private func indent(_ range: NSRange) -> Bool {
-        let lineRange = contentText.lineRange(for: range)
-
-        var replacement = ""
-        contentText.lines(range: lineRange).forEach() {
-            replacement.append(indent)
-            replacement.append($0)
-        }
-
-        textStorage.replaceCharacters(in: lineRange, with: replacement)
-        selectedRange = NSMakeRange(lineRange.location, replacement.length)
+        editorView.replaceText(in: range, with: insertment, selected: false)
         return false
     }
 
@@ -370,8 +362,7 @@ extension EditorViewController {
         let beforeCursor = NSMakeRange(lineRange.location, range.upperBound - lineRange.lowerBound)
 
         if contentText[beforeCursor].isOnly(characterSet: .indent) {
-            textStorage.replaceCharacters(in: beforeCursor, with: "")
-            selectedRange = NSMakeRange(lineRange.location, .zero)
+            editorView.replaceText(in: beforeCursor, with: .blank, selected: false)
             return false
         } else {
             return true
@@ -390,8 +381,7 @@ extension EditorViewController {
             }
         }
 
-        textStorage.replaceCharacters(in: lineRange, with: replacement)
-        selectedRange = NSMakeRange(lineRange.location, replacement.length)
+        editorView.replaceText(in: lineRange, with: replacement, selected: true)
     }
 
     private func toggleComment() {
@@ -415,8 +405,7 @@ extension EditorViewController {
         }
 
         let replacement = onlyComment ? uncomment : comment
-        textStorage.replaceCharacters(in: lineRange, with: replacement)
-        selectedRange = NSMakeRange(lineRange.location, replacement.length)
+        editorView.replaceText(in: lineRange, with: replacement, selected: true)
     }
 
 }
@@ -496,16 +485,19 @@ extension EditorViewController {
         let replaceText = completionItem.insertText ?? completionItem.label
         let replaceRange = syntaxManager?.wordRange(text: contentText, range: completionRange) ?? completionRange
 
-        textStorage.replaceCharacters(in: replaceRange, with: replaceText)
-        selectedRange = NSMakeRange(replaceRange.location + replaceText.length, .zero)
+        editorView.replaceText(in: replaceRange, with: replaceText, selected: false)
     }
 
 }
 
-
 // MARK: - Hover support
 
 extension EditorViewController {
+
+    @objc func invokeHover() {
+        viewModel.sendDidChange(editorView)
+        viewModel.sendHover(editorView)
+    }
 
     func willSendHover(invoke range: NSRange) {
         if let hover = self.hover {
